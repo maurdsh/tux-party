@@ -8,6 +8,19 @@
         body {
             margin: 0;
             overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: white; /* Fondo blanco */
+        }
+        .game-area {
+            position: relative;
+            width: 90vw; /* 90% del ancho de la ventana */
+            height: 90vh; /* 90% de la altura de la ventana */
+            border: 2px solid black; /* Bordes negros */
+            background-color: white; /* Fondo del área de juego */
+            overflow: hidden; /* Evita que los pingüinos salgan del área */
         }
         .player {
             position: absolute;
@@ -17,10 +30,13 @@
 </head>
 <body>
 
+<div class="game-area" id="gameArea"></div>
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const socket = io();
     const players = {};
+    const gameArea = document.getElementById('gameArea');
 
     // Función para crear un nuevo jugador
     function createPlayer(id, x, y) {
@@ -30,7 +46,7 @@
         playerDiv.id = id;
         playerDiv.style.left = `${x}px`;
         playerDiv.style.top = `${y}px`;
-        document.body.appendChild(playerDiv);
+        gameArea.appendChild(playerDiv);
         players[id] = playerDiv;
     }
 
@@ -88,14 +104,20 @@
 
     // Movimiento del pingüino al hacer clic
     document.addEventListener('click', (event) => {
-        const x = event.clientX - 25; // Centra el pingüino
-        const y = event.clientY - 25;
+        const rect = gameArea.getBoundingClientRect(); // Obtener el área de juego
+        const x = event.clientX - rect.left - 25; // Centra el pingüino
+        const y = event.clientY - rect.top - 25;
 
-        socket.emit('movePlayer', { x, y });
+        // Limitar el movimiento al área
+        const limitedX = Math.max(0, Math.min(rect.width - 50, x));
+        const limitedY = Math.max(0, Math.min(rect.height - 50, y));
 
-        movePlayerSmoothly(socket.id, x, y);
+        socket.emit('movePlayer', { x: limitedX, y: limitedY });
+
+        movePlayerSmoothly(socket.id, limitedX, limitedY);
     });
 </script>
 
 </body>
 </html>
+
