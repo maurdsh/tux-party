@@ -29,6 +29,11 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('playerMoved', { id: socket.id, player: players[socket.id] });
     });
 
+    // Manejar el envío de mensajes
+    socket.on('sendMessage', (message) => {
+        io.emit('receiveMessage', message); // Emitir el mensaje a todos los jugadores
+    });
+
     socket.on('disconnect', () => {
         delete players[socket.id];
         socket.broadcast.emit('playerDisconnected', socket.id);
@@ -39,3 +44,4 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
+
