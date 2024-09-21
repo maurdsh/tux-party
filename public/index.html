@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego Multijugador de Pingüinos</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        .player {
+            position: absolute;
+            width: 50px; /* Ajusta el tamaño según necesites */
+        }
+    </style>
+</head>
+<body>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const players = {};
+
+    // Función para crear un nuevo jugador
+    function createPlayer(id, x, y) {
+        const playerDiv = document.createElement('img');
+        playerDiv.src = 'pingu.png'; // Asegúrate de tener esta imagen en la carpeta pública
+        playerDiv.className = 'player';
+        playerDiv.id = id;
+        playerDiv.style.left = `${x}px`;
+        playerDiv.style.top = `${y}px`;
+        document.body.appendChild(playerDiv);
+        players[id] = playerDiv;
+    }
+
+    // Manejo de jugadores actuales
+    socket.on('currentPlayers', (currentPlayers) => {
+        for (let id in currentPlayers) {
+            createPlayer(id, currentPlayers[id].x, currentPlayers[id].y);
+        }
+    });
+
+    // Notificación de nuevo jugador
+    socket.on('newPlayer', (data) => {
+        createPlayer(data.id, data.player.x, data.player.y);
+    });
+
+    // Movimiento de otro jugador
+    socket.on('playerMoved', (data) => {
+        movePlayerSmoothly(data.id, data.player.x, data.player.y);
+    });
+
+    // Notificación de jugador desconectado
+    socket.on('playerDisconnected', (id) => {
+        const player = players[id];
+        if (player) {
+            player.remove();
+            delete players[id];
+        }
+    });
+
+    // Movimiento suave del pingüino
+    function movePlayerSmoothly(id, targetX, targetY) {
+        const playerDiv = players[id];
+        const currentX = parseFloat(playerDiv.style.left);
+        const currentY = parseFloat(playerDiv.style.top);
+
+        const dx = targetX - currentX;
+        const dy = targetY - currentY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const steps = 60; // Número de pasos para el movimiento
+        const stepX = dx / steps;
+        const stepY = dy / steps;
+
+        let stepCount = 0;
+
+        const moveInterval = setInterval(() => {
+            if (stepCount < steps) {
+                playerDiv.style.left = `${currentX + stepX * stepCount}px`;
+                playerDiv.style.top = `${currentY + stepY * stepCount}px`;
+                stepCount++;
+            } else {
+                clearInterval(moveInterval);
+            }
+        }, 16); // Aproximadamente 60 fps
+    }
+
+    // Movimiento del pingüino al hacer clic
+    document.addEventListener('click', (event) => {
+        const x = event.clientX - 25; // Centra el pingüino
+        const y = event.clientY - 25;
+
+        socket.emit('movePlayer', { x, y });
+
+        movePlayerSmoothly(socket.id, x, y);
+    });
+</script>
+
+</body>
+</html>
