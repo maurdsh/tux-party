@@ -7,9 +7,8 @@
     <style>
         body {
             margin: 0;
-            overflow: hidden;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             height: 100vh;
             background-color: white;
@@ -21,25 +20,26 @@
             border: 2px solid black; /* Bordes negros */
             background-color: white; /* Fondo del área de juego */
             overflow: hidden; /* Evita que los pingüinos salgan del área */
+            padding-bottom: 70px; /* Espacio para el área de chat */
         }
         .player {
             position: absolute;
             width: 50px; /* Ajusta el tamaño según necesites */
         }
         .chat-area {
-            width: 90vw; /* 90% del ancho de la ventana */
-            max-height: 10vh; /* Máxima altura del área de chat */
+            position: absolute;
+            bottom: 0; /* Ubicado en la parte inferior del área de juego */
+            width: 100%; /* Ancho total del área de juego */
+            max-height: 60px; /* Altura máxima del área de chat */
             overflow-y: auto; /* Scroll si hay muchos mensajes */
-            border: 2px solid black; /* Bordes negros */
+            border-top: 2px solid black; /* Borde superior */
             background-color: white; /* Fondo del área de chat */
-            margin-top: 10px; /* Espacio entre el área de juego y el chat */
             padding: 5px;
         }
         .message {
-            margin: 5px 0; /* Espaciado entre mensajes */
+            margin: 2px 0; /* Espaciado entre mensajes */
         }
         .input-area {
-            width: 90vw; /* 90% del ancho de la ventana */
             display: flex;
             justify-content: space-between;
             margin-top: 5px;
@@ -51,11 +51,12 @@
 </head>
 <body>
 
-<div class="game-area" id="gameArea"></div>
-<div class="chat-area" id="chatArea"></div>
-<div class="input-area">
-    <input type="text" id="messageInput" maxlength="100" placeholder="Escribe tu mensaje (máx. 20 palabras)" />
-    <button id="sendMessage">Enviar</button>
+<div class="game-area" id="gameArea">
+    <div class="chat-area" id="chatArea"></div>
+    <div class="input-area">
+        <input type="text" id="messageInput" maxlength="100" placeholder="Escribe tu mensaje (máx. 20 palabras)" />
+        <button id="sendMessage">Enviar</button>
+    </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
