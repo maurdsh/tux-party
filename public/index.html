@@ -15,11 +15,13 @@
         }
         .game-area {
             position: relative;
-            width: 90vw; /* 90% del ancho de la ventana */
-            height: 90vh; /* 90% de la altura de la ventana */
+            width: calc(90vw - 20px); /* 90% del ancho de la ventana menos margen */
+            height: calc(90vh - 20px); /* 90% de la altura de la ventana menos margen */
             border: 2px solid black; /* Bordes negros */
             background-color: white; /* Fondo del área de juego */
             overflow: hidden; /* Evita que los pingüinos salgan del área */
+            padding: 10px; /* Margen interno para el área de juego */
+            box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
         }
         .player {
             position: absolute;
@@ -36,12 +38,13 @@
         .chat-area {
             position: absolute;
             bottom: 0; /* Ubicado en la parte inferior del área de juego */
-            width: 100%; /* Ancho total del área de juego */
+            width: calc(100% - 20px); /* Ancho total del área de juego menos margen */
             max-height: 60px; /* Altura máxima del área de chat */
             overflow-y: auto; /* Scroll si hay muchos mensajes */
             border-top: 2px solid black; /* Borde superior */
             background-color: white; /* Fondo del área de chat */
             padding: 5px;
+            box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
         }
         .input-area {
             display: flex;
@@ -153,17 +156,20 @@
 
     // Movimiento del pingüino al hacer clic
     document.addEventListener('click', (event) => {
-        const rect = gameArea.getBoundingClientRect(); // Obtener el área de juego
-        const x = event.clientX - rect.left - 25; // Centra el pingüino
-        const y = event.clientY - rect.top - 25;
+        // Verificar si el clic fue en el campo de texto
+        if (event.target !== messageInput) {
+            const rect = gameArea.getBoundingClientRect(); // Obtener el área de juego
+            const x = event.clientX - rect.left - 25; // Centra el pingüino
+            const y = event.clientY - rect.top - 25;
 
-        // Limitar el movimiento al área
-        const limitedX = Math.max(0, Math.min(rect.width - 50, x));
-        const limitedY = Math.max(0, Math.min(rect.height - 50, y));
+            // Limitar el movimiento al área
+            const limitedX = Math.max(10, Math.min(rect.width - 60, x)); // Margen de 10px
+            const limitedY = Math.max(10, Math.min(rect.height - 60, y)); // Margen de 10px
 
-        socket.emit('movePlayer', { x: limitedX, y: limitedY });
+            socket.emit('movePlayer', { x: limitedX, y: limitedY });
 
-        movePlayerSmoothly(socket.id, limitedX, limitedY);
+            movePlayerSmoothly(socket.id, limitedX, limitedY);
+        }
     });
 
     // Enviar mensaje
@@ -184,8 +190,7 @@
 
     // Recibir mensaje
     socket.on('receiveMessage', (message) => {
-        const messageDiv = createMessageDiv(socket.id, message); // Crear el div del mensaje
-        players[socket.id].messageDiv = messageDiv; // Almacenar el div del mensaje
+        createMessageDiv(socket.id, message); // Crear el div del mensaje
         moveMessage(socket.id); // Mover el mensaje al pingüino
     });
 
