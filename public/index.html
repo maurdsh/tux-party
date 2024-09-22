@@ -185,21 +185,31 @@ function createMessageDiv(id, message) {
         }
     });
 
-    // Enviar mensaje
-    sendMessageButton.addEventListener('click', () => {
-        const message = messageInput.value.trim();
-        const wordCount = message.split(/\s+/).length;
+  // Enviar mensaje al hacer clic en el botón
+sendMessageButton.addEventListener('click', sendMessage);
 
-        if (wordCount > 20) {
-            alert('El mensaje no puede tener más de 20 palabras.');
-            return;
-        }
+// Enviar mensaje al presionar "Enter"
+messageInput.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+});
 
-        if (message) {
-            socket.emit('sendMessage', message);
-            messageInput.value = ''; // Limpiar el campo de entrada
-        }
-    });
+// Función para enviar mensaje
+function sendMessage() {
+    const message = messageInput.value.trim();
+    const wordCount = message.split(/\s+/).length;
+
+    if (wordCount > 20) {
+        alert('El mensaje no puede tener más de 20 palabras.');
+        return;
+    }
+
+    if (message) {
+        socket.emit('sendMessage', message);
+        messageInput.value = ''; // Limpiar el campo de entrada
+    }
+});
 
     // Recibir mensaje de otros jugadores
 socket.on('receiveMessage', (data) => {
