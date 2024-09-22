@@ -10,13 +10,14 @@ app.use(express.static('public'));
 
 let players = {};
 
+// Manejar nuevas conexiones
 io.on('connection', (socket) => {
     console.log('Nuevo jugador conectado:', socket.id);
 
     // Agregar nuevo jugador
     players[socket.id] = { x: 0, y: 0 };
     
-    // Enviar a todos los jugadores actuales al nuevo jugador
+    // Enviar todos los jugadores actuales al nuevo jugador
     socket.emit('currentPlayers', players);
 
     // Notificar a los demás jugadores sobre el nuevo jugador
@@ -31,11 +32,13 @@ io.on('connection', (socket) => {
 
     // Manejar el envío de mensajes
     socket.on('sendMessage', (message) => {
-        // Enviar el mensaje solo al jugador correspondiente
-        io.emit('receiveMessage', message); // Emitir el mensaje al jugador emisor
+        // Enviar el mensaje a todos los jugadores, con el ID del emisor
+        io.emit('receiveMessage', { id: socket.id, message: message }); // Emitir el mensaje para todos
     });
 
+    // Manejar la desconexión de un jugador
     socket.on('disconnect', () => {
+        console.log('Jugador desconectado:', socket.id);
         delete players[socket.id];
         socket.broadcast.emit('playerDisconnected', socket.id);
     });
