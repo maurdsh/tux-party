@@ -160,7 +160,7 @@ function movePlayerSmoothly(id, targetX, targetY) {
             // Actualizar la posición del mensaje de manera consistente a la derecha del pingüino
             if (player.messageDiv) {
                 player.messageDiv.style.left = `${currentX + stepX * stepCount + 60}px`; // A la derecha del pingüino
-                player.messageDiv.style.top = `${currentY + stepY * stepCount + 1}px`; // A la misma altura que el pingüino
+                player.messageDiv.style.top = `${currentY + stepY * stepCount}px`; // A la misma altura que el pingüino
             }
 
             stepCount++;
