@@ -20,7 +20,7 @@
             border: 2px solid black; /* Bordes negros */
             background-color: white; /* Fondo del área de juego */
             overflow: hidden; /* Evita que los pingüinos salgan del área */
-            padding: 10px; /* Margen interno para el área de juego */
+            padding: 20px; /* Margen interno para el área de juego */
             box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
         }
         .player {
@@ -34,10 +34,11 @@
             padding: 2px;
             font-size: 12px; /* Ajusta el tamaño de la fuente */
             white-space: nowrap; /* Evitar saltos de línea */
+            pointer-events: none; /* Evitar que interfiera con los clics */
         }
         .chat-area {
             position: absolute;
-            bottom: 0; /* Ubicado en la parte inferior del área de juego */
+            bottom: 60px; /* Ubicado por encima del teclado */
             width: calc(100% - 20px); /* Ancho total del área de juego menos margen */
             max-height: 60px; /* Altura máxima del área de chat */
             overflow-y: auto; /* Scroll si hay muchos mensajes */
@@ -47,9 +48,13 @@
             box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
         }
         .input-area {
+            position: absolute;
+            bottom: 0; /* Ubicado en la parte inferior del área de juego */
+            width: calc(100% - 20px); /* Ancho total del área de juego menos margen */
             display: flex;
             justify-content: space-between;
-            margin-top: 5px;
+            padding: 10px; /* Padding generoso */
+            box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
         }
         input {
             width: 80%; /* 80% para el campo de texto */
