@@ -153,12 +153,14 @@ function createMessageDiv(id, message) {
 
         const moveInterval = setInterval(() => {
             if (stepCount < steps) {
+                //Actualiza la posición del pinguüino
                 player.div.style.left = `${currentX + stepX * stepCount}px`;
                 player.div.style.top = `${currentY + stepY * stepCount}px`;
-                // Actualizar la posición del mensaje
+                
+                // Actualizar la posición del mensaje de manera consistente a la derecha del pingüino
                 if (player.messageDiv) {
-                    player.messageDiv.style.left = `${currentX + stepX * stepCount}px`;
-                    player.messageDiv.style.top = `${currentY + stepY * stepCount - 40}px`; // Ajustar para que aparezca arriba
+                    player.messageDiv.style.left = `${currentX + stepX * stepCount + 10}px`;
+                    player.messageDiv.style.top = `${currentY + stepY * stepCount}px`; // Ajustar para que aparezca arriba
                 }
                 stepCount++;
             } else {
@@ -226,7 +228,7 @@ function moveMessage(id) {
         const rect = playerDiv.getBoundingClientRect();
         
         // Colocar el mensaje siempre a la derecha del pingüino
-        player.messageDiv.style.left = `${rect.left + 60}px`; // Ajusta 60px a la derecha del pingüino
+        player.messageDiv.style.left = `${rect.left + 10}px`; // Ajusta 60px a la derecha del pingüino
         player.messageDiv.style.top = `${rect.top}px`; // Mantener el mensaje al nivel del pingüino
         
         console.log(`Moviendo mensaje del jugador ${id} a posición: (${rect.left + 60}, ${rect.top})`); // Debugging de la posición
