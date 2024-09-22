@@ -32,7 +32,7 @@ io.on('connection', (socket) => {
     // Manejar el envío de mensajes
     socket.on('sendMessage', (message) => {
         // Enviar el mensaje solo al jugador correspondiente
-        socket.emit('receiveMessage', message); // Emitir el mensaje al jugador emisor
+        io.emit('receiveMessage', message); // Emitir el mensaje al jugador emisor
     });
 
     socket.on('disconnect', () => {
