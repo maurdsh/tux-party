@@ -81,6 +81,7 @@
 
     // Función para crear un nuevo jugador
     function createPlayer(id, x, y) {
+        console.log(`Creando jugador con ID: ${id} en posición (${x}, ${y})`);
         const playerDiv = document.createElement('img');
         playerDiv.src = 'pingu.png'; // Asegúrate de tener esta imagen en la carpeta pública
         playerDiv.className = 'player';
@@ -92,12 +93,13 @@
     }
 
     // Función para crear el div del mensaje
-    function createMessageDiv(id, message) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message';
-        messageDiv.textContent = message;
-        gameArea.appendChild(messageDiv);
-        players[id].messageDiv = messageDiv; // Almacena el div del mensaje
+function createMessageDiv(id, message) {
+    console.log(`Creando mensaje para el jugador: ${id}`); // Verificar que el ID es correcto
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message';
+    messageDiv.textContent = message;
+    gameArea.appendChild(messageDiv);
+    players[id].messageDiv = messageDiv; // Almacena el div del mensaje
 
         // Eliminar el mensaje después de 6 segundos
         setTimeout(() => {
@@ -199,21 +201,23 @@
         }
     });
 
-    // Recibir mensaje
-    socket.on('receiveMessage', (message) => {
-        createMessageDiv(socket.id, message); // Crear el div del mensaje
-        moveMessage(socket.id); // Mover el mensaje al pingüino
-    });
+    // Recibir mensaje de otros jugadores
+socket.on('receiveMessage', (data) => {
+    console.log("Mensaje recibido del jugador:", data.id);  // Verificar el ID del emisor del mensaje
+    createMessageDiv(data.id, data.message); // Crear el div del mensaje para el jugador correcto
+    moveMessage(data.id); // Mover el mensaje al pingüino del jugador que envió el mensaje
+});
 
     // Función para mover el mensaje al pingüino
-    function moveMessage(id) {
-        const player = players[id];
-        if (player.messageDiv) {
-            const playerDiv = player.div;
-            const rect = playerDiv.getBoundingClientRect();
-            player.messageDiv.style.left = `${rect.left}px`;
-            player.messageDiv.style.top = `${rect.top - 40}px`; // Ajustar para que aparezca arriba
-        }
+function moveMessage(id) {
+    const player = players[id];
+    if (player && player.messageDiv) {
+        const playerDiv = player.div;
+        const rect = playerDiv.getBoundingClientRect();
+        player.messageDiv.style.left = `${rect.left}px`;
+        player.messageDiv.style.top = `${rect.top - 40}px`; // Ajustar para que aparezca arriba
+        console.log(`Moviendo mensaje del jugador ${id} a posición: (${rect.left}, ${rect.top})`); // Debugging de la posición
+         }
     }
 
     // Actualizar la posición del mensaje al mover el jugador
