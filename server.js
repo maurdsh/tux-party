@@ -31,8 +31,8 @@ io.on('connection', (socket) => {
 
     // Manejar el envío de mensajes
     socket.on('sendMessage', (message) => {
-        // Enviar el mensaje solo al jugador correspondiente
-        socket.emit('receiveMessage', message); // Emitir el mensaje al jugador emisor
+        // Enviar el mensaje a todos los jugadores
+        io.emit('receiveMessage', { id: socket.id, message }); // Emitir el mensaje a todos
     });
 
     socket.on('disconnect', () => {
@@ -45,3 +45,4 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
+
