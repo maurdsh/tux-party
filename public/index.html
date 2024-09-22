@@ -170,66 +170,30 @@
         // Verificar si el clic fue en el campo de texto
         if (event.target !== messageInput) {
             const rect = gameArea.getBoundingClientRect(); // Obtener el área de juego
-            const x = event.clientX - rect.left - 25; // Centra el pingüino
-            const y = event.clientY - rect.top - 25;
-
-            // Limitar el movimiento al área
-            const limitedX = Math.max(10, Math.min(rect.width - 60, x)); // Margen de 10px
-            const limitedY = Math.max(10, Math.min(rect.height - 60, y)); // Margen de 10px
-
-            socket.emit('movePlayer', { x: limitedX, y: limitedY });
-
-            movePlayerSmoothly(socket.id, limitedX, limitedY);
+            const x = event.clientX - rect.left; // Posición X relativa
+            const y = event.clientY - rect.top; // Posición Y relativa
+            socket.emit('movePlayer', { x, y });
         }
     });
 
-    // Enviar mensaje
+    // Enviar el mensaje
     sendMessageButton.addEventListener('click', () => {
         const message = messageInput.value.trim();
-        const wordCount = message.split(/\s+/).length;
-
-        if (wordCount > 20) {
-            alert('El mensaje no puede tener más de 20 palabras.');
-            return;
-        }
-
-        if (message) {
-            socket.emit('sendMessage', message);
-            messageInput.value = ''; // Limpiar el campo de entrada
+        if (message && message.split(' ').length <= 20) { // Validar longitud del mensaje
+            createMessageDiv(socket.id, message);
+            socket.emit('sendMessage', message); // Enviar el mensaje al servidor
+            messageInput.value = ''; // Limpiar el campo de texto
         }
     });
 
-    // Recibir mensaje
+    // Recibir mensaje del servidor
     socket.on('receiveMessage', (message) => {
-        createMessageDiv(socket.id, message); // Crear el div del mensaje
-        moveMessage(socket.id); // Mover el mensaje al pingüino
+        createMessageDiv(socket.id, message); // Crear el mensaje solo para el jugador emisor
     });
-
-    // Función para mover el mensaje al pingüino
-    function moveMessage(id) {
-        const player = players[id];
-        if (player.messageDiv) {
-            const playerDiv = player.div;
-            const rect = playerDiv.getBoundingClientRect();
-            player.messageDiv.style.left = `${rect.left}px`;
-            player.messageDiv.style.top = `${rect.top - 40}px`; // Ajustar para que aparezca arriba
-        }
-    }
-
-    // Actualizar la posición del mensaje al mover el jugador
-    function updateMessages() {
-        for (const id in players) {
-            moveMessage(id);
-        }
-    }
-
-    // Actualizar las posiciones de los mensajes al mover
-    setInterval(updateMessages, 100); // Actualiza cada 100 ms
 </script>
 
 </body>
 </html>
-
 
 
 
