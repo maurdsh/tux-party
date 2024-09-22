@@ -96,19 +96,20 @@
 function createMessageDiv(id, message) {
     console.log(`Creando mensaje para el jugador: ${id}`); // Verificar que el ID es correcto
     const player = players[id];
-    const playerDiv = player.div;
-    const rect = playerDiv.getBoundingClientRect(); // Obtener las coordenadas del pingüino
 
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message';
     messageDiv.textContent = message;
 
-    // Colocar el mensaje inicialmente a la derecha del pingüino
-    messageDiv.style.left = `${rect.left + 20}px`; // Ajusta el mensaje 60px a la derecha del pingüino
-    messageDiv.style.top = `${rect.top}px`; // Mantén el mensaje alineado al nivel del pingüino
+    // Colocar el mensaje inicialmente a la derecha del pingüino usando las coordenadas del jugador
+    const playerX = parseFloat(player.div.style.left);
+    const playerY = parseFloat(player.div.style.top);
+
+    messageDiv.style.left = `${playerX + 60}px`; // Ajustar 60px a la derecha del pingüino
+    messageDiv.style.top = `${playerY}px`; // Mantener el mensaje alineado con el pingüino
 
     gameArea.appendChild(messageDiv);
-    players[id].messageDiv = messageDiv; // Almacena el div del mensaje
+    players[id].messageDiv = messageDiv; // Almacenar el div del mensaje
 
     // Eliminar el mensaje después de 6 segundos
     setTimeout(() => {
@@ -229,9 +230,17 @@ socket.on('receiveMessage', (data) => {
     moveMessage(data.id); // Mover el mensaje al pingüino del jugador que envió el mensaje
 });
 
-   // Función para actualizar la posición del mensaje (ahora no hace nada)
+   // Función para mover el mensaje al pingüino
 function moveMessage(id) {
-    // Esta función queda vacía porque ya se maneja dentro de movePlayerSmoothly
+    const player = players[id];
+    if (player && player.messageDiv) {
+        const playerX = parseFloat(player.div.style.left);
+        const playerY = parseFloat(player.div.style.top);
+
+        // Colocar el mensaje siempre a la derecha del pingüino
+        player.messageDiv.style.left = `${playerX + 60}px`; // Ajustar 60px a la derecha del pingüino
+        player.messageDiv.style.top = `${playerY}px`; // Mantener el mensaje alineado con el pingüino
+    }
 }
     // Actualizar la posición del mensaje al mover el jugador
     function updateMessages() {
