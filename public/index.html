@@ -15,49 +15,49 @@
         }
         .game-area {
             position: relative;
-            width: calc(90vw - 20px); /* 90% del ancho de la ventana menos margen */
-            height: calc(90vh - 20px); /* 90% de la altura de la ventana menos margen */
-            border: 2px solid black; /* Bordes negros */
-            background-color: white; /* Fondo del área de juego */
-            overflow: hidden; /* Evita que los pingüinos salgan del área */
-            padding: 20px; /* Margen interno para el área de juego */
-            box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
+            width: calc(90vw - 20px);
+            height: calc(90vh - 20px);
+            border: 2px solid black;
+            background-color: white;
+            overflow: hidden;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .player {
             position: absolute;
-            width: 50px; /* Ajusta el tamaño según necesites */
+            width: 50px;
         }
         .message {
             position: absolute;
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+            background-color: rgba(255, 255, 255, 0.8);
             border: 1px solid black;
             padding: 2px;
-            font-size: 12px; /* Ajusta el tamaño de la fuente */
-            white-space: nowrap; /* Evitar saltos de línea */
-            pointer-events: none; /* Evitar que interfiera con los clics */
+            font-size: 12px;
+            white-space: nowrap;
+            pointer-events: none;
         }
         .chat-area {
             position: absolute;
-            bottom: 60px; /* Ubicado por encima del teclado */
-            width: calc(100% - 20px); /* Ancho total del área de juego menos margen */
-            max-height: 60px; /* Altura máxima del área de chat */
-            overflow-y: auto; /* Scroll si hay muchos mensajes */
-            border-top: 2px solid black; /* Borde superior */
-            background-color: white; /* Fondo del área de chat */
+            bottom: 60px;
+            width: calc(100% - 20px);
+            max-height: 60px;
+            overflow-y: auto;
+            border-top: 2px solid black;
+            background-color: white;
             padding: 5px;
-            box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
+            box-sizing: border-box;
         }
         .input-area {
             position: absolute;
-            bottom: 0; /* Ubicado en la parte inferior del área de juego */
-            width: calc(100% - 20px); /* Ancho total del área de juego menos margen */
+            bottom: 0;
+            width: calc(100% - 20px);
             display: flex;
             justify-content: space-between;
-            padding: 10px; /* Padding generoso */
-            box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
+            padding: 10px;
+            box-sizing: border-box;
         }
         input {
-            width: 80%; /* 80% para el campo de texto */
+            width: 80%;
         }
     </style>
 </head>
@@ -75,67 +75,59 @@
     const socket = io();
     const players = {};
     const gameArea = document.getElementById('gameArea');
-    const chatArea = document.getElementById('chatArea');
     const messageInput = document.getElementById('messageInput');
     const sendMessageButton = document.getElementById('sendMessage');
 
-    // Función para crear un nuevo jugador
     function createPlayer(id, x, y) {
         const playerDiv = document.createElement('img');
-        playerDiv.src = 'pingu.png'; // Asegúrate de tener esta imagen en la carpeta pública
+        playerDiv.src = 'pingu.png';
         playerDiv.className = 'player';
         playerDiv.id = id;
         playerDiv.style.left = `${x}px`;
         playerDiv.style.top = `${y}px`;
         gameArea.appendChild(playerDiv);
-        players[id] = { div: playerDiv, messageDiv: null }; // Almacena el div del jugador y el mensaje
+        players[id] = { div: playerDiv, messageDiv: null };
     }
 
-    // Función para crear el div del mensaje
     function createMessageDiv(id, message) {
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message';
         messageDiv.textContent = message;
         gameArea.appendChild(messageDiv);
-        players[id].messageDiv = messageDiv; // Almacena el div del mensaje
+        players[id].messageDiv = messageDiv;
 
         // Eliminar el mensaje después de 6 segundos
         setTimeout(() => {
             messageDiv.remove();
-            players[id].messageDiv = null; // Limpiar referencia
-        }, 6000); // 6000 ms = 6 segundos
+            players[id].messageDiv = null;
+        }, 6000);
     }
 
-    // Manejo de jugadores actuales
     socket.on('currentPlayers', (currentPlayers) => {
         for (let id in currentPlayers) {
             createPlayer(id, currentPlayers[id].x, currentPlayers[id].y);
         }
     });
 
-    // Notificación de nuevo jugador
     socket.on('newPlayer', (data) => {
         createPlayer(data.id, data.player.x, data.player.y);
     });
 
-    // Movimiento de otro jugador
     socket.on('playerMoved', (data) => {
         movePlayerSmoothly(data.id, data.player.x, data.player.y);
     });
 
-    // Notificación de jugador desconectado
     socket.on('playerDisconnected', (id) => {
         const player = players[id];
         if (player) {
             player.div.remove();
             if (player.messageDiv) {
-                player.messageDiv.remove(); // Eliminar el mensaje del jugador desconectado
+                player.messageDiv.remove();
             }
             delete players[id];
         }
     });
 
-    // Movimiento suave del pingüino
     function movePlayerSmoothly(id, targetX, targetY) {
         const player = players[id];
         const currentX = parseFloat(player.div.style.left);
@@ -143,7 +135,7 @@
 
         const dx = targetX - currentX;
         const dy = targetY - currentY;
-        const steps = 60; // Número de pasos para el movimiento
+        const steps = 60; 
         const stepX = dx / steps;
         const stepY = dy / steps;
 
@@ -162,31 +154,27 @@
             } else {
                 clearInterval(moveInterval);
             }
-        }, 16); // Aproximadamente 60 fps
+        }, 16);
     }
 
-    // Movimiento del pingüino al hacer clic
     document.addEventListener('click', (event) => {
-        // Verificar si el clic fue en el campo de texto
         if (event.target !== messageInput) {
-            const rect = gameArea.getBoundingClientRect(); // Obtener el área de juego
-            const x = event.clientX - rect.left; // Posición X relativa
-            const y = event.clientY - rect.top; // Posición Y relativa
+            const rect = gameArea.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
             socket.emit('movePlayer', { x, y });
         }
     });
 
-    // Enviar el mensaje
     sendMessageButton.addEventListener('click', () => {
         const message = messageInput.value.trim();
-        if (message && message.split(' ').length <= 20) { // Validar longitud del mensaje
+        if (message && message.split(' ').length <= 20) {
             createMessageDiv(socket.id, message);
-            socket.emit('sendMessage', message); // Enviar el mensaje al servidor
-            messageInput.value = ''; // Limpiar el campo de texto
+            socket.emit('sendMessage', message); 
+            messageInput.value = ''; 
         }
     });
 
-    // Recibir mensaje del servidor
     socket.on('receiveMessage', (message) => {
         createMessageDiv(socket.id, message); // Crear el mensaje solo para el jugador emisor
     });
@@ -194,6 +182,5 @@
 
 </body>
 </html>
-
 
 
