@@ -93,6 +93,12 @@
         messageDiv.textContent = message;
         gameArea.appendChild(messageDiv);
         players[id].messageDiv = messageDiv; // Almacena el div del mensaje
+
+        // Eliminar el mensaje después de 6 segundos
+        setTimeout(() => {
+            messageDiv.remove();
+            players[id].messageDiv = null; // Limpiar referencia
+        }, 6000); // 6000 ms = 6 segundos
     }
 
     // Manejo de jugadores actuales
@@ -218,6 +224,7 @@
 
 </body>
 </html>
+
 
 
 
