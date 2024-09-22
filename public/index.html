@@ -137,38 +137,38 @@ function createMessageDiv(id, message) {
         }
     });
 
-    // Movimiento suave del pingüino
-    function movePlayerSmoothly(id, targetX, targetY) {
-        const player = players[id];
-        const currentX = parseFloat(player.div.style.left);
-        const currentY = parseFloat(player.div.style.top);
+   // Movimiento suave del pingüino
+function movePlayerSmoothly(id, targetX, targetY) {
+    const player = players[id];
+    const currentX = parseFloat(player.div.style.left);
+    const currentY = parseFloat(player.div.style.top);
 
-        const dx = targetX - currentX;
-        const dy = targetY - currentY;
-        const steps = 60; // Número de pasos para el movimiento
-        const stepX = dx / steps;
-        const stepY = dy / steps;
+    const dx = targetX - currentX;
+    const dy = targetY - currentY;
+    const steps = 60; // Número de pasos para el movimiento
+    const stepX = dx / steps;
+    const stepY = dy / steps;
 
-        let stepCount = 0;
+    let stepCount = 0;
 
-        const moveInterval = setInterval(() => {
-            if (stepCount < steps) {
-                //Actualiza la posición del pinguüino
-                player.div.style.left = `${currentX + stepX * stepCount}px`;
-                player.div.style.top = `${currentY + stepY * stepCount}px`;
-                
-                // Actualizar la posición del mensaje de manera consistente a la derecha del pingüino
-                if (player.messageDiv) {
-                    player.messageDiv.style.left = `${currentX + stepX * stepCount + 10}px`;
-                    player.messageDiv.style.top = `${currentY + stepY * stepCount}px`; // Ajustar para que aparezca arriba
-                }
-                stepCount++;
-            } else {
-                clearInterval(moveInterval);
+    const moveInterval = setInterval(() => {
+        if (stepCount < steps) {
+            // Actualizar la posición del pingüino
+            player.div.style.left = `${currentX + stepX * stepCount}px`;
+            player.div.style.top = `${currentY + stepY * stepCount}px`;
+            
+            // Actualizar la posición del mensaje de manera consistente a la derecha del pingüino
+            if (player.messageDiv) {
+                player.messageDiv.style.left = `${currentX + stepX * stepCount + 60}px`; // A la derecha del pingüino
+                player.messageDiv.style.top = `${currentY + stepY * stepCount}px`; // A la misma altura que el pingüino
             }
-        }, 16); // Aproximadamente 60 fps
-    }
 
+            stepCount++;
+        } else {
+            clearInterval(moveInterval);
+        }
+    }, 16); // Aproximadamente 60 fps
+}
     // Movimiento del pingüino al hacer clic
     document.addEventListener('click', (event) => {
         // Verificar si el clic fue en el campo de texto
@@ -220,22 +220,10 @@ socket.on('receiveMessage', (data) => {
     moveMessage(data.id); // Mover el mensaje al pingüino del jugador que envió el mensaje
 });
 
-    // Función para mover el mensaje al pingüino
+   // Función para actualizar la posición del mensaje (ahora no hace nada)
 function moveMessage(id) {
-    const player = players[id];
-    if (player && player.messageDiv) {
-        const playerDiv = player.div;
-        const rect = playerDiv.getBoundingClientRect();
-        
-        // Colocar el mensaje siempre a la derecha del pingüino
-        player.messageDiv.style.left = `${rect.left + 10}px`; // Ajusta 60px a la derecha del pingüino
-        player.messageDiv.style.top = `${rect.top}px`; // Mantener el mensaje al nivel del pingüino
-        
-        console.log(`Moviendo mensaje del jugador ${id} a posición: (${rect.left + 60}, ${rect.top})`); // Debugging de la posición
-    }
+    // Esta función queda vacía porque ya se maneja dentro de movePlayerSmoothly
 }
-
-
     // Actualizar la posición del mensaje al mover el jugador
     function updateMessages() {
         for (const id in players) {
