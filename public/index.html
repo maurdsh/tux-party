@@ -95,18 +95,27 @@
     // Función para crear el div del mensaje
 function createMessageDiv(id, message) {
     console.log(`Creando mensaje para el jugador: ${id}`); // Verificar que el ID es correcto
+    const player = players[id];
+    const playerDiv = player.div;
+    const rect = playerDiv.getBoundingClientRect(); // Obtener las coordenadas del pingüino
+
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message';
     messageDiv.textContent = message;
+
+    // Colocar el mensaje inicialmente a la derecha del pingüino
+    messageDiv.style.left = `${rect.left + 60}px`; // Ajusta el mensaje 60px a la derecha del pingüino
+    messageDiv.style.top = `${rect.top}px`; // Mantén el mensaje alineado al nivel del pingüino
+
     gameArea.appendChild(messageDiv);
     players[id].messageDiv = messageDiv; // Almacena el div del mensaje
 
-        // Eliminar el mensaje después de 6 segundos
-        setTimeout(() => {
-            messageDiv.remove();
-            players[id].messageDiv = null; // Limpiar referencia
-        }, 6000); // 6000 ms = 6 segundos
-    }
+    // Eliminar el mensaje después de 6 segundos
+    setTimeout(() => {
+        messageDiv.remove();
+        players[id].messageDiv = null; // Limpiar referencia
+    }, 6000); // 6000 ms = 6 segundos
+}
 
     // Manejo de jugadores actuales
     socket.on('currentPlayers', (currentPlayers) => {
