@@ -14,15 +14,20 @@
             background-color: white;
         }
         .game-area {
-            position: relative;
-            width: calc(90vw - 20px); /* 90% del ancho de la ventana menos margen */
-            height: calc(90vh - 20px); /* 90% de la altura de la ventana menos margen */
-            border: 2px solid black; /* Bordes negros */
-            background-color: white; /* Fondo del área de juego */
-            overflow: hidden; /* Evita que los pingüinos salgan del área */
-            padding: 20px; /* Margen interno para el área de juego */
-            box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
-        }
+    position: relative;
+    width: 80vw;  /* Toma el 80% del ancho de la pantalla */
+    height: 80vh; /* Toma el 80% de la altura de la pantalla */
+    min-width: 1024px;  /* Tamaño mínimo para pantallas pequeñas */
+    min-height: 768px;  /* Tamaño mínimo para pantallas pequeñas */
+    max-width: 1920px;  /* Tamaño máximo para pantallas grandes */
+    max-height: 1080px; /* Tamaño máximo para pantallas grandes */
+    margin: auto;
+    background: url('public/1.png') no-repeat center center; /* Imagen centrada */
+    background-size: contain; /* Ajusta la imagen sin recortes */
+    border: 2px solid black;
+    overflow: hidden;
+}
+
         .player {
             position: absolute;
             width: 50px; /* Ajusta el tamaño según necesites */
