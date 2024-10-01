@@ -84,17 +84,19 @@
     const sendMessageButton = document.getElementById('sendMessage');
 
     // Función para crear un nuevo jugador
-    function createPlayer(id, x, y) {
-        console.log(`Creando jugador con ID: ${id} en posición (${x}, ${y})`);
-        const playerDiv = document.createElement('img');
-        playerDiv.src = 'pingu.png'; // Asegúrate de tener esta imagen en la carpeta pública
-        playerDiv.className = 'player';
-        playerDiv.id = id;
-        playerDiv.style.left = `${x}px`;
-        playerDiv.style.top = `${y}px`;
-        gameArea.appendChild(playerDiv);
-        players[id] = { div: playerDiv, messageDiv: null }; // Almacena el div del jugador y el mensaje
-    }
+function createPlayer(id, x, y) {
+    console.log(`Creando jugador con ID: ${id} en posición (${x}, ${y})`);
+    const playerDiv = document.createElement('img');
+    playerDiv.src = 'pingu.png'; // Asegúrate de tener esta imagen en la carpeta pública
+    playerDiv.className = 'player';
+    playerDiv.id = id;
+    playerDiv.style.left = `${x}px`;
+    playerDiv.style.top = `${y}px`;
+    gameArea.appendChild(playerDiv);
+
+    // Corregido: Asignar correctamente el div del jugador y el arreglo para los mensajes
+    players[id] = { div: playerDiv, messageDivs: [] };
+}
 
     // Almacenar múltiples mensajes por jugador
 players[id] = { div: playerDiv, messageDivs: [] }; // Cambia messageDiv a messageDivs
