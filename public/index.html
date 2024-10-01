@@ -32,6 +32,7 @@
         .player {
             position: absolute;
             width: 50px;
+            z-index: 10;
         }
         
         .message {
@@ -129,10 +130,12 @@ function createPlayer(id, x, y) {
     playerDiv.id = id;
     playerDiv.style.left = `${x}px`;
     playerDiv.style.top = `${y}px`;
+    playerDiv.style.zIndex = 10; // Asegura que el pingüino esté en la parte superior
 
     // Agregar el evento para cargar la imagen
     playerDiv.onload = () => {
         gameArea.appendChild(playerDiv);
+        console.log(`Jugador creado: ${id} en (${x}, ${y})`);
     };
     playerDiv.onerror = () => {
         console.error("Error al cargar la imagen: pingu.png");
