@@ -76,7 +76,7 @@
 <div class="game-area" id="gameArea"></div>
 <div class="chat-area" id="chatArea"></div>
 <div class="input-area">
-    <input type="text" id="messageInput" maxlength="100" placeholder="Escribe tu mensaje (máx. 100 caracteres)" />
+    <input type="text" id="messageInput" maxlength="60" placeholder="Escribe tu mensaje (máx. 60 caracteres)" />
 
     <button id="sendMessage">Enviar</button>
 </div>
@@ -109,7 +109,7 @@ function createMessageDiv(id, message) {
     const player = players[id];
 
     // Limitar a 2 mensajes, eliminar el más antiguo si ya hay 2
-    if (player.messageDivs.length >= 2) {
+    if (player.messageDivs.length >= 1) {
         const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el más antiguo
         oldestMessageDiv.remove(); // Eliminar el div del DOM
     }
@@ -232,8 +232,8 @@ function sendMessage() {
     const message = messageInput.value.trim();
     const wordCount = message.split(/\s+/).length;
 
-    if (message.length > 100) { // Cambiado de wordCount a message.length
-        alert('El mensaje no puede tener más de 100 caracteres.');
+    if (message.length > 60) { // Cambiado de wordCount a message.length
+        alert('El mensaje no puede tener más de 60 caracteres.');
         return;
     }
 
@@ -257,7 +257,7 @@ function sendMessage() {
         }
     }
 
-    setInterval(updateMessages, 100); 
+    setInterval(updateMessages, 60); 
 
     // Fragmento código desconexión por inactividad
     let inactivityTimer;
@@ -283,7 +283,7 @@ function sendMessage() {
 let inputText = '';
 
 document.addEventListener('keydown', (event) => {
-    if (event.key.length === 1 && inputText.length < 100) {
+    if (event.key.length === 1 && inputText.length < 60) {
         inputText += event.key;
         messageInput.value = inputText;
     } else if (event.key === 'Backspace') {
