@@ -74,7 +74,8 @@
 <div class="game-area" id="gameArea"></div>
 <div class="chat-area" id="chatArea"></div>
 <div class="input-area">
-    <input type="text" id="messageInput" maxlength="100" placeholder="Escribe tu mensaje (máx. 20 palabras)" />
+    <input type="text" id="messageInput" maxlength="50" placeholder="Escribe tu mensaje (máx. 50 caracteres)" />
+
     <button id="sendMessage">Enviar</button>
 </div>
 
@@ -274,7 +275,7 @@ function sendMessage() {
 let inputText = '';
 
 document.addEventListener('keydown', (event) => {
-    if (event.key.length === 1) {
+    if (event.key.length === 1 && inputText.length < 50) {
         inputText += event.key;
         messageInput.value = inputText;
     } else if (event.key === 'Backspace') {
