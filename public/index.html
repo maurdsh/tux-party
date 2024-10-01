@@ -242,40 +242,45 @@ function createMessageDiv(id, message) {
     // Al hacer clic para mover el pingüino
 document.addEventListener('click', (event) => {
     const rect = gameArea.getBoundingClientRect();
-    const x = event.clientX - rect.left; // Coordenada X del clic
-    const y = event.clientY - rect.top; // Coordenada Y del clic
+    const x = event.clientX - rect.left; // No restes el valor fijo
+    const y = event.clientY - rect.top; // No restes el valor fijo
 
     // Obtener la posición actual del jugador
     const currentPlayer = players[socket.id];
     if (!currentPlayer) return; // Asegúrate de que el jugador exista
 
-    // Obtener la posición del pingüino
-    const playerX = parseFloat(currentPlayer.div.style.left);
-    const playerY = parseFloat(currentPlayer.div.style.top);
+    // Obtener el centro del pingüino
+    const penguinCenterX = parseFloat(currentPlayer.div.style.left) + 25; // 25 es la mitad del ancho del pingüino (50px)
+    const penguinCenterY = parseFloat(currentPlayer.div.style.top) + 25; // 25 es la mitad de la altura del pingüino (50px)
 
-    // Calcular el punto central del pingüino
-    const centerX = playerX + 25; // 25 es la mitad del ancho del pingüino
-    const centerY = playerY + 25; // 25 es la mitad de la altura del pingüino
+    // Calcular las coordenadas de los triángulos
+    const topTriangle = (x >= penguinCenterX && y < penguinCenterY) ||
+                        (x < penguinCenterX && y < penguinCenterY);
+    const bottomTriangle = (x >= penguinCenterX && y > penguinCenterY) ||
+                           (x < penguinCenterX && y > penguinCenterY);
+    const rightTriangle = (x >= penguinCenterX && y < penguinCenterY) ||
+                          (x >= penguinCenterX && y > penguinCenterY);
+    const leftTriangle = (x < penguinCenterX && y < penguinCenterY) ||
+                         (x < penguinCenterX && y > penguinCenterY);
 
-    // Determinar en qué triángulo se hizo clic
-    let direction;
-    if (y < centerY && x < centerX) {
+    // Determinar la dirección del movimiento
+    let direction = null;
+
+    if (y < penguinCenterY && x > penguinCenterX) {
+        direction = 'up'; // Triángulo superior derecho
+    } else if (y < penguinCenterY && x < penguinCenterX) {
         direction = 'up'; // Triángulo superior izquierdo
-    } else if (y < centerY && x >= centerX) {
-        direction = 'right'; // Triángulo superior derecho
-    } else if (y >= centerY && x < centerX) {
-        direction = 'left'; // Triángulo inferior izquierdo
-    } else {
+    } else if (y > penguinCenterY && x > penguinCenterX) {
         direction = 'down'; // Triángulo inferior derecho
+    } else if (y > penguinCenterY && x < penguinCenterX) {
+        direction = 'down'; // Triángulo inferior izquierdo
     }
 
-    // Limitar las coordenadas para que el pingüino no salga del área de juego
-    const limitedX = Math.max(0, Math.min(rect.width - 50, x)); // 50 es el ancho del pingüino
-    const limitedY = Math.max(0, Math.min(rect.height - 50, y)); // 50 es la altura del pingüino
-
-    // Mover el pingüino y animar
-    movePenguin(currentPlayer.div, limitedX, limitedY, direction);
-    socket.emit('movePlayer', { x: limitedX, y: limitedY });
+    // Mover el pingüino y animar si hay dirección
+    if (direction) {
+        movePenguin(currentPlayer.div, limitedX, limitedY, direction);
+        socket.emit('movePlayer', { x: limitedX, y: limitedY });
+    }
 });
 
     // Enviar mensaje al hacer clic en el botón
