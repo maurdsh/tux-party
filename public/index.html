@@ -99,10 +99,19 @@
     // Almacenar múltiples mensajes por jugador
 players[id] = { div: playerDiv, messageDivs: [] }; // Cambia messageDiv a messageDivs
 
+const MAX_MESSAGES = 3; // Límite de mensajes por jugador en 6 segundos
+
 // Función para crear el div del mensaje
 function createMessageDiv(id, message) {
     console.log(`Creando mensaje para el jugador: ${id}`);
     const player = players[id];
+
+    // Verifica si ya ha alcanzado el límite de mensajes
+    if (player.messageDivs.length >= MAX_MESSAGES) {
+        // Elimina el mensaje más antiguo antes de agregar uno nuevo
+        const oldestMessage = player.messageDivs.shift(); // Elimina el primero (el más antiguo)
+        oldestMessage.remove(); // Remueve el div del mensaje del DOM
+    }
 
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message';
