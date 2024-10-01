@@ -105,29 +105,34 @@
     }
 
     // Función para crear el div del mensaje
-    function createMessageDiv(id, message) {
-        const player = players[id];
+function createMessageDiv(id, message) {
+    const player = players[id];
 
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message';
-        messageDiv.textContent = message;
-
-        // Colocar el mensaje inicialmente a la derecha del pingüino
-        const playerX = parseFloat(player.div.style.left);
-        const playerY = parseFloat(player.div.style.top);
-        messageDiv.style.left = `${playerX + 60}px`; 
-        messageDiv.style.top = `${playerY}px`; 
-
-        gameArea.appendChild(messageDiv);
-        player.messageDivs.push(messageDiv); 
-
-        // Eliminar el mensaje después de 6 segundos
-        setTimeout(() => {
-            messageDiv.remove();
-            player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
-        }, 6000);
+    // Limitar a 2 mensajes, eliminar el más antiguo si ya hay 2
+    if (player.messageDivs.length >= 2) {
+        const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el más antiguo
+        oldestMessageDiv.remove(); // Eliminar el div del DOM
     }
 
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message';
+    messageDiv.textContent = message;
+
+    // Colocar el mensaje inicialmente a la derecha del pingüino
+    const playerX = parseFloat(player.div.style.left);
+    const playerY = parseFloat(player.div.style.top);
+    messageDiv.style.left = `${playerX + 60}px`; 
+    messageDiv.style.top = `${playerY}px`; 
+
+    gameArea.appendChild(messageDiv);
+    player.messageDivs.push(messageDiv); 
+
+    // Eliminar el mensaje después de 6 segundos
+    setTimeout(() => {
+        messageDiv.remove();
+        player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
+    }, 6000);
+}
     // Función para mover el mensaje
     function moveMessage(id) {
         const player = players[id];
