@@ -183,23 +183,26 @@ function movePlayerSmoothly(id, targetX, targetY) {
         }
     }, 16); // Aproximadamente 60 fps
 }
+    
     // Movimiento del pingüino al hacer clic
-    document.addEventListener('click', (event) => {
-        // Verificar si el clic fue en el campo de texto
-        if (event.target !== messageInput) {
-            const rect = gameArea.getBoundingClientRect(); // Obtener el área de juego
-            const x = event.clientX - rect.left - 25; // Centra el pingüino
-            const y = event.clientY - rect.top - 25;
+document.addEventListener('click', (event) => {
+    // Verificar si el clic fue en el campo de texto o en el botón de enviar
+    if (event.target === messageInput || event.target === sendMessageButton) {
+        return; // No hacer nada si se hizo clic en el botón o campo de texto
+    }
 
-            // Limitar el movimiento al área
-            const limitedX = Math.max(10, Math.min(rect.width - 60, x)); // Margen de 10px
-            const limitedY = Math.max(10, Math.min(rect.height - 60, y)); // Margen de 10px
+    const rect = gameArea.getBoundingClientRect(); // Obtener el área de juego
+    const x = event.clientX - rect.left - 25; // Centra el pingüino
+    const y = event.clientY - rect.top - 25;
 
-            socket.emit('movePlayer', { x: limitedX, y: limitedY });
+    // Limitar el movimiento al área
+    const limitedX = Math.max(10, Math.min(rect.width - 60, x)); // Margen de 10px
+    const limitedY = Math.max(10, Math.min(rect.height - 60, y)); // Margen de 10px
 
-            movePlayerSmoothly(socket.id, limitedX, limitedY);
-        }
-    });
+    socket.emit('movePlayer', { x: limitedX, y: limitedY });
+
+    movePlayerSmoothly(socket.id, limitedX, limitedY);
+});
 
   // Enviar mensaje al hacer clic en el botón
 sendMessageButton.addEventListener('click', sendMessage);
@@ -226,6 +229,19 @@ function sendMessage() {
         messageInput.value = ''; // Limpiar el campo de entrada
     }
 }
+
+    //Fragmento de código para que al momento de teclear se redacte mensaje 
+document.addEventListener('keydown', (event) => {
+    // Verifica si la tecla presionada es una letra
+    if (event.key.length === 1 && event.key.match(/[a-zA-ZñÑ]/)) {
+        // Pon el foco en el campo de texto
+        messageInput.focus();
+
+        // Inserta automáticamente la letra presionada en el campo de texto
+        messageInput.value += event.key;
+    }
+});
+
 
     // Recibir mensaje de otros jugadores
 socket.on('receiveMessage', (data) => {
@@ -256,28 +272,26 @@ function moveMessage(id) {
     // Actualizar las posiciones de los mensajes al mover
     setInterval(updateMessages, 100); // Actualiza cada 100 ms
 
-let inactivityTimeout;
+    //Fragemnto código desconexión por inactividad
+let inactivityTimer;
 
-// Función para manejar la desconexión por inactividad
 function handleInactivity() {
-    alert('Has sido desconectado por inactividad. Actualiza la página para continuar pinguineando.');
-    socket.emit('disconnectUser'); // Enviar evento de desconexión al servidor
-    socket.disconnect(); // Desconectar el socket del cliente
+    alert("Has estado inactivo durante 10 minutos. Actualiza la página para continuar pingüineando.");
+    // Aquí puedes agregar el código para desconectar al usuario si es necesario
 }
 
-// Reiniciar el temporizador de inactividad
-function resetInactivityTimeout() {
-    clearTimeout(inactivityTimeout);
-    inactivityTimeout = setTimeout(handleInactivity, 10 * 60 * 1000); // 10 minutos = 30 * 60 * 1000 ms
+// Restablecer temporizador de inactividad
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(handleInactivity, 600000); // 10 minutos
 }
 
-// Escuchar eventos de actividad del usuario
-document.addEventListener('mousemove', resetInactivityTimeout);
-document.addEventListener('keypress', resetInactivityTimeout);
-document.addEventListener('click', resetInactivityTimeout);
+// Escuchar eventos de actividad
+document.addEventListener('keydown', resetInactivityTimer);
+document.addEventListener('mousemove', resetInactivityTimer);
 
-// Iniciar el temporizador de inactividad al cargar la página
-resetInactivityTimeout();
+// Iniciar el temporizador al cargar la página
+resetInactivityTimer();
 
 </script>
 
