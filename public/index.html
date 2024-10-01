@@ -103,7 +103,32 @@
         // Almacenar el jugador en el objeto players
         players[id] = { div: playerDiv, messageDivs: [] };
     }
+// Obtener las imágenes de movimiento
+const penguinImages = {
+    up: ['arriba1.png', 'arriba2.png'],
+    down: ['abajo1.png', 'abajo2.png'],
+    left: ['izquierda1.png', 'izquierda2.png'],
+    right: ['derecha1.png', 'derecha2.png']
+};
 
+// Función para mover el pingüino con animación de imágenes
+function movePenguin(penguin, targetX, targetY, gameArea, direction) {
+    let frame = 0;
+    const intervalId = setInterval(() => {
+        penguin.src = penguinImages[direction][frame % penguinImages[direction].length];
+        frame++;
+    }, 200);
+
+    // Mover el pingüino a la nueva posición
+    penguin.style.left = `${targetX}px`;
+    penguin.style.top = `${targetY}px`;
+
+    // Detener el cambio de imágenes después de 1s (tiempo del movimiento)
+    setTimeout(() => {
+        clearInterval(intervalId);
+        penguin.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
+    }, 1000);
+}
     // Función para crear el div del mensaje
 function createMessageDiv(id, message) {
     const player = players[id];
