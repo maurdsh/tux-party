@@ -242,8 +242,8 @@ function createMessageDiv(id, message) {
     // Al hacer clic para mover el pingüino
 document.addEventListener('click', (event) => {
     const rect = gameArea.getBoundingClientRect();
-    const x = event.clientX - rect.left; // No restes el valor fijo
-    const y = event.clientY - rect.top; // No restes el valor fijo
+    const x = event.clientX - rect.left; // Coordenadas X del clic
+    const y = event.clientY - rect.top; // Coordenadas Y del clic
 
     // Obtener la posición actual del jugador
     const currentPlayer = players[socket.id];
@@ -253,35 +253,61 @@ document.addEventListener('click', (event) => {
     const penguinCenterX = parseFloat(currentPlayer.div.style.left) + 25; // 25 es la mitad del ancho del pingüino (50px)
     const penguinCenterY = parseFloat(currentPlayer.div.style.top) + 25; // 25 es la mitad de la altura del pingüino (50px)
 
-    // Calcular las coordenadas de los triángulos
-    const topTriangle = (x >= penguinCenterX && y < penguinCenterY) ||
-                        (x < penguinCenterX && y < penguinCenterY);
-    const bottomTriangle = (x >= penguinCenterX && y > penguinCenterY) ||
-                           (x < penguinCenterX && y > penguinCenterY);
-    const rightTriangle = (x >= penguinCenterX && y < penguinCenterY) ||
-                          (x >= penguinCenterX && y > penguinCenterY);
-    const leftTriangle = (x < penguinCenterX && y < penguinCenterY) ||
-                         (x < penguinCenterX && y > penguinCenterY);
-
-    // Determinar la dirección del movimiento
+    // Determinar la dirección del movimiento basado en la posición del clic
     let direction = null;
 
-    if (y < penguinCenterY && x > penguinCenterX) {
-        direction = 'up'; // Triángulo superior derecho
-    } else if (y < penguinCenterY && x < penguinCenterX) {
-        direction = 'up'; // Triángulo superior izquierdo
-    } else if (y > penguinCenterY && x > penguinCenterX) {
-        direction = 'down'; // Triángulo inferior derecho
-    } else if (y > penguinCenterY && x < penguinCenterX) {
-        direction = 'down'; // Triángulo inferior izquierdo
+    if (y < penguinCenterY && x < penguinCenterX) {
+        // Triángulo superior izquierdo
+        direction = 'up-left';
+    } else if (y < penguinCenterY && x >= penguinCenterX) {
+        // Triángulo superior derecho
+        direction = 'up-right';
+    } else if (y >= penguinCenterY && x < penguinCenterX) {
+        // Triángulo inferior izquierdo
+        direction = 'down-left';
+    } else if (y >= penguinCenterY && x >= penguinCenterX) {
+        // Triángulo inferior derecho
+        direction = 'down-right';
     }
 
     // Mover el pingüino y animar si hay dirección
     if (direction) {
-        movePenguin(currentPlayer.div, limitedX, limitedY, direction);
-        socket.emit('movePlayer', { x: limitedX, y: limitedY });
+        // Asumiendo que la función movePenguin recibe la dirección y actualiza la posición
+        movePenguin(currentPlayer.div, direction);
+        
+        // Emite la nueva posición al servidor
+        socket.emit('movePlayer', { x: currentPlayer.div.style.left, y: currentPlayer.div.style.top });
     }
 });
+
+// Función de mover pingüino (necesitarás ajustar esto según tu lógica de movimiento)
+function movePenguin(penguinDiv, direction) {
+    const step = 10; // Define un paso para el movimiento
+
+    // Obtener la posición actual
+    let left = parseFloat(penguinDiv.style.left) || 0;
+    let top = parseFloat(penguinDiv.style.top) || 0;
+
+    // Actualiza la posición según la dirección
+    switch (direction) {
+        case 'up-left':
+            penguinDiv.style.left = `${left - step}px`;
+            penguinDiv.style.top = `${top - step}px`;
+            break;
+        case 'up-right':
+            penguinDiv.style.left = `${left + step}px`;
+            penguinDiv.style.top = `${top - step}px`;
+            break;
+        case 'down-left':
+            penguinDiv.style.left = `${left - step}px`;
+            penguinDiv.style.top = `${top + step}px`;
+            break;
+        case 'down-right':
+            penguinDiv.style.left = `${left + step}px`;
+            penguinDiv.style.top = `${top + step}px`;
+            break;
+    }
+}
 
     // Enviar mensaje al hacer clic en el botón
     sendMessageButton.addEventListener('click', sendMessage);
