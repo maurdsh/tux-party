@@ -242,25 +242,23 @@ function createMessageDiv(id, message) {
     // Al hacer clic para mover el pingüino
 document.addEventListener('click', (event) => {
     const rect = gameArea.getBoundingClientRect();
-    const x = event.clientX - rect.left - 25; // Ajusta según el tamaño del pingüino
-    const y = event.clientY - rect.top - 25;
+    const x = event.clientX - rect.left; // No restes el valor fijo
+    const y = event.clientY - rect.top; // No restes el valor fijo
 
-    const limitedX = Math.max(10, Math.min(rect.width - 60, x));
-    const limitedY = Math.max(10, Math.min(rect.height - 60, y));
+    // Asegúrate de que el pingüino no salga del área de juego
+    const limitedX = Math.max(0, Math.min(rect.width - 50, x)); // 50 es el ancho del pingüino
+    const limitedY = Math.max(0, Math.min(rect.height - 50, y)); // 50 es la altura del pingüino
 
     // Obtener la posición actual del jugador
     const currentPlayer = players[socket.id];
     if (!currentPlayer) return; // Asegúrate de que el jugador exista
 
-    const currentX = parseFloat(currentPlayer.div.style.left);
-    const currentY = parseFloat(currentPlayer.div.style.top);
-
     // Determinar la dirección del movimiento
     let direction;
-    if (limitedY < currentY) direction = 'up';
-    else if (limitedY > currentY) direction = 'down';
-    else if (limitedX < currentX) direction = 'left';
-    else if (limitedX > currentX) direction = 'right';
+    if (limitedY < currentPlayer.div.style.top.replace('px', '')) direction = 'up';
+    else if (limitedY > currentPlayer.div.style.top.replace('px', '')) direction = 'down';
+    else if (limitedX < currentPlayer.div.style.left.replace('px', '')) direction = 'left';
+    else if (limitedX > currentPlayer.div.style.left.replace('px', '')) direction = 'right';
 
     // Mover el pingüino y animar
     movePenguin(currentPlayer.div, limitedX, limitedY, direction);
