@@ -255,6 +255,30 @@ function moveMessage(id) {
 
     // Actualizar las posiciones de los mensajes al mover
     setInterval(updateMessages, 100); // Actualiza cada 100 ms
+
+let inactivityTimeout;
+
+// Función para manejar la desconexión por inactividad
+function handleInactivity() {
+    alert('Has sido desconectado por inactividad. Actualiza la página para continuar pinguineando.');
+    socket.emit('disconnectUser'); // Enviar evento de desconexión al servidor
+    socket.disconnect(); // Desconectar el socket del cliente
+}
+
+// Reiniciar el temporizador de inactividad
+function resetInactivityTimeout() {
+    clearTimeout(inactivityTimeout);
+    inactivityTimeout = setTimeout(handleInactivity, 30 * 60 * 1000); // 30 minutos = 30 * 60 * 1000 ms
+}
+
+// Escuchar eventos de actividad del usuario
+document.addEventListener('mousemove', resetInactivityTimeout);
+document.addEventListener('keypress', resetInactivityTimeout);
+document.addEventListener('click', resetInactivityTimeout);
+
+// Iniciar el temporizador de inactividad al cargar la página
+resetInactivityTimeout();
+
 </script>
 
 </body>
