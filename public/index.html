@@ -96,9 +96,12 @@
         players[id] = { div: playerDiv, messageDiv: null }; // Almacena el div del jugador y el mensaje
     }
 
-    // Función para crear el div del mensaje
+    // Almacenar múltiples mensajes por jugador
+players[id] = { div: playerDiv, messageDivs: [] }; // Cambia messageDiv a messageDivs
+
+// Función para crear el div del mensaje
 function createMessageDiv(id, message) {
-    console.log(`Creando mensaje para el jugador: ${id}`); // Verificar que el ID es correcto
+    console.log(`Creando mensaje para el jugador: ${id}`);
     const player = players[id];
 
     const messageDiv = document.createElement('div');
@@ -113,13 +116,28 @@ function createMessageDiv(id, message) {
     messageDiv.style.top = `${playerY}px`; // Mantener el mensaje alineado con el pingüino
 
     gameArea.appendChild(messageDiv);
-    players[id].messageDiv = messageDiv; // Almacenar el div del mensaje
+    player.messageDivs.push(messageDiv); // Almacenar el nuevo div del mensaje
 
     // Eliminar el mensaje después de 6 segundos
     setTimeout(() => {
         messageDiv.remove();
-        players[id].messageDiv = null; // Limpiar referencia
+        player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv); // Limpiar referencia del mensaje eliminado
     }, 6000); // 6000 ms = 6 segundos
+}
+
+// Función para mover el mensaje
+function moveMessage(id) {
+    const player = players[id];
+    if (player && player.messageDivs.length > 0) {
+        const playerX = parseFloat(player.div.style.left);
+        const playerY = parseFloat(player.div.style.top);
+
+        // Mover todos los mensajes asociados al jugador
+        player.messageDivs.forEach((messageDiv, index) => {
+            messageDiv.style.left = `${playerX + 60}px`; // A la derecha del pingüino
+            messageDiv.style.top = `${playerY + (index * 20)}px`; // A la misma altura que el pingüino, con un pequeño desplazamiento vertical para cada mensaje
+        });
+    }
 }
 
     // Manejo de jugadores actuales
@@ -252,18 +270,6 @@ socket.on('receiveMessage', (data) => {
     moveMessage(data.id); // Mover el mensaje al pingüino del jugador que envió el mensaje
 });
 
-   // Función para mover el mensaje al pingüino
-function moveMessage(id) {
-    const player = players[id];
-    if (player && player.messageDiv) {
-        const playerX = parseFloat(player.div.style.left);
-        const playerY = parseFloat(player.div.style.top);
-
-        // Colocar el mensaje siempre a la derecha del pingüino
-        player.messageDiv.style.left = `${playerX + 60}px`; // Ajustar 60px a la derecha del pingüino
-        player.messageDiv.style.top = `${playerY}px`; // Mantener el mensaje alineado con el pingüino
-    }
-}
     // Actualizar la posición del mensaje al mover el jugador
     function updateMessages() {
         for (const id in players) {
