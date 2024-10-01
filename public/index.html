@@ -91,6 +91,35 @@
     const chatArea = document.getElementById('chatArea');
     const messageInput = document.getElementById('messageInput');
     const sendMessageButton = document.getElementById('sendMessage');
+
+function adjustGameArea() {
+    const gameArea = document.getElementById('gameArea');
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    // Establecer dimensiones fijas para el game area
+    const gameAreaWidth = 800; // Ancho definido en CSS
+    const gameAreaHeight = 600; // Alto definido en CSS
+
+    // Calcular la escala necesaria
+    const scaleX = windowWidth / gameAreaWidth;
+    const scaleY = windowHeight / gameAreaHeight;
+    const scale = Math.min(scaleX, scaleY);
+
+    // Aplicar escala si es menor a 1
+    if (scale < 1) {
+        gameArea.style.transform = `scale(${scale})`;
+        gameArea.style.transformOrigin = 'top left'; // Cambiar el origen para que el escalado comience desde la esquina superior izquierda
+        gameArea.style.width = `${gameAreaWidth}px`; // Mantener el ancho fijo
+        gameArea.style.height = `${gameAreaHeight}px`; // Mantener el alto fijo
+    } else {
+        gameArea.style.transform = 'none'; // No aplicar escalado si la ventana es suficientemente grande
+    }
+}
+
+// Llama a la función cuando se carga la página y al redimensionar la ventana
+window.onload = adjustGameArea;
+window.onresize = adjustGameArea;
     
     // Función para crear un nuevo jugador
     function createPlayer(id, x, y) {
