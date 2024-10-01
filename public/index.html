@@ -16,16 +16,16 @@
         }
         
         .game-area {
-    position: relative;
-    width: calc(90vw - 20px); /* 90% del ancho de la ventana menos margen */
-    height: calc(90vh - 20px); /* 90% de la altura de la ventana menos margen */
-    background: url('1.png') no-repeat center center; /* Imagen centrada */
-    background-size: 100% 100%; /* Estira la imagen para cubrir todo el área sin recortes */
-    border: 2px solid black;
-    overflow: hidden;
-    padding: 20px; /* Margen interno para el área de juego */
-    box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
-}
+            position: relative;
+            width: calc(90vw - 20px); /* 90% del ancho de la ventana menos margen */
+            height: calc(90vh - 20px); /* 90% de la altura de la ventana menos margen */
+            background: url('1.png') no-repeat center center; /* Imagen centrada */
+            background-size: 100% 100%; /* Estira la imagen para cubrir todo el área sin recortes */
+            border: 2px solid black;
+            overflow: hidden;
+            padding: 20px; /* Margen interno para el área de juego */
+            box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
+        }
 
         .player {
             position: absolute;
@@ -84,72 +84,69 @@
     const sendMessageButton = document.getElementById('sendMessage');
 
     // Función para crear un nuevo jugador
-function createPlayer(id, x, y) {
-    console.log(`Creando jugador con ID: ${id} en posición (${x}, ${y})`);
-    const playerDiv = document.createElement('img');
-    playerDiv.src = 'pingu.png'; // Asegúrate de tener esta imagen en la carpeta pública
-    playerDiv.className = 'player';
-    playerDiv.id = id;
-    playerDiv.style.left = `${x}px`;
-    playerDiv.style.top = `${y}px`;
-    gameArea.appendChild(playerDiv);
+    function createPlayer(id, x, y) {
+        console.log(`Creando jugador con ID: ${id} en posición (${x}, ${y})`);
+        const playerDiv = document.createElement('img');
+        playerDiv.src = 'pingu.png'; // Asegúrate de tener esta imagen en la carpeta pública
+        playerDiv.className = 'player';
+        playerDiv.id = id;
+        playerDiv.style.left = `${x}px`;
+        playerDiv.style.top = `${y}px`;
+        gameArea.appendChild(playerDiv);
 
-    // Corregido: Asignar correctamente el div del jugador y el arreglo para los mensajes
-    players[id] = { div: playerDiv, messageDivs: [] };
-}
-
-    // Almacenar múltiples mensajes por jugador
-players[id] = { div: playerDiv, messageDivs: [] }; // Cambia messageDiv a messageDivs
-
-const MAX_MESSAGES = 3; // Límite de mensajes por jugador en 6 segundos
-
-// Función para crear el div del mensaje
-function createMessageDiv(id, message) {
-    console.log(`Creando mensaje para el jugador: ${id}`);
-    const player = players[id];
-
-    // Verifica si ya ha alcanzado el límite de mensajes
-    if (player.messageDivs.length >= MAX_MESSAGES) {
-        // Elimina el mensaje más antiguo antes de agregar uno nuevo
-        const oldestMessage = player.messageDivs.shift(); // Elimina el primero (el más antiguo)
-        oldestMessage.remove(); // Remueve el div del mensaje del DOM
+        // Asignar correctamente el div del jugador y el arreglo para los mensajes
+        players[id] = { div: playerDiv, messageDivs: [] };
     }
 
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'message';
-    messageDiv.textContent = message;
+    const MAX_MESSAGES = 3; // Límite de mensajes por jugador en 6 segundos
 
-    // Colocar el mensaje inicialmente a la derecha del pingüino usando las coordenadas del jugador
-    const playerX = parseFloat(player.div.style.left);
-    const playerY = parseFloat(player.div.style.top);
+    // Función para crear el div del mensaje
+    function createMessageDiv(id, message) {
+        console.log(`Creando mensaje para el jugador: ${id}`);
+        const player = players[id];
 
-    messageDiv.style.left = `${playerX + 60}px`; // Ajustar 60px a la derecha del pingüino
-    messageDiv.style.top = `${playerY}px`; // Mantener el mensaje alineado con el pingüino
+        // Verifica si ya ha alcanzado el límite de mensajes
+        if (player.messageDivs.length >= MAX_MESSAGES) {
+            // Elimina el mensaje más antiguo antes de agregar uno nuevo
+            const oldestMessage = player.messageDivs.shift(); // Elimina el primero (el más antiguo)
+            oldestMessage.remove(); // Remueve el div del mensaje del DOM
+        }
 
-    gameArea.appendChild(messageDiv);
-    player.messageDivs.push(messageDiv); // Almacenar el nuevo div del mensaje
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message';
+        messageDiv.textContent = message;
 
-    // Eliminar el mensaje después de 6 segundos
-    setTimeout(() => {
-        messageDiv.remove();
-        player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv); // Limpiar referencia del mensaje eliminado
-    }, 6000); // 6000 ms = 6 segundos
-}
-
-// Función para mover el mensaje
-function moveMessage(id) {
-    const player = players[id];
-    if (player && player.messageDivs.length > 0) {
+        // Colocar el mensaje inicialmente a la derecha del pingüino usando las coordenadas del jugador
         const playerX = parseFloat(player.div.style.left);
         const playerY = parseFloat(player.div.style.top);
 
-        // Mover todos los mensajes asociados al jugador
-        player.messageDivs.forEach((messageDiv, index) => {
-            messageDiv.style.left = `${playerX + 60}px`; // A la derecha del pingüino
-            messageDiv.style.top = `${playerY + (index * 20)}px`; // A la misma altura que el pingüino, con un pequeño desplazamiento vertical para cada mensaje
-        });
+        messageDiv.style.left = `${playerX + 60}px`; // Ajustar 60px a la derecha del pingüino
+        messageDiv.style.top = `${playerY}px`; // Mantener el mensaje alineado con el pingüino
+
+        gameArea.appendChild(messageDiv);
+        player.messageDivs.push(messageDiv); // Almacenar el nuevo div del mensaje
+
+        // Eliminar el mensaje después de 6 segundos
+        setTimeout(() => {
+            messageDiv.remove();
+            player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv); // Limpiar referencia del mensaje eliminado
+        }, 6000); // 6000 ms = 6 segundos
     }
-}
+
+    // Función para mover el mensaje
+    function moveMessage(id) {
+        const player = players[id];
+        if (player && player.messageDivs.length > 0) {
+            const playerX = parseFloat(player.div.style.left);
+            const playerY = parseFloat(player.div.style.top);
+
+            // Mover todos los mensajes asociados al jugador
+            player.messageDivs.forEach((messageDiv, index) => {
+                messageDiv.style.left = `${playerX + 60}px`; // A la derecha del pingüino
+                messageDiv.style.top = `${playerY + (index * 20)}px`; // A la misma altura que el pingüino, con un pequeño desplazamiento vertical para cada mensaje
+            });
+        }
+    }
 
     // Manejo de jugadores actuales
     socket.on('currentPlayers', (currentPlayers) => {
@@ -173,148 +170,70 @@ function moveMessage(id) {
         const player = players[id];
         if (player) {
             player.div.remove();
-            if (player.messageDiv) {
-                player.messageDiv.remove(); // Eliminar el mensaje del jugador desconectado
-            }
+            player.messageDivs.forEach((messageDiv) => messageDiv.remove()); // Eliminar todos los mensajes del jugador desconectado
             delete players[id];
         }
     });
 
-   // Movimiento suave del pingüino
-function movePlayerSmoothly(id, targetX, targetY) {
-    const player = players[id];
-    const currentX = parseFloat(player.div.style.left);
-    const currentY = parseFloat(player.div.style.top);
+    // Movimiento suave del pingüino
+    function movePlayerSmoothly(id, targetX, targetY) {
+        const player = players[id];
+        const currentX = parseFloat(player.div.style.left);
+        const currentY = parseFloat(player.div.style.top);
 
-    const dx = targetX - currentX;
-    const dy = targetY - currentY;
-    const steps = 60; // Número de pasos para el movimiento
-    const stepX = dx / steps;
-    const stepY = dy / steps;
+        const dx = targetX - currentX;
+        const dy = targetY - currentY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
 
-    let stepCount = 0;
+        const steps = 10; // Número de pasos para realizar el movimiento suave
+        const stepX = dx / steps;
+        const stepY = dy / steps;
 
-    const moveInterval = setInterval(() => {
-        if (stepCount < steps) {
-            // Actualizar la posición del pingüino
-            player.div.style.left = `${currentX + stepX * stepCount}px`;
-            player.div.style.top = `${currentY + stepY * stepCount}px`;
-            
-            // Actualizar la posición del mensaje de manera consistente a la derecha del pingüino
-            if (player.messageDiv) {
-                player.messageDiv.style.left = `${currentX + stepX * stepCount + 60}px`; // A la derecha del pingüino
-                player.messageDiv.style.top = `${currentY + stepY * stepCount}px`; // A la misma altura que el pingüino
+        let currentStep = 0;
+
+        function step() {
+            if (currentStep < steps) {
+                const newX = currentX + stepX * currentStep;
+                const newY = currentY + stepY * currentStep;
+                player.div.style.left = `${newX}px`;
+                player.div.style.top = `${newY}px`;
+
+                // Mueve los mensajes asociados al jugador
+                moveMessage(id);
+
+                currentStep++;
+                requestAnimationFrame(step);
             }
-
-            stepCount++;
-        } else {
-            clearInterval(moveInterval);
         }
-    }, 16); // Aproximadamente 60 fps
-}
-    
-    // Movimiento del pingüino al hacer clic
-document.addEventListener('click', (event) => {
-    // Verificar si el clic fue en el campo de texto o en el botón de enviar
-    if (event.target === messageInput || event.target === sendMessageButton) {
-        return; // No hacer nada si se hizo clic en el botón o campo de texto
+
+        requestAnimationFrame(step);
     }
 
-    const rect = gameArea.getBoundingClientRect(); // Obtener el área de juego
-    const x = event.clientX - rect.left - 25; // Centra el pingüino
-    const y = event.clientY - rect.top - 25;
+    // Escuchar nuevos mensajes de chat
+    socket.on('chatMessage', (data) => {
+        console.log(`Nuevo mensaje de ${data.id}: ${data.message}`);
+        createMessageDiv(data.id, data.message);
+    });
 
-    // Limitar el movimiento al área
-    const limitedX = Math.max(10, Math.min(rect.width - 60, x)); // Margen de 10px
-    const limitedY = Math.max(10, Math.min(rect.height - 60, y)); // Margen de 10px
-
-    socket.emit('movePlayer', { x: limitedX, y: limitedY });
-
-    movePlayerSmoothly(socket.id, limitedX, limitedY);
-});
-
-  // Enviar mensaje al hacer clic en el botón
-sendMessageButton.addEventListener('click', sendMessage);
-
-// Enviar mensaje al presionar "Enter"
-messageInput.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') {
-        sendMessage();
-    }
-});
-
-// Función para enviar el mensaje
-function sendMessage() {
-    const message = messageInput.value.trim();
-    const wordCount = message.split(/\s+/).length;
-
-    if (wordCount > 20) {
-        alert('El mensaje no puede tener más de 20 palabras.');
-        return;
-    }
-
-    if (message) {
-        socket.emit('sendMessage', message);
-        messageInput.value = ''; // Limpiar el campo de entrada
-    }
-}
-
-    //Fragmento de código para que al momento de teclear se redacte mensaje 
-document.addEventListener('keydown', (event) => {
-    // Verifica si la tecla presionada es una letra
-    if (event.key.length === 1 && event.key.match(/[a-zA-ZñÑ]/)) {
-        // Prevenir la acción por defecto del navegador
-        event.preventDefault();
-
-        // Pon el foco en el campo de texto
-        messageInput.focus();
-
-        // Inserta automáticamente la letra presionada en el campo de texto
-        messageInput.value += event.key;
-    }
-});
-
-    // Recibir mensaje de otros jugadores
-socket.on('receiveMessage', (data) => {
-    console.log("Mensaje recibido del jugador:", data.id);  // Verificar el ID del emisor del mensaje
-    createMessageDiv(data.id, data.message); // Crear el div del mensaje para el jugador correcto
-    moveMessage(data.id); // Mover el mensaje al pingüino del jugador que envió el mensaje
-});
-
-    // Actualizar la posición del mensaje al mover el jugador
-    function updateMessages() {
-        for (const id in players) {
-            moveMessage(id);
+    // Enviar mensaje de chat
+    sendMessageButton.addEventListener('click', () => {
+        const message = messageInput.value.trim();
+        if (message.length > 0) {
+            socket.emit('chatMessage', message);
+            messageInput.value = ''; // Limpiar el campo de texto después de enviar el mensaje
         }
-    }
+    });
 
-    // Actualizar las posiciones de los mensajes al mover
-    setInterval(updateMessages, 100); // Actualiza cada 100 ms
-
-    //Fragemnto código desconexión por inactividad
-let inactivityTimer;
-
-function handleInactivity() {
-    alert("Has estado inactivo durante 10 minutos. Actualiza la página para continuar pingüineando.");
-    // Aquí puedes agregar el código para desconectar al usuario si es necesario
-}
-
-// Restablecer temporizador de inactividad
-function resetInactivityTimer() {
-    clearTimeout(inactivityTimer);
-    inactivityTimer = setTimeout(handleInactivity, 600000); // 10 minutos
-}
-
-// Escuchar eventos de actividad
-document.addEventListener('keydown', resetInactivityTimer);
-document.addEventListener('mousemove', resetInactivityTimer);
-
-// Iniciar el temporizador al cargar la página
-resetInactivityTimer();
-
+    // Detectar "Enter" para enviar mensaje de chat
+    messageInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            sendMessageButton.click();
+        }
+    });
 </script>
 
 </body>
 </html>
+
 
 
