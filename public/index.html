@@ -222,19 +222,18 @@
    // Función para enviar el mensaje
 function sendMessage() {
     const message = messageInput.value.trim();
-    const wordCount = message.split(/\s+/).length;
 
-    if (wordCount > 20) {
-        alert('El mensaje no puede tener más de 20 palabras.');
+    if (message.length > 50) { // Cambiado de wordCount a message.length
+        alert('El mensaje no puede tener más de 50 caracteres.');
         return;
     }
 
     if (message) {
         socket.emit('sendMessage', message);
-        inputText = ''; // Reiniciar el texto aquí
         messageInput.value = ''; // Limpiar el campo de entrada
     }
 }
+
 
     // Recibir mensaje de otros jugadores
     socket.on('receiveMessage', (data) => {
