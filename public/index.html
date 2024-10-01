@@ -234,6 +234,9 @@ function sendMessage() {
 document.addEventListener('keydown', (event) => {
     // Verifica si la tecla presionada es una letra
     if (event.key.length === 1 && event.key.match(/[a-zA-ZñÑ]/)) {
+        // Evita que el navegador inserte la letra automáticamente
+        event.preventDefault();
+
         // Pon el foco en el campo de texto
         messageInput.focus();
 
@@ -241,7 +244,6 @@ document.addEventListener('keydown', (event) => {
         messageInput.value += event.key;
     }
 });
-
 
     // Recibir mensaje de otros jugadores
 socket.on('receiveMessage', (data) => {
