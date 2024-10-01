@@ -17,51 +17,51 @@
         
         .game-area {
             position: relative;
-            width: calc(90vw - 20px); /* 90% del ancho de la ventana menos margen */
-            height: calc(90vh - 20px); /* 90% de la altura de la ventana menos margen */
-            background: url('1.png') no-repeat center center; /* Imagen centrada */
-            background-size: 100% 100%; /* Estira la imagen para cubrir todo el área sin recortes */
+            width: calc(90vw - 20px);
+            height: calc(90vh - 20px);
+            background: url('1.png') no-repeat center center;
+            background-size: 100% 100%;
             border: 2px solid black;
             overflow: hidden;
-            padding: 20px; /* Margen interno para el área de juego */
-            box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .player {
             position: absolute;
-            width: 50px; /* Ajusta el tamaño según necesites */
+            width: 50px;
         }
         .message {
             position: absolute;
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+            background-color: rgba(255, 255, 255, 0.8);
             border: 1px solid black;
             padding: 2px;
-            font-size: 12px; /* Ajusta el tamaño de la fuente */
-            white-space: nowrap; /* Evitar saltos de línea */
-            pointer-events: none; /* Evitar que interfiera con los clics */
+            font-size: 12px;
+            white-space: nowrap;
+            pointer-events: none;
         }
         .chat-area {
             position: absolute;
-            bottom: 60px; /* Ubicado por encima del teclado */
-            width: calc(100% - 20px); /* Ancho total del área de juego menos margen */
-            max-height: 60px; /* Altura máxima del área de chat */
-            overflow-y: auto; /* Scroll si hay muchos mensajes */
-            border-top: 2px solid black; /* Borde superior */
-            background-color: white; /* Fondo del área de chat */
+            bottom: 60px;
+            width: calc(100% - 20px);
+            max-height: 60px;
+            overflow-y: auto;
+            border-top: 2px solid black;
+            background-color: white;
             padding: 5px;
-            box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
+            box-sizing: border-box;
         }
         .input-area {
             position: absolute;
-            bottom: 0; /* Ubicado en la parte inferior del área de juego */
-            width: calc(100% - 20px); /* Ancho total del área de juego menos margen */
+            bottom: 0;
+            width: calc(100% - 20px);
             display: flex;
             justify-content: space-between;
-            padding: 10px; /* Padding generoso */
-            box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
+            padding: 10px;
+            box-sizing: border-box;
         }
         input {
-            width: 80%; /* 80% para el campo de texto */
+            width: 80%;
         }
     </style>
 </head>
@@ -85,22 +85,20 @@
 
     // Función para crear un nuevo jugador
     function createPlayer(id, x, y) {
-        console.log(`Creando jugador con ID: ${id} en posición (${x}, ${y})`);
         const playerDiv = document.createElement('img');
-        playerDiv.src = 'pingu.png'; // Asegúrate de tener esta imagen en la carpeta pública
+        playerDiv.src = 'pingu.png';
         playerDiv.className = 'player';
         playerDiv.id = id;
         playerDiv.style.left = `${x}px`;
         playerDiv.style.top = `${y}px`;
         gameArea.appendChild(playerDiv);
 
-        // Asignar correctamente el div del jugador y el arreglo para los mensajes
+        // Almacenar el div del jugador y el arreglo para los mensajes
         players[id] = { div: playerDiv, messageDivs: [] };
     }
 
     // Función para crear el div del mensaje
     function createMessageDiv(id, message) {
-        console.log(`Creando mensaje para el jugador: ${id}`);
         const player = players[id];
 
         const messageDiv = document.createElement('div');
@@ -194,6 +192,9 @@
 
                 currentStep++;
                 requestAnimationFrame(step);
+            } else {
+                // Mover el mensaje una vez al final
+                moveMessage(id);
             }
         }
 
@@ -202,7 +203,6 @@
 
     // Escuchar nuevos mensajes de chat
     socket.on('chatMessage', (data) => {
-        console.log(`Nuevo mensaje de ${data.id}: ${data.message}`);
         createMessageDiv(data.id, data.message);
     });
 
@@ -225,3 +225,4 @@
 
 </body>
 </html>
+
