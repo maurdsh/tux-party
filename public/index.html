@@ -38,7 +38,9 @@
             border: 1px solid black;
             padding: 2px;
             font-size: 12px;
-            white-space: nowrap;
+            white-space: normal; /* Cambiado de nowrap a normal para permitir saltos de línea */
+            word-wrap: break-word; /* Permitir romper palabras largas */
+            max-width: 150px; /* Establece el ancho máximo del mensaje */
             pointer-events: none;
         }
         
