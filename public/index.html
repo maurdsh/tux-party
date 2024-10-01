@@ -31,6 +31,7 @@
             position: absolute;
             width: 50px;
         }
+        
         .message {
             position: absolute;
             background-color: rgba(255, 255, 255, 0.8);
@@ -40,6 +41,7 @@
             white-space: nowrap;
             pointer-events: none;
         }
+        
         .chat-area {
             position: absolute;
             bottom: 60px;
@@ -51,6 +53,7 @@
             padding: 5px;
             box-sizing: border-box;
         }
+        
         .input-area {
             position: absolute;
             bottom: 0;
@@ -60,6 +63,7 @@
             padding: 10px;
             box-sizing: border-box;
         }
+        
         input {
             width: 80%;
         }
@@ -86,14 +90,14 @@
     // Función para crear un nuevo jugador
     function createPlayer(id, x, y) {
         const playerDiv = document.createElement('img');
-        playerDiv.src = 'pingu.png';
+        playerDiv.src = 'pingu.png'; // Asegúrate de que la imagen esté en la carpeta pública
         playerDiv.className = 'player';
         playerDiv.id = id;
         playerDiv.style.left = `${x}px`;
         playerDiv.style.top = `${y}px`;
         gameArea.appendChild(playerDiv);
-
-        // Almacenar el div del jugador y el arreglo para los mensajes
+        
+        // Almacenar el jugador en el objeto players
         players[id] = { div: playerDiv, messageDivs: [] };
     }
 
@@ -105,21 +109,20 @@
         messageDiv.className = 'message';
         messageDiv.textContent = message;
 
-        // Colocar el mensaje inicialmente a la derecha del pingüino usando las coordenadas del jugador
+        // Colocar el mensaje inicialmente a la derecha del pingüino
         const playerX = parseFloat(player.div.style.left);
         const playerY = parseFloat(player.div.style.top);
-
-        messageDiv.style.left = `${playerX + 60}px`; // Ajustar 60px a la derecha del pingüino
-        messageDiv.style.top = `${playerY}px`; // Mantener el mensaje alineado con el pingüino
+        messageDiv.style.left = `${playerX + 60}px`; 
+        messageDiv.style.top = `${playerY}px`; 
 
         gameArea.appendChild(messageDiv);
-        player.messageDivs.push(messageDiv); // Almacenar el nuevo div del mensaje
+        player.messageDivs.push(messageDiv); 
 
         // Eliminar el mensaje después de 6 segundos
         setTimeout(() => {
             messageDiv.remove();
-            player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv); // Limpiar referencia del mensaje eliminado
-        }, 6000); // 6000 ms = 6 segundos
+            player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
+        }, 6000);
     }
 
     // Función para mover el mensaje
@@ -129,10 +132,9 @@
             const playerX = parseFloat(player.div.style.left);
             const playerY = parseFloat(player.div.style.top);
 
-            // Mover todos los mensajes asociados al jugador
-            player.messageDivs.forEach((messageDiv) => {
-                messageDiv.style.left = `${playerX + 60}px`; // A la derecha del pingüino
-                messageDiv.style.top = `${playerY}px`; // Mantener a la misma altura que el pingüino
+            player.messageDivs.forEach((messageDiv, index) => {
+                messageDiv.style.left = `${playerX + 60}px`; 
+                messageDiv.style.top = `${playerY + (index * 20)}px`; 
             });
         }
     }
@@ -159,7 +161,7 @@
         const player = players[id];
         if (player) {
             player.div.remove();
-            player.messageDivs.forEach((messageDiv) => messageDiv.remove()); // Eliminar todos los mensajes del jugador desconectado
+            player.messageDivs.forEach(div => div.remove()); // Eliminar mensajes del jugador desconectado
             delete players[id];
         }
     });
@@ -172,57 +174,101 @@
 
         const dx = targetX - currentX;
         const dy = targetY - currentY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        const steps = 10; // Número de pasos para realizar el movimiento suave
+        const steps = 60; 
         const stepX = dx / steps;
         const stepY = dy / steps;
 
-        let currentStep = 0;
+        let stepCount = 0;
 
-        function step() {
-            if (currentStep < steps) {
-                const newX = currentX + stepX * currentStep;
-                const newY = currentY + stepY * currentStep;
-                player.div.style.left = `${newX}px`;
-                player.div.style.top = `${newY}px`;
-
-                // Mueve los mensajes asociados al jugador
-                moveMessage(id);
-
-                currentStep++;
-                requestAnimationFrame(step);
+        const moveInterval = setInterval(() => {
+            if (stepCount < steps) {
+                player.div.style.left = `${currentX + stepX * stepCount}px`;
+                player.div.style.top = `${currentY + stepY * stepCount}px`;
+                moveMessage(id); // Actualizar posición de los mensajes mientras se mueve
+                stepCount++;
             } else {
-                // Mover el mensaje una vez al final
-                moveMessage(id);
+                clearInterval(moveInterval);
             }
+        }, 16); 
+    }
+    
+    // Movimiento del pingüino al hacer clic
+    document.addEventListener('click', (event) => {
+        if (event.target === messageInput || event.target === sendMessageButton) {
+            return;
         }
 
-        requestAnimationFrame(step);
+        const rect = gameArea.getBoundingClientRect();
+        const x = event.clientX - rect.left - 25;
+        const y = event.clientY - rect.top - 25;
+
+        const limitedX = Math.max(10, Math.min(rect.width - 60, x));
+        const limitedY = Math.max(10, Math.min(rect.height - 60, y));
+
+        socket.emit('movePlayer', { x: limitedX, y: limitedY });
+        movePlayerSmoothly(socket.id, limitedX, limitedY);
+    });
+
+    // Enviar mensaje al hacer clic en el botón
+    sendMessageButton.addEventListener('click', sendMessage);
+
+    // Enviar mensaje al presionar "Enter"
+    messageInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    // Función para enviar el mensaje
+    function sendMessage() {
+        const message = messageInput.value.trim();
+        const wordCount = message.split(/\s+/).length;
+
+        if (wordCount > 20) {
+            alert('El mensaje no puede tener más de 20 palabras.');
+            return;
+        }
+
+        if (message) {
+            socket.emit('sendMessage', message);
+            messageInput.value = '';
+        }
     }
 
-    // Escuchar nuevos mensajes de chat
-    socket.on('chatMessage', (data) => {
+    // Recibir mensaje de otros jugadores
+    socket.on('receiveMessage', (data) => {
         createMessageDiv(data.id, data.message);
+        moveMessage(data.id);
     });
 
-    // Enviar mensaje de chat
-    sendMessageButton.addEventListener('click', () => {
-        const message = messageInput.value.trim();
-        if (message.length > 0) {
-            socket.emit('chatMessage', message);
-            messageInput.value = ''; // Limpiar el campo de texto después de enviar el mensaje
+    // Actualizar la posición del mensaje al mover el jugador
+    function updateMessages() {
+        for (const id in players) {
+            moveMessage(id);
         }
-    });
+    }
 
-    // Detectar "Enter" para enviar mensaje de chat
-    messageInput.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            sendMessageButton.click();
-        }
-    });
+    setInterval(updateMessages, 100); 
+
+    // Fragmento código desconexión por inactividad
+    let inactivityTimer;
+
+    function handleInactivity() {
+        alert("Has estado inactivo durante 10 minutos. Actualiza la página para continuar pingüineando.");
+        // Aquí puedes agregar el código para desconectar al usuario si es necesario
+    }
+
+    function resetInactivityTimer() {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(handleInactivity, 600000);
+    }
+
+    document.addEventListener('keydown', resetInactivityTimer);
+    document.addEventListener('mousemove', resetInactivityTimer);
+    document.addEventListener('click', resetInactivityTimer);
+    
+    // Inicializar el temporizador al cargar la página
+    resetInactivityTimer();
 </script>
-
 </body>
 </html>
-
