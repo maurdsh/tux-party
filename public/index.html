@@ -120,20 +120,28 @@ function adjustGameArea() {
 // Llama a la función cuando se carga la página y al redimensionar la ventana
 window.onload = adjustGameArea;
 window.onresize = adjustGameArea;
-    
+
     // Función para crear un nuevo jugador
-    function createPlayer(id, x, y) {
-        const playerDiv = document.createElement('img');
-        playerDiv.src = 'pingu.png'; // Asegúrate de que la imagen esté en la carpeta pública
-        playerDiv.className = 'player';
-        playerDiv.id = id;
-        playerDiv.style.left = ${x}px;
-        playerDiv.style.top = ${y}px;
+function createPlayer(id, x, y) {
+    const playerDiv = document.createElement('img');
+    playerDiv.src = 'pingu.png'; // Ajusta la ruta si es necesario
+    playerDiv.className = 'player';
+    playerDiv.id = id;
+    playerDiv.style.left = `${x}px`;
+    playerDiv.style.top = `${y}px`;
+
+    // Agregar el evento para cargar la imagen
+    playerDiv.onload = () => {
         gameArea.appendChild(playerDiv);
-        
-        // Almacenar el jugador en el objeto players
-        players[id] = { div: playerDiv, messageDivs: [] };
-    }
+    };
+    playerDiv.onerror = () => {
+        console.error("Error al cargar la imagen: pingu.png");
+    };
+    
+    // Almacenar el jugador en el objeto players
+    players[id] = { div: playerDiv, messageDivs: [] };
+}
+    
 // Obtener las imágenes de movimiento
 const penguinImages = {
     up: ['arriba1.png', 'arriba2.png'],
