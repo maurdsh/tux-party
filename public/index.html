@@ -242,11 +242,18 @@ function createMessageDiv(id, message) {
     // Al hacer clic para mover el pingüino
 document.addEventListener('click', (event) => {
     const rect = gameArea.getBoundingClientRect();
-    const x = event.clientX - rect.left - 25;
+    const x = event.clientX - rect.left - 25; // Ajusta según el tamaño del pingüino
     const y = event.clientY - rect.top - 25;
 
     const limitedX = Math.max(10, Math.min(rect.width - 60, x));
     const limitedY = Math.max(10, Math.min(rect.height - 60, y));
+
+    // Obtener la posición actual del jugador
+    const currentPlayer = players[socket.id];
+    if (!currentPlayer) return; // Asegúrate de que el jugador exista
+
+    const currentX = parseFloat(currentPlayer.div.style.left);
+    const currentY = parseFloat(currentPlayer.div.style.top);
 
     // Determinar la dirección del movimiento
     let direction;
@@ -256,10 +263,9 @@ document.addEventListener('click', (event) => {
     else if (limitedX > currentX) direction = 'right';
 
     // Mover el pingüino y animar
-    movePenguin(players[socket.id].div, limitedX, limitedY, direction);
+    movePenguin(currentPlayer.div, limitedX, limitedY, direction);
     socket.emit('movePlayer', { x: limitedX, y: limitedY });
 });
-
 
     // Enviar mensaje al hacer clic en el botón
     sendMessageButton.addEventListener('click', sendMessage);
