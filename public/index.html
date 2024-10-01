@@ -268,7 +268,7 @@ function handleInactivity() {
 // Reiniciar el temporizador de inactividad
 function resetInactivityTimeout() {
     clearTimeout(inactivityTimeout);
-    inactivityTimeout = setTimeout(handleInactivity, 12 * 60 * 1000); // 12 minutos = 30 * 60 * 1000 ms
+    inactivityTimeout = setTimeout(handleInactivity, 10 * 60 * 1000); // 10 minutos = 30 * 60 * 1000 ms
 }
 
 // Escuchar eventos de actividad del usuario
