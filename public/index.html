@@ -239,7 +239,7 @@ function createMessageDiv(id, message) {
         }, 16); 
     }
     
-    // Al hacer clic para mover el pingüino
+    /// Al hacer clic para mover el pingüino
 document.addEventListener('click', (event) => {
     const rect = gameArea.getBoundingClientRect();
     const x = event.clientX - rect.left; // No restes el valor fijo
@@ -255,10 +255,14 @@ document.addEventListener('click', (event) => {
 
     // Determinar la dirección del movimiento
     let direction;
-    if (limitedY < currentPlayer.div.style.top.replace('px', '')) direction = 'up';
-    else if (limitedY > currentPlayer.div.style.top.replace('px', '')) direction = 'down';
-    else if (limitedX < currentPlayer.div.style.left.replace('px', '')) direction = 'left';
-    else if (limitedX > currentPlayer.div.style.left.replace('px', '')) direction = 'right';
+    const currentX = parseFloat(currentPlayer.div.style.left);
+    const currentY = parseFloat(currentPlayer.div.style.top);
+
+    if (limitedY < currentY) direction = 'up';
+    else if (limitedY > currentY) direction = 'down';
+    
+    if (limitedX < currentX) direction = 'left';
+    else if (limitedX > currentX) direction = 'right';
 
     // Mover el pingüino y animar
     movePenguin(currentPlayer.div, limitedX, limitedY, direction);
