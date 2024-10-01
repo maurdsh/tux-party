@@ -275,7 +275,7 @@ function sendMessage() {
 let inputText = '';
 
 document.addEventListener('keydown', (event) => {
-    if (event.key.length === 1 && inputText.length < 50) {
+    if (event.key.length === 1) {
         inputText += event.key;
         messageInput.value = inputText;
     } else if (event.key === 'Backspace') {
