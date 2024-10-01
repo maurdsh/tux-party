@@ -269,6 +269,27 @@
     
     // Inicializar el temporizador al cargar la página
     resetInactivityTimer();
+
+    // Fragmento para capturar teclas y registrar texto
+let inputText = '';
+
+document.addEventListener('keydown', (event) => {
+    if (event.key.length === 1) {
+        inputText += event.key;
+        messageInput.value = inputText;
+    } else if (event.key === 'Backspace') {
+        inputText = inputText.slice(0, -1);
+        messageInput.value = inputText;
+    } else if (event.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+messageInput.addEventListener('focus', () => {
+    inputText = '';
+});
+
+// Cierra tu etiqueta script aquí
 </script>
 </body>
 </html>
