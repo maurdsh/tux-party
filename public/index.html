@@ -234,7 +234,7 @@ function sendMessage() {
 document.addEventListener('keydown', (event) => {
     // Verifica si la tecla presionada es una letra
     if (event.key.length === 1 && event.key.match(/[a-zA-ZñÑ]/)) {
-        // Evita que el navegador inserte la letra automáticamente
+        // Prevenir la acción por defecto del navegador
         event.preventDefault();
 
         // Pon el foco en el campo de texto
