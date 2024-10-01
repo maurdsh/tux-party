@@ -98,19 +98,10 @@
         players[id] = { div: playerDiv, messageDivs: [] };
     }
 
-    const MAX_MESSAGES = 3; // Límite de mensajes por jugador en 6 segundos
-
     // Función para crear el div del mensaje
     function createMessageDiv(id, message) {
         console.log(`Creando mensaje para el jugador: ${id}`);
         const player = players[id];
-
-        // Verifica si ya ha alcanzado el límite de mensajes
-        if (player.messageDivs.length >= MAX_MESSAGES) {
-            // Elimina el mensaje más antiguo antes de agregar uno nuevo
-            const oldestMessage = player.messageDivs.shift(); // Elimina el primero (el más antiguo)
-            oldestMessage.remove(); // Remueve el div del mensaje del DOM
-        }
 
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message';
@@ -141,9 +132,9 @@
             const playerY = parseFloat(player.div.style.top);
 
             // Mover todos los mensajes asociados al jugador
-            player.messageDivs.forEach((messageDiv, index) => {
+            player.messageDivs.forEach((messageDiv) => {
                 messageDiv.style.left = `${playerX + 60}px`; // A la derecha del pingüino
-                messageDiv.style.top = `${playerY + (index * 20)}px`; // A la misma altura que el pingüino, con un pequeño desplazamiento vertical para cada mensaje
+                messageDiv.style.top = `${playerY}px`; // Mantener a la misma altura que el pingüino
             });
         }
     }
@@ -234,6 +225,3 @@
 
 </body>
 </html>
-
-
-
