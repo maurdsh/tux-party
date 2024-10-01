@@ -239,7 +239,7 @@ function createMessageDiv(id, message) {
         }, 16); 
     }
     
-    // Al hacer clic para mover el pingüino
+   // Al hacer clic para mover el pingüino
 document.addEventListener('click', (event) => {
     const rect = gameArea.getBoundingClientRect();
     const x = event.clientX - rect.left; // Coordenadas X del clic
@@ -249,9 +249,13 @@ document.addEventListener('click', (event) => {
     const currentPlayer = players[socket.id];
     if (!currentPlayer) return; // Asegúrate de que el jugador exista
 
+    // Obtener la posición actual del pingüino
+    let left = parseFloat(currentPlayer.div.style.left) || 0;
+    let top = parseFloat(currentPlayer.div.style.top) || 0;
+
     // Obtener el centro del pingüino
-    const penguinCenterX = parseFloat(currentPlayer.div.style.left) + 25; // 25 es la mitad del ancho del pingüino (50px)
-    const penguinCenterY = parseFloat(currentPlayer.div.style.top) + 25; // 25 es la mitad de la altura del pingüino (50px)
+    const penguinCenterX = left + 25; // 25 es la mitad del ancho del pingüino
+    const penguinCenterY = top + 25; // 25 es la mitad de la altura del pingüino
 
     // Determinar la dirección del movimiento basado en la posición del clic
     let direction = null;
@@ -272,15 +276,14 @@ document.addEventListener('click', (event) => {
 
     // Mover el pingüino y animar si hay dirección
     if (direction) {
-        // Asumiendo que la función movePenguin recibe la dirección y actualiza la posición
         movePenguin(currentPlayer.div, direction);
         
-        // Emite la nueva posición al servidor
+        // Emitir la nueva posición al servidor
         socket.emit('movePlayer', { x: currentPlayer.div.style.left, y: currentPlayer.div.style.top });
     }
 });
 
-// Función de mover pingüino (necesitarás ajustar esto según tu lógica de movimiento)
+// Función de mover pingüino (ajustar lógica de movimiento)
 function movePenguin(penguinDiv, direction) {
     const step = 10; // Define un paso para el movimiento
 
@@ -306,6 +309,15 @@ function movePenguin(penguinDiv, direction) {
             penguinDiv.style.left = `${left + step}px`;
             penguinDiv.style.top = `${top + step}px`;
             break;
+    }
+
+    // Emitir la nueva posición después de mover
+    socket.emit('movePlayer', { x: penguinDiv.style.left, y: penguinDiv.style.top });
+
+    // Si el pingüino no ha alcanzado el borde del game area, seguir moviendo
+    const rect = gameArea.getBoundingClientRect();
+    if (left >= 0 && left <= (rect.width - 50) && top >= 0 && top <= (rect.height - 50)) {
+        requestAnimationFrame(() => movePenguin(penguinDiv, direction)); // Continuar el movimiento
     }
 }
 
