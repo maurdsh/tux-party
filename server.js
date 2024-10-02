@@ -24,11 +24,15 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('newPlayer', { id: socket.id, player: players[socket.id] });
 
     // Manejar el movimiento del pingüino
-    socket.on('movePlayer', (data) => {
-        players[socket.id].x = data.x;
-        players[socket.id].y = data.y;
-        socket.broadcast.emit('playerMoved', { id: socket.id, player: players[socket.id] });
-    });
+   socket.on('movePlayer', (data) => {
+    // Guardar las nuevas coordenadas y la dirección del movimiento
+    players[socket.id].x = data.x;
+    players[socket.id].y = data.y;
+    players[socket.id].direction = data.direction; // Agregar la dirección
+    
+    // Emitir a otros jugadores la nueva posición y la dirección
+    socket.broadcast.emit('playerMoved', { id: socket.id, player: players[socket.id] });
+});
 
     // Manejar el envío de mensajes
     socket.on('sendMessage', (message) => {
