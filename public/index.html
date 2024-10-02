@@ -96,8 +96,8 @@
         playerDiv.src = 'pingu.png'; // Asegúrate de que la imagen esté en la carpeta pública
         playerDiv.className = 'player';
         playerDiv.id = id;
-        playerDiv.style.left = ${x}px;
-        playerDiv.style.top = ${y}px;
+        playerDiv.style.left = `${x}px`;
+        playerDiv.style.top = `${y}px`;
         gameArea.appendChild(playerDiv);
         
         // Almacenar el jugador en el objeto players
@@ -132,8 +132,8 @@ function movePenguin(penguin, targetX, targetY, direction) {
     let stepCount = 0;
     const moveInterval = setInterval(() => {
         if (stepCount < steps) {
-            penguin.style.left = ${currentX + stepX * stepCount}px;
-            penguin.style.top = ${currentY + stepY * stepCount}px;
+            penguin.style.left = `${currentX + stepX * stepCount}px`;
+            penguin.style.top = `${currentY + stepY * stepCount}px`;
             stepCount++;
         } else {
             clearInterval(moveInterval);
@@ -160,8 +160,8 @@ function createMessageDiv(id, message) {
     // Colocar el mensaje inicialmente a la derecha del pingüino
     const playerX = parseFloat(player.div.style.left);
     const playerY = parseFloat(player.div.style.top);
-    messageDiv.style.left = ${playerX + 60}px; 
-    messageDiv.style.top = ${playerY}px; 
+    messageDiv.style.left = `${playerX + 60}px`; 
+    messageDiv.style.top = `${playerY}px`; 
 
     gameArea.appendChild(messageDiv);
     player.messageDivs.push(messageDiv); 
@@ -180,8 +180,8 @@ function createMessageDiv(id, message) {
             const playerY = parseFloat(player.div.style.top);
 
             player.messageDivs.forEach((messageDiv, index) => {
-                messageDiv.style.left = ${playerX + 60}px; 
-                messageDiv.style.top = ${playerY + (index * 20)}px; 
+                messageDiv.style.left = `${playerX + 60}px`; 
+                messageDiv.style.top = `${playerY + (index * 20)}px`; 
             });
         }
     }
@@ -229,8 +229,8 @@ function createMessageDiv(id, message) {
 
         const moveInterval = setInterval(() => {
             if (stepCount < steps) {
-                player.div.style.left = ${currentX + stepX * stepCount}px;
-                player.div.style.top = ${currentY + stepY * stepCount}px;
+                player.div.style.left = `${currentX + stepX * stepCount}px`;
+                player.div.style.top = `${currentY + stepY * stepCount}px`;
                 moveMessage(id); // Actualizar posición de los mensajes mientras se mueve
                 stepCount++;
             } else {
