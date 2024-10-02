@@ -214,38 +214,30 @@ function createMessageDiv(id, message) {
     });
 
     // Movimiento suave del pingüino
-function movePlayerSmoothly(id, targetX, targetY, direction) {
-    const player = players[id];
-    const currentX = parseFloat(player.div.style.left);
-    const currentY = parseFloat(player.div.style.top);
+    function movePlayerSmoothly(id, targetX, targetY) {
+        const player = players[id];
+        const currentX = parseFloat(player.div.style.left);
+        const currentY = parseFloat(player.div.style.top);
 
-    const dx = targetX - currentX;
-    const dy = targetY - currentY;
-    const steps = 60; 
-    const stepX = dx / steps;
-    const stepY = dy / steps;
+        const dx = targetX - currentX;
+        const dy = targetY - currentY;
+        const steps = 60; 
+        const stepX = dx / steps;
+        const stepY = dy / steps;
 
-    let stepCount = 0;
-    let frame = 0; // Para la animación
+        let stepCount = 0;
 
-    const moveInterval = setInterval(() => {
-        if (stepCount < steps) {
-            player.div.style.left = `${currentX + stepX * stepCount}px`;
-            player.div.style.top = `${currentY + stepY * stepCount}px`;
-            player.div.src = penguinImages[direction][frame % penguinImages[direction].length]; // Cambiar imagen de animación
-            frame++;
-            stepCount++;
-        } else {
-            clearInterval(moveInterval);
-            player.div.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
-        }
-    }, 16); 
-}
-
-// Actualiza la llamada al evento `playerMoved` para incluir la dirección
-socket.on('playerMoved', (data) => {
-    movePlayerSmoothly(data.id, data.player.x, data.player.y, data.direction); // Asegúrate de pasar la dirección
-});
+        const moveInterval = setInterval(() => {
+            if (stepCount < steps) {
+                player.div.style.left = ${currentX + stepX * stepCount}px;
+                player.div.style.top = ${currentY + stepY * stepCount}px;
+                moveMessage(id); // Actualizar posición de los mensajes mientras se mueve
+                stepCount++;
+            } else {
+                clearInterval(moveInterval);
+            }
+        }, 16); 
+    }
     
     // Al hacer clic para mover el pingüino
 document.addEventListener('click', (event) => {
@@ -272,8 +264,19 @@ document.addEventListener('click', (event) => {
     else if (limitedX > currentX) direction = 'right';
 
     // Mover el pingüino y animar
-movePenguin(currentPlayer.div, limitedX, limitedY, direction);
-socket.emit('movePlayer', { x: limitedX, y: limitedY, direction: direction }); // Añadir dirección aquí
+    movePenguin(currentPlayer.div, limitedX, limitedY, direction);
+
+    // Emitir la posición y la dirección del movimiento al servidor
+    socket.emit('movePlayer', { x: limitedX, y: limitedY, direction });
+});
+
+// Movimiento de otro jugador
+socket.on('playerMoved', (data) => {
+    const { id, player } = data;
+    
+    // Mover y aplicar la animación de acuerdo a la dirección recibida
+    movePenguin(players[id].div, player.x, player.y, player.direction);
+});
 
     // Enviar mensaje al hacer clic en el botón
     sendMessageButton.addEventListener('click', sendMessage);
@@ -360,5 +363,3 @@ messageInput.addEventListener('focus', () => {
 </script>
 </body>
 </html>
-
-
