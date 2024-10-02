@@ -200,6 +200,12 @@ function createMessageDiv(id, message) {
 
     // Movimiento de otro jugador
     socket.on('playerMoved', (data) => {
+        const player = players[data.id];
+    
+    if (player) {
+        // Añade la animación de movimiento para el jugador que se ha movido
+        movePenguin(player.div, data.player.x, data.player.y, data.direction);
+    }
         movePlayerSmoothly(data.id, data.player.x, data.player.y);
     });
 
@@ -265,17 +271,7 @@ document.addEventListener('click', (event) => {
 
     // Mover el pingüino y animar
     movePenguin(currentPlayer.div, limitedX, limitedY, direction);
-
-    // Emitir la posición y la dirección del movimiento al servidor
-    socket.emit('movePlayer', { x: limitedX, y: limitedY, direction });
-});
-
-// Movimiento de otro jugador
-socket.on('playerMoved', (data) => {
-    const { id, player } = data;
-    
-    // Mover y aplicar la animación de acuerdo a la dirección recibida
-    movePenguin(players[id].div, player.x, player.y, player.direction);
+    socket.emit('movePlayer', { x: limitedX, y: limitedY });
 });
 
     // Enviar mensaje al hacer clic en el botón
