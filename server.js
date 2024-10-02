@@ -1,62 +1,50 @@
-// server.js
-
 const express = require('express');
 const http = require('http');
-const socketIO = require('socket.io');
-const path = require('path');
+const socketIo = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIO(server);
+const io = socketIo(server);
 
-const PORT = process.env.PORT || 3000;
+app.use(express.static('public'));
 
-// Servir archivos estï¿½ticos desde la carpeta 'public'
-app.use(express.static(path.join(__dirname, 'public')));
+let players = {};
 
-// Almacenar los jugadores actuales
-const players = {};
-
-// Manejar la conexiï¿½n de los sockets
+// Manejar nuevas conexiones
 io.on('connection', (socket) => {
     console.log('Nuevo jugador conectado:', socket.id);
 
-    // Inicializar el jugador en la posiciï¿½n (0, 0)
-    players[socket.id] = {
-        x: 0,
-        y: 0,
-    };
+    // Agregar nuevo jugador
+    players[socket.id] = { x: 0, y: 0 };
+    
+    // Enviar todos los jugadores actuales al nuevo jugador
+    socket.emit('currentPlayers', players);
 
-    // Emitir a todos los clientes los jugadores actuales
-    io.emit('currentPlayers', players);
+    // Notificar a los demás jugadores sobre el nuevo jugador
+    socket.broadcast.emit('newPlayer', { id: socket.id, player: players[socket.id] });
 
-    // Manejar el movimiento del jugador
+    // Manejar el movimiento del pingüino
     socket.on('movePlayer', (data) => {
         players[socket.id].x = data.x;
         players[socket.id].y = data.y;
-        socket.broadcast.emit('playerMoved', {
-            id: socket.id,
-            player: players[socket.id],
-        });
+        socket.broadcast.emit('playerMoved', { id: socket.id, player: players[socket.id] });
     });
 
-    // Manejar la desconexiï¿½n del jugador
+    // Manejar el envío de mensajes
+    socket.on('sendMessage', (message) => {
+        // Enviar el mensaje a todos los jugadores, con el ID del emisor
+        io.emit('receiveMessage', { id: socket.id, message: message }); // Emitir el mensaje para todos
+    });
+
+    // Manejar la desconexión de un jugador
     socket.on('disconnect', () => {
         console.log('Jugador desconectado:', socket.id);
         delete players[socket.id];
-        io.emit('playerDisconnected', socket.id);
-    });
-
-    // Manejar el envï¿½o de mensajes
-    socket.on('sendMessage', (message) => {
-        io.emit('receiveMessage', {
-            id: socket.id,
-            message: message,
-        });
+        socket.broadcast.emit('playerDisconnected', socket.id);
     });
 });
 
-// Iniciar el servidor
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`Servidor escuchando en http://localhost:${PORT}`);
+    console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
