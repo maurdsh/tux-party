@@ -1,50 +1,38 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-const path = require('path');
-
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
+app.use(express.static('public'));
 
 let players = {};
 
-// Servir archivos estï¿½ticos
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Servir el archivo HTML
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Manejar conexiones de jugadores
 io.on('connection', (socket) => {
-    console.log('Jugador conectado:', socket.id);
+    console.log('Nuevo jugador conectado:', socket.id);
 
-    // Asignar un nuevo jugador
-    players[socket.id] = { x: 100, y: 100 };
-    socket.emit('yourID', socket.id);
-    io.emit('updatePlayers', players);
+    // Agregar nuevo jugador
+    players[socket.id] = { x: 0, y: 0 };
 
-    // Manejar movimiento
-    socket.on('movePlayer', (data) => {
-        if (players[socket.id]) {
-            players[socket.id].x = data.x;
-            players[socket.id].y = data.y;
-            io.emit('updatePlayers', players);
-        }
+    // Enviar a todos los jugadores actuales al nuevo jugador
+    socket.emit('currentPlayers', players);
+
+    // Notificar a los demï¿½s jugadores sobre el nuevo jugador
+@@ -31,11 +32,13 @@ io.on('connection', (socket) => {
+
+    // Manejar el envï¿½o de mensajes
+    socket.on('sendMessage', (message) => {
+        // Enviar el mensaje solo al jugador correspondiente
+        io.emit('receiveMessage', message); // Emitir el mensaje al jugador emisor
     });
 
-    // Desconexiï¿½n
     socket.on('disconnect', () => {
-        console.log('Jugador desconectado:', socket.id);
         delete players[socket.id];
-        io.emit('updatePlayers', players);
+        socket.broadcast.emit('playerDisconnected', socket.id);
     });
 });
-
-// Iniciar servidor
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`Servidor corriendo en puerto ${PORT}`);
+    console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
+              
