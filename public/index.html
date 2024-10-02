@@ -96,8 +96,8 @@
         playerDiv.src = 'pingu.png'; // Asegúrate de que la imagen esté en la carpeta pública
         playerDiv.className = 'player';
         playerDiv.id = id;
-        playerDiv.style.left = `${x}px`;
-        playerDiv.style.top = `${y}px`;
+        playerDiv.style.left = ${x}px;
+        playerDiv.style.top = ${y}px;
         gameArea.appendChild(playerDiv);
         
         // Almacenar el jugador en el objeto players
@@ -132,8 +132,8 @@ function movePenguin(penguin, targetX, targetY, direction) {
     let stepCount = 0;
     const moveInterval = setInterval(() => {
         if (stepCount < steps) {
-            penguin.style.left = `${currentX + stepX * stepCount}px`;
-            penguin.style.top = `${currentY + stepY * stepCount}px`;
+            penguin.style.left = ${currentX + stepX * stepCount}px;
+            penguin.style.top = ${currentY + stepY * stepCount}px;
             stepCount++;
         } else {
             clearInterval(moveInterval);
@@ -160,8 +160,8 @@ function createMessageDiv(id, message) {
     // Colocar el mensaje inicialmente a la derecha del pingüino
     const playerX = parseFloat(player.div.style.left);
     const playerY = parseFloat(player.div.style.top);
-    messageDiv.style.left = `${playerX + 60}px`; 
-    messageDiv.style.top = `${playerY}px`; 
+    messageDiv.style.left = ${playerX + 60}px; 
+    messageDiv.style.top = ${playerY}px; 
 
     gameArea.appendChild(messageDiv);
     player.messageDivs.push(messageDiv); 
@@ -180,8 +180,8 @@ function createMessageDiv(id, message) {
             const playerY = parseFloat(player.div.style.top);
 
             player.messageDivs.forEach((messageDiv, index) => {
-                messageDiv.style.left = `${playerX + 60}px`; 
-                messageDiv.style.top = `${playerY + (index * 20)}px`; 
+                messageDiv.style.left = ${playerX + 60}px; 
+                messageDiv.style.top = ${playerY + (index * 20)}px; 
             });
         }
     }
@@ -213,13 +213,8 @@ function createMessageDiv(id, message) {
         }
     });
 
-   // Movimiento de otro jugador
-socket.on('playerMoved', (data) => {
-    movePlayerSmoothly(data.id, data.player.x, data.player.y, data.player.direction); // Pasar dirección
-});
-
-// Movimiento suave del pingüino
-function movePlayerSmoothly(id, targetX, targetY) {
+    // Movimiento suave del pingüino
+function movePlayerSmoothly(id, targetX, targetY, direction) {
     const player = players[id];
     const currentX = parseFloat(player.div.style.left);
     const currentY = parseFloat(player.div.style.top);
@@ -231,28 +226,26 @@ function movePlayerSmoothly(id, targetX, targetY) {
     const stepY = dy / steps;
 
     let stepCount = 0;
-    let direction;
+    let frame = 0; // Para la animación
 
-    // Determina la dirección
-    if (dy < 0 && Math.abs(dx) < Math.abs(dy)) direction = 'up';
-    else if (dy > 0 && Math.abs(dx) < Math.abs(dy)) direction = 'down';
-    else if (dx < 0) direction = 'left';
-    else if (dx > 0) direction = 'right';
-
-    const intervalId = setInterval(() => {
+    const moveInterval = setInterval(() => {
         if (stepCount < steps) {
             player.div.style.left = `${currentX + stepX * stepCount}px`;
             player.div.style.top = `${currentY + stepY * stepCount}px`;
-
-            // Cambiar la imagen del pingüino según la dirección
-            player.div.src = penguinImages[direction][stepCount % penguinImages[direction].length];
+            player.div.src = penguinImages[direction][frame % penguinImages[direction].length]; // Cambiar imagen de animación
+            frame++;
             stepCount++;
         } else {
-            clearInterval(intervalId);
+            clearInterval(moveInterval);
             player.div.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
         }
     }, 16); 
 }
+
+// Actualiza la llamada al evento `playerMoved` para incluir la dirección
+socket.on('playerMoved', (data) => {
+    movePlayerSmoothly(data.id, data.player.x, data.player.y, data.direction); // Asegúrate de pasar la dirección
+});
     
     // Al hacer clic para mover el pingüino
 document.addEventListener('click', (event) => {
@@ -280,7 +273,7 @@ document.addEventListener('click', (event) => {
 
     // Mover el pingüino y animar
 movePenguin(currentPlayer.div, limitedX, limitedY, direction);
-socket.emit('movePlayer', { x: limitedX, y: limitedY, direction: direction }); // Agregar dirección aquí
+socket.emit('movePlayer', { x: limitedX, y: limitedY, direction: direction }); // Añadir dirección aquí
 
     // Enviar mensaje al hacer clic en el botón
     sendMessageButton.addEventListener('click', sendMessage);
@@ -367,3 +360,5 @@ messageInput.addEventListener('focus', () => {
 </script>
 </body>
 </html>
+
+
