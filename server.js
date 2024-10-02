@@ -18,7 +18,13 @@ io.on('connection', (socket) => {
     socket.emit('currentPlayers', players);
 
     // Notificar a los demï¿½s jugadores sobre el nuevo jugador
-@@ -31,11 +32,13 @@ io.on('connection', (socket) => {
+    socket.broadcast.emit('newPlayer', { id: socket.id, player: players[socket.id] });
+    // Manejar el movimiento del pingï¿½ino
+    socket.on('movePlayer', (data) => {
+        players[socket.id].x = data.x;
+        players[socket.id].y = data.y;
+        socket.broadcast.emit('playerMoved', { id: socket.id, player: players[socket.id] });
+    });
 
     // Manejar el envï¿½o de mensajes
     socket.on('sendMessage', (message) => {
@@ -35,4 +41,3 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
-              
