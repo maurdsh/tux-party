@@ -4,7 +4,7 @@
     <meta name="google-adsense-account" content="ca-pub-7958789052344952">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juego Multijugador de PingÃ¼inos</title>
+    <title>Juego Multijugador de Pingüinos</title>
     <style>
         body {
             margin: 0;
@@ -38,9 +38,9 @@
             border: 1px solid black;
             padding: 2px;
             font-size: 12px;
-            white-space: normal; /* Cambiado de nowrap a normal para permitir saltos de lÃ­nea */
+            white-space: normal; /* Cambiado de nowrap a normal para permitir saltos de línea */
             word-wrap: break-word; /* Permitir romper palabras largas */
-            max-width: 150px; /* Establece el ancho mÃ¡ximo del mensaje */
+            max-width: 150px; /* Establece el ancho máximo del mensaje */
             pointer-events: none;
         }
         
@@ -76,7 +76,7 @@
 <div class="game-area" id="gameArea"></div>
 <div class="chat-area" id="chatArea"></div>
 <div class="input-area">
-    <input type="text" id="messageInput" maxlength="60" placeholder="Escribe tu mensaje (mÃ¡x. 60 caracteres)" />
+    <input type="text" id="messageInput" maxlength="60" placeholder="Escribe tu mensaje (máx. 60 caracteres)" />
 
     <button id="sendMessage">Enviar</button>
 </div>
@@ -90,20 +90,20 @@
     const messageInput = document.getElementById('messageInput');
     const sendMessageButton = document.getElementById('sendMessage');
 
-    // FunciÃ³n para crear un nuevo jugador
+    // Función para crear un nuevo jugador
     function createPlayer(id, x, y) {
         const playerDiv = document.createElement('img');
-        playerDiv.src = 'pingu.png'; // AsegÃºrate de que la imagen estÃ© en la carpeta pÃºblica
+        playerDiv.src = 'pingu.png'; // Asegúrate de que la imagen esté en la carpeta pública
         playerDiv.className = 'player';
         playerDiv.id = id;
-        playerDiv.style.left = ${x}px;
-        playerDiv.style.top = ${y}px;
+        playerDiv.style.left = `${x}px`;
+        playerDiv.style.top = `${y}px`;
         gameArea.appendChild(playerDiv);
         
         // Almacenar el jugador en el objeto players
         players[id] = { div: playerDiv, messageDivs: [] };
     }
-// Obtener las imÃ¡genes de movimiento
+// Obtener las imágenes de movimiento
 const penguinImages = {
     up: ['arriba1.png', 'arriba2.png'],
     down: ['abajo1.png', 'abajo2.png'],
@@ -111,10 +111,10 @@ const penguinImages = {
     right: ['derecha1.png', 'derecha2.png']
 };
 
-// FunciÃ³n para mover el pingÃ¼ino con animaciÃ³n de imÃ¡genes
+// Función para mover el pingüino con animación de imágenes
 function movePenguin(penguin, targetX, targetY, direction) {
     let frame = 0;
-    const steps = 60; // NÃºmero total de pasos para el movimiento
+    const steps = 60; // Número total de pasos para el movimiento
     const currentX = parseFloat(penguin.style.left);
     const currentY = parseFloat(penguin.style.top);
 
@@ -123,7 +123,7 @@ function movePenguin(penguin, targetX, targetY, direction) {
     const stepX = dx / steps;
     const stepY = dy / steps;
 
-    // Cambiar las imÃ¡genes cada ciertos pasos
+    // Cambiar las imágenes cada ciertos pasos
     const intervalId = setInterval(() => {
         penguin.src = penguinImages[direction][frame % penguinImages[direction].length];
         frame++;
@@ -132,24 +132,24 @@ function movePenguin(penguin, targetX, targetY, direction) {
     let stepCount = 0;
     const moveInterval = setInterval(() => {
         if (stepCount < steps) {
-            penguin.style.left = ${currentX + stepX * stepCount}px;
-            penguin.style.top = ${currentY + stepY * stepCount}px;
+            penguin.style.left = `${currentX + stepX * stepCount}px`;
+            penguin.style.top = `${currentY + stepY * stepCount}px`;
             stepCount++;
         } else {
             clearInterval(moveInterval);
             clearInterval(intervalId);
-            penguin.src = 'pingu.png'; // Imagen final cuando el pingÃ¼ino se detiene
+            penguin.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
         }
     }, 16); // Ajusta este valor para controlar la velocidad del movimiento
 }
 
-    // FunciÃ³n para crear el div del mensaje
+    // Función para crear el div del mensaje
 function createMessageDiv(id, message) {
     const player = players[id];
 
-    // Limitar a 2 mensajes, eliminar el mÃ¡s antiguo si ya hay 2
+    // Limitar a 2 mensajes, eliminar el más antiguo si ya hay 2
     if (player.messageDivs.length >= 1) {
-        const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el mÃ¡s antiguo
+        const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el más antiguo
         oldestMessageDiv.remove(); // Eliminar el div del DOM
     }
 
@@ -157,22 +157,22 @@ function createMessageDiv(id, message) {
     messageDiv.className = 'message';
     messageDiv.textContent = message;
 
-    // Colocar el mensaje inicialmente a la derecha del pingÃ¼ino
+    // Colocar el mensaje inicialmente a la derecha del pingüino
     const playerX = parseFloat(player.div.style.left);
     const playerY = parseFloat(player.div.style.top);
-    messageDiv.style.left = ${playerX + 60}px; 
-    messageDiv.style.top = ${playerY}px; 
+    messageDiv.style.left = `${playerX + 60}px`; 
+    messageDiv.style.top = `${playerY}px`; 
 
     gameArea.appendChild(messageDiv);
     player.messageDivs.push(messageDiv); 
 
-    // Eliminar el mensaje despuÃ©s de 6 segundos
+    // Eliminar el mensaje después de 6 segundos
     setTimeout(() => {
         messageDiv.remove();
         player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
     }, 6000);
 }
-    // FunciÃ³n para mover el mensaje
+    // Función para mover el mensaje
     function moveMessage(id) {
         const player = players[id];
         if (player && player.messageDivs.length > 0) {
@@ -180,8 +180,8 @@ function createMessageDiv(id, message) {
             const playerY = parseFloat(player.div.style.top);
 
             player.messageDivs.forEach((messageDiv, index) => {
-                messageDiv.style.left = ${playerX + 60}px; 
-                messageDiv.style.top = ${playerY + (index * 20)}px; 
+                messageDiv.style.left = `${playerX + 60}px`; 
+                messageDiv.style.top = `${playerY + (index * 20)}px`; 
             });
         }
     }
@@ -193,7 +193,7 @@ function createMessageDiv(id, message) {
         }
     });
 
-    // NotificaciÃ³n de nuevo jugador
+    // Notificación de nuevo jugador
     socket.on('newPlayer', (data) => {
         createPlayer(data.id, data.player.x, data.player.y);
     });
@@ -203,7 +203,7 @@ function createMessageDiv(id, message) {
         movePlayerSmoothly(data.id, data.player.x, data.player.y);
     });
 
-    // NotificaciÃ³n de jugador desconectado
+    // Notificación de jugador desconectado
     socket.on('playerDisconnected', (id) => {
         const player = players[id];
         if (player) {
@@ -213,7 +213,7 @@ function createMessageDiv(id, message) {
         }
     });
 
-    // Movimiento suave del pingÃ¼ino
+    // Movimiento suave del pingüino
     function movePlayerSmoothly(id, targetX, targetY) {
         const player = players[id];
         const currentX = parseFloat(player.div.style.left);
@@ -229,9 +229,9 @@ function createMessageDiv(id, message) {
 
         const moveInterval = setInterval(() => {
             if (stepCount < steps) {
-                player.div.style.left = ${currentX + stepX * stepCount}px;
-                player.div.style.top = ${currentY + stepY * stepCount}px;
-                moveMessage(id); // Actualizar posiciÃ³n de los mensajes mientras se mueve
+                player.div.style.left = `${currentX + stepX * stepCount}px`;
+                player.div.style.top = `${currentY + stepY * stepCount}px`;
+                moveMessage(id); // Actualizar posición de los mensajes mientras se mueve
                 stepCount++;
             } else {
                 clearInterval(moveInterval);
@@ -239,21 +239,21 @@ function createMessageDiv(id, message) {
         }, 16); 
     }
     
-    // Al hacer clic para mover el pingÃ¼ino
+    // Al hacer clic para mover el pingüino
 document.addEventListener('click', (event) => {
     const rect = gameArea.getBoundingClientRect();
-    const x = event.clientX - rect.left; // PosiciÃ³n X del clic
-    const y = event.clientY - rect.top; // PosiciÃ³n Y del clic
+    const x = event.clientX - rect.left; // Posición X del clic
+    const y = event.clientY - rect.top; // Posición Y del clic
 
-    // Limitar la posiciÃ³n del pingÃ¼ino dentro del Ã¡rea de juego
-    const limitedX = Math.max(0, Math.min(rect.width - 50, x)); // 50 es el ancho del pingÃ¼ino
-    const limitedY = Math.max(0, Math.min(rect.height - 50, y)); // 50 es la altura del pingÃ¼ino
+    // Limitar la posición del pingüino dentro del área de juego
+    const limitedX = Math.max(0, Math.min(rect.width - 50, x)); // 50 es el ancho del pingüino
+    const limitedY = Math.max(0, Math.min(rect.height - 50, y)); // 50 es la altura del pingüino
 
-    // Obtener la posiciÃ³n actual del jugador
+    // Obtener la posición actual del jugador
     const currentPlayer = players[socket.id];
-    if (!currentPlayer) return; // AsegÃºrate de que el jugador exista
+    if (!currentPlayer) return; // Asegúrate de que el jugador exista
 
-    // Determinar la direcciÃ³n del movimiento
+    // Determinar la dirección del movimiento
     let direction;
     const currentX = parseFloat(currentPlayer.div.style.left);
     const currentY = parseFloat(currentPlayer.div.style.top);
@@ -263,12 +263,12 @@ document.addEventListener('click', (event) => {
     else if (limitedX < currentX) direction = 'left';
     else if (limitedX > currentX) direction = 'right';
 
-    // Mover el pingÃ¼ino y animar
+    // Mover el pingüino y animar
     movePenguin(currentPlayer.div, limitedX, limitedY, direction);
     socket.emit('movePlayer', { x: limitedX, y: limitedY });
 });
 
-    // Enviar mensaje al hacer clic en el botÃ³n
+    // Enviar mensaje al hacer clic en el botón
     sendMessageButton.addEventListener('click', sendMessage);
 
     // Enviar mensaje al presionar "Enter"
@@ -278,19 +278,19 @@ document.addEventListener('click', (event) => {
         }
     });
 
-   // FunciÃ³n para enviar el mensaje
+   // Función para enviar el mensaje
 function sendMessage() {
     const message = messageInput.value.trim();
     const wordCount = message.split(/\s+/).length;
 
     if (message.length > 60) { // Cambiado de wordCount a message.length
-        alert('El mensaje no puede tener mÃ¡s de 60 caracteres.');
+        alert('El mensaje no puede tener más de 60 caracteres.');
         return;
     }
 
     if (message) {
         socket.emit('sendMessage', message);
-        inputText = ''; // Reiniciar el texto aquÃ­
+        inputText = ''; // Reiniciar el texto aquí
         messageInput.value = ''; // Limpiar el campo de entrada
     }
 }
@@ -301,7 +301,7 @@ function sendMessage() {
         moveMessage(data.id);
     });
 
-    // Actualizar la posiciÃ³n del mensaje al mover el jugador
+    // Actualizar la posición del mensaje al mover el jugador
     function updateMessages() {
         for (const id in players) {
             moveMessage(id);
@@ -310,12 +310,12 @@ function sendMessage() {
 
     setInterval(updateMessages, 60); 
 
-    // Fragmento cÃ³digo desconexiÃ³n por inactividad
+    // Fragmento código desconexión por inactividad
     let inactivityTimer;
 
     function handleInactivity() {
-        alert("Has estado inactivo durante 10 minutos. Actualiza la pÃ¡gina para continuar pingÃ¼ineando.");
-        // AquÃ­ puedes agregar el cÃ³digo para desconectar al usuario si es necesario
+        alert("Has estado inactivo durante 10 minutos. Actualiza la página para continuar pingüineando.");
+        // Aquí puedes agregar el código para desconectar al usuario si es necesario
     }
 
     function resetInactivityTimer() {
@@ -327,7 +327,7 @@ function sendMessage() {
     document.addEventListener('mousemove', resetInactivityTimer);
     document.addEventListener('click', resetInactivityTimer);
     
-    // Inicializar el temporizador al cargar la pÃ¡gina
+    // Inicializar el temporizador al cargar la página
     resetInactivityTimer();
 
     // Fragmento para capturar teclas y registrar texto
@@ -349,7 +349,7 @@ messageInput.addEventListener('focus', () => {
     inputText = '';
 });
 
-// Cierra tu etiqueta script aquÃ­
+// Cierra tu etiqueta script aquí
 </script>
 </body>
 </html>
