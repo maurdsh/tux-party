@@ -219,7 +219,7 @@ socket.on('playerMoved', (data) => {
 });
 
 // Movimiento suave del pingüino
-function movePlayerSmoothly(id, targetX, targetY, direction) {
+function movePlayerSmoothly(id, targetX, targetY) {
     const player = players[id];
     const currentX = parseFloat(player.div.style.left);
     const currentY = parseFloat(player.div.style.top);
@@ -231,16 +231,24 @@ function movePlayerSmoothly(id, targetX, targetY, direction) {
     const stepY = dy / steps;
 
     let stepCount = 0;
+    let direction;
 
-    const moveInterval = setInterval(() => {
+    // Determina la dirección
+    if (dy < 0 && Math.abs(dx) < Math.abs(dy)) direction = 'up';
+    else if (dy > 0 && Math.abs(dx) < Math.abs(dy)) direction = 'down';
+    else if (dx < 0) direction = 'left';
+    else if (dx > 0) direction = 'right';
+
+    const intervalId = setInterval(() => {
         if (stepCount < steps) {
             player.div.style.left = `${currentX + stepX * stepCount}px`;
             player.div.style.top = `${currentY + stepY * stepCount}px`;
-            player.div.src = penguinImages[direction][stepCount % penguinImages[direction].length]; // Cambiar imagen aquí
-            moveMessage(id); // Actualizar posición de los mensajes mientras se mueve
+
+            // Cambiar la imagen del pingüino según la dirección
+            player.div.src = penguinImages[direction][stepCount % penguinImages[direction].length];
             stepCount++;
         } else {
-            clearInterval(moveInterval);
+            clearInterval(intervalId);
             player.div.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
         }
     }, 16); 
