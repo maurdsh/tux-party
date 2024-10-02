@@ -30,6 +30,12 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('playerMoved', { id: socket.id, player: players[socket.id] });
     });
 
+// Cuando un jugador emite un cambio de frame, notificar a todos los demás
+socket.on('penguinFrameUpdate', (data) => {
+    // Emitir la actualización a todos los jugadores excepto al que envió el frame
+    socket.broadcast.emit('penguinFrameUpdate', data);
+});
+    
     // Manejar el envío de mensajes
     socket.on('sendMessage', (message) => {
         // Enviar el mensaje a todos los jugadores, con el ID del emisor
