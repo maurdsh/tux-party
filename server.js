@@ -30,6 +30,16 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('playerMoved', { id: socket.id, player: players[socket.id] });
     });
 
+// Emitir evento de movimiento de jugador a todos los clientes conectados
+socket.on('playerMoved', (data) => {
+  io.emit('playerMoved', data);
+});
+
+// Escuchar evento de movimiento de jugador
+socket.on('playerMoved', (data) => {
+  animateMove(data.id, data.player.x, data.player.y);
+});
+    
     // Manejar el envío de mensajes
     socket.on('sendMessage', (message) => {
         // Enviar el mensaje a todos los jugadores, con el ID del emisor
