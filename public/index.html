@@ -112,53 +112,53 @@
         right: ['derecha1.png', 'derecha2.png']
     };
 
-   // Función para mover el pingüino con animación de imágenes
-function movePenguin(penguin, targetX, targetY, direction) {
-  let frame = 0;
-  const steps = 60; // Número total de pasos para el movimiento
-  const currentX = parseFloat(penguin.style.left);
-  const currentY = parseFloat(penguin.style.top);
+    // Función para mover el pingüino con animación de imágenes
+    function movePenguin(penguin, targetX, targetY, direction) {
+        let frame = 0;
+        const steps = 60; // Número total de pasos para el movimiento
+        const currentX = parseFloat(penguin.style.left);
+        const currentY = parseFloat(penguin.style.top);
 
-  const dx = targetX - currentX;
-  const dy = targetY - currentY;
-  const stepX = dx / steps;
-  const stepY = dy / steps;
+        const dx = targetX - currentX;
+        const dy = targetY - currentY;
+        const stepX = dx / steps;
+        const stepY = dy / steps;
 
-  // Cambiar las imágenes cada ciertos pasos
-  const intervalId = setInterval(() => {
-    penguin.src = penguinImages[direction][frame % penguinImages[direction].length];
-    frame++;
-  }, 200);
+        // Cambiar las imágenes cada ciertos pasos
+        const intervalId = setInterval(() => {
+            penguin.src = penguinImages[direction][frame % penguinImages[ direction].length];
+            frame++;
+        }, 200);
 
-  let stepCount = 0;
-  const moveInterval = setInterval(() => {
-    if (stepCount < steps) {
-      penguin.style.left = `${currentX + stepX * stepCount}px`;
-      penguin.style.top = `${currentY + stepY * stepCount}px`;
-      stepCount++;
-    } else {
-      clearInterval(moveInterval);
-      clearInterval(intervalId);
-      penguin.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
+        let stepCount = 0;
+        const moveInterval = setInterval(() => {
+            if (stepCount < steps) {
+                penguin.style.left = `${currentX + stepX * stepCount}px`;
+                penguin.style.top = `${currentY + stepY * stepCount}px`;
+                stepCount++;
+            } else {
+                clearInterval(moveInterval);
+                clearInterval(intervalId);
+                penguin.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
+            }
+        }, 16); // Ajusta este valor para controlar la velocidad del movimiento
     }
-  }, 16); // Ajusta este valor para controlar la velocidad del movimiento
-}
 
-// Función para animar el movimiento de otros jugadores
-function animateMove(id, targetX, targetY) {
-  const player = players[id];
-  if (player) {
-    movePenguin(player.div, targetX, targetY, getDirection(player.div.style.left, player.div.style.top, targetX, targetY));
-  }
-}
+    // Función para animar el movimiento de otros jugadores
+    function animateMove(id, targetX, targetY) {
+        const player = players[id];
+        if (player) {
+            movePlayerSmoothly(id, targetX, targetY);
+        }
+    }
 
-// Función para determinar la dirección del movimiento
-function getDirection(currentX, currentY, targetX, targetY) {
-  if (targetY < currentY && Math.abs(targetX - currentX) < Math.abs(targetY - currentY)) return 'up';
-  else if (targetY > currentY && Math.abs(targetX - currentX) < Math.abs(targetY - currentY)) return 'down';
-  else if (targetX < currentX) return 'left';
-  else if (targetX > currentX) return 'right';
-}
+    // Función para determinar la dirección del movimiento
+    function getDirection(currentX, currentY, targetX, targetY) {
+        if (targetY < currentY && Math.abs(targetX - currentX) < Math.abs(targetY - currentY)) return 'up';
+        else if (targetY > currentY && Math.abs(targetX - currentX) < Math.abs(targetY - currentY)) return 'down';
+        else if (targetX < currentX) return 'left';
+        else if (targetX > currentX) return 'right';
+    }
 
     // Función para crear el div del mensaje
     function createMessageDiv(id, message) {
@@ -217,9 +217,9 @@ function getDirection(currentX, currentY, targetX, targetY) {
     });
 
     // Movimiento de otro jugador
-socket.on('playerMoved', (data) => {
-  animateMove(data.id, data.player.x, data.player.y);
-});
+    socket.on('playerMoved', (data) => {
+        animateMove(data.id, data.player.x, data.player.y);
+    });
     
     // Notificación de jugador desconectado
     socket.on('playerDisconnected', (id) => {
@@ -234,27 +234,25 @@ socket.on('playerMoved', (data) => {
     // Movimiento suave del pingüino
     function movePlayerSmoothly(id, targetX, targetY) {
         const player = players[id];
-        const currentX = parseFloat(player.div.style.left);
-        const currentY = parseFloat(player.div.style.top);
+        const startX = player.div.offsetLeft;
+        const startY = player.div.offsetTop;
+        const distanceX = targetX - startX;
+        const distanceY = targetY - startY;
+        const speed = 10; // adjust the speed as needed
 
-        const dx = targetX - currentX;
-        const dy = targetY - currentY;
-        const steps = 60; 
-        const stepX = dx / steps;
-        const stepY = dy / steps;
-
-        let stepCount = 0;
-
-        const moveInterval = setInterval(() => {
-            if (stepCount < steps) {
- player.div.style.left = `${currentX + stepX * stepCount}px`;
-                player.div.style.top = `${currentY + stepY * stepCount}px`;
-                moveMessage(id); // Actualizar posición de los mensajes mientras se mueve
-                stepCount++;
+        function animate() {
+            const newX = player.div.offsetLeft + distanceX / speed;
+            const newY = player.div.offsetTop + distanceY / speed;
+            player.div.style.left = `${newX}px`;
+            player.div.style.top = `${newY}px`;
+            if (Math.abs(new X - targetX) < 1 && Math.abs(newY - targetY) < 1) {
+                player.div.style.left = `${targetX}px`;
+                player.div.style.top = `${targetY}px`;
             } else {
-                clearInterval(moveInterval);
+                requestAnimationFrame(animate);
             }
-        }, 16); // Ajusta este valor para controlar la velocidad del movimiento
+        }
+        animate();
     }
 
     // Al hacer clic para mover el pingüino
