@@ -129,6 +129,14 @@ function movePenguin(penguin, targetX, targetY, direction) {
         frame++;
     }, 200);
 
+// Emitir el frame de animación a los demás usuarios
+        socket.emit('penguinFrameUpdate', {
+            id: socket.id,
+            frameSrc: frameSrc
+        });
+
+    }, 200);
+    
     let stepCount = 0;
     const moveInterval = setInterval(() => {
         if (stepCount < steps) {
@@ -202,6 +210,14 @@ function createMessageDiv(id, message) {
     socket.on('playerMoved', (data) => {
         movePlayerSmoothly(data.id, data.player.x, data.player.y);
     });
+
+    //Evento que indica cuándo se ha actualizado el frame de un pingüino en otro cliente
+    socket.on('penguinFrameUpdate', (data) => {
+    if (players[data.id]) {
+        players[data.id].div.src = data.frameSrc; // Actualizar la imagen del pingüino para el otro jugador
+    }
+});
+
 
     // Notificación de jugador desconectado
     socket.on('playerDisconnected', (id) => {
