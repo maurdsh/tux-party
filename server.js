@@ -24,11 +24,11 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('newPlayer', { id: socket.id, player: players[socket.id] });
 
     // Manejar el movimiento del pingüino
-    socket.on('movePlayer', (data) => {
-        players[socket.id].x = data.x;
-        players[socket.id].y = data.y;
-        socket.broadcast.emit('playerMoved', { id: socket.id, player: players[socket.id] });
-    });
+socket.on('movePlayer', (data) => {
+    players[socket.id].x = data.x;
+    players[socket.id].y = data.y;
+    io.emit('playerMoved', { id: socket.id, player: players[socket.id] });
+});
 
     // Escuchar evento de movimiento de jugador
 socket.on('playerMoved', (data) => {
