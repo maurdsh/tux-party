@@ -12,7 +12,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: 0066FF;
+            background-color: #0066FF;
         }
         
         .game-area {
@@ -167,11 +167,11 @@ function createMessageDiv(id, message) {
     gameArea.appendChild(messageDiv);
     player.messageDivs.push(messageDiv); 
 
-    // Eliminar el mensaje después de 6 segundos
+    // Eliminar el mensaje después de 10 segundos
     setTimeout(() => {
         messageDiv.remove();
         player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
-    }, 6000);
+    }, 10000);
 }
     // Función para mover el mensaje
     function moveMessage(id) {
