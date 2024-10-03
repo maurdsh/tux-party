@@ -78,6 +78,7 @@
 <body>
 
 <div class="game-area" id="gameArea"></div>
+<div class="game-area" id="gameArea2" style="display: none;"></div>
 <div class="chat-area" id="chatArea"></div>
 <div class="input-area">
     <input type="text" id="messageInput" maxlength="60" placeholder="Escribe tu mensaje (máx. 60 caracteres)" />
@@ -282,6 +283,8 @@ document.addEventListener('click', (event) => {
         }
     });
 
+  const gameArea2 = document.getElementById('gameArea2'); // Obtener referencia al nuevo gameArea
+    
    // Función para enviar el mensaje
 function sendMessage() {
     const message = messageInput.value.trim();
@@ -296,9 +299,23 @@ function sendMessage() {
         socket.emit('sendMessage', message);
         inputText = ''; // Reiniciar el texto aquí
         messageInput.value = ''; // Limpiar el campo de entrada
+
+        // Si el mensaje es "EXIT", cambiar al nuevo gameArea
+        if (message.toUpperCase() === "EXIT") {
+            switchToGameArea2();
     }
 }
 
+    // Función para cambiar al nuevo gameArea
+function switchToGameArea2() {
+    const currentGameArea = document.getElementById('gameArea');
+    currentGameArea.style.display = 'none'; // Oculta el primer gameArea
+    gameArea2.style.display = 'block'; // Muestra el segundo gameArea
+    gameArea2.style.width = '350px'; // Ajusta el ancho según tus necesidades
+    gameArea2.style.height = '400px'; // Ajusta la altura según tus necesidades
+    gameArea2.style.background = 'url("2.png") no-repeat center center'; // Cambia la imagen de fondo
+    gameArea2.style.backgroundSize = '100% 100%'; // Ajusta el tamaño de la imagen
+    
     // Recibir mensaje de otros jugadores
     socket.on('receiveMessage', (data) => {
         createMessageDiv(data.id, data.message);
