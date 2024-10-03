@@ -108,7 +108,7 @@
     const messageInput = document.getElementById('messageInput');
     const sendMessageButton = document.getElementById('sendMessage');
     // Funciï¿½n para crear un nuevo jugador
-    function createPlayer(id, x, y, gameArea) {
+    function createPlayer (id, x, y, gameArea) {
         const playerDiv = document.createElement('img');
         playerDiv.src = 'pingu.png'; // Asegï¿½rate de que la imagen estï¿½ en la carpeta pï¿½blica
         playerDiv.className = 'player';
@@ -199,7 +199,7 @@
     });
     // Notificaciï¿½n de nuevo jugador
     socket.on('newPlayer', (data) => {
-        createPlayer(data.id, data.player.x, data.player.y, gameArea);
+        createPlayer(data.id, data.player.x, data.player.y, gameArea );
     });
     // Movimiento de otro jugador
     socket.on('playerMoved', (data) => {
@@ -291,7 +291,7 @@
     }
     // Recibir mensaje de otros jugadores
     socket.on('receiveMessage', (data) => {
-        createMessageDiv(data.id, data.message, gameArea);
+        createMessageDiv (data.id, data.message, gameArea);
         moveMessage(data.id, gameArea);
     });
     // Actualizar la posiciï¿½n del mensaje al mover el jugador
@@ -351,6 +351,10 @@
         playerDiv.style.top = `${y}px`;
         players[id] = { div: playerDiv, messageDivs: [] };
     }
+    // Crear jugador al conectar
+    socket.on('connection', () => {
+        createPlayer(socket.id, 100, 100, gameArea);
+    });
 </script>
 </body>
 </html>
