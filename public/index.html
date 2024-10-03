@@ -78,7 +78,7 @@
             position: absolute;
             bottom: 0;
             width: calc(100% - 20px);
-            display: flex;
+            display: flex ;
             justify-content: space-between;
             padding: 10px;
             box-sizing: border-box;
@@ -92,7 +92,9 @@
 <body>
 
 <div class="game-area" id="gameArea"></div>
-<div class="game-area-2" id="gameArea2"></div>
+<div class="game-area-2" id="gameArea2">
+    <img src="pingu.png" id="pingu2" class="player">
+</div>
 <div class="chat-area" id="chatArea"></div>
 <div class="input-area">
     <input type="text" id="messageInput" maxlength="60" placeholder="Escribe tu mensaje (mï¿½x. 60 caracteres)" />
@@ -311,10 +313,10 @@
         }
 
         if (message) {
-            if (message === 'EXIT') {
+            if (message === ' EXIT') {
                 gameArea.style.display = 'none';
                 gameArea2.style.display = 'block';
-                // Aquï¿½ puedes agregar cï¿½digo para inicializar el ï¿½rea de juego 2
+                createPlayer2(socket.id, 100, 100); // Inicializar el jugador en el segundo ï¿½rea de juego
             } else {
                 socket.emit('sendMessage', message);
                 inputText = ''; // Reiniciar el texto aquï¿½
@@ -376,6 +378,14 @@
     messageInput.addEventListener('focus', () => {
         inputText = '';
     });
+
+    // Funciï¿½n para crear un nuevo jugador en el segundo ï¿½rea de juego
+    function createPlayer2(id, x, y) {
+        const playerDiv = document.getElementById('pingu2');
+        playerDiv.style.left = `${x}px`;
+        playerDiv.style.top = `${y}px`;
+        players[id] = { div: playerDiv, messageDivs: [] };
+    }
 </script>
 </body>
 </html>
