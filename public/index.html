@@ -112,35 +112,38 @@ const penguinImages = {
 };
 
 // Función para mover el pingüino con animación de imágenes
-function movePenguin(penguin, targetX, targetY, direction) {
-    let frame = 0;
-    const steps = 60; // Número total de pasos para el movimiento
-    const currentX = parseFloat(penguin.style.left);
-    const currentY = parseFloat(penguin.style.top);
+function movePlayerSmoothly(id, targetX, targetY, direction) {
+    const player = players[id];
+    const currentX = parseFloat(player.div.style.left);
+    const currentY = parseFloat(player.div.style.top);
 
     const dx = targetX - currentX;
     const dy = targetY - currentY;
+    const steps = 60; 
     const stepX = dx / steps;
     const stepY = dy / steps;
 
-    // Cambiar las imágenes cada ciertos pasos
-    const intervalId = setInterval(() => {
-        penguin.src = penguinImages[direction][frame % penguinImages[direction].length];
-        frame++;
-    }, 200);
-
     let stepCount = 0;
+    let frame = 0;
+
+    // Iniciar la animación del pingüino según la dirección
+    const intervalId = setInterval(() => {
+        player.div.src = penguinImages[direction][frame % penguinImages[direction].length];
+        frame++;
+    }, 200); // Cambiar cada 200 ms
+
     const moveInterval = setInterval(() => {
         if (stepCount < steps) {
-            penguin.style.left = `${currentX + stepX * stepCount}px`;
-            penguin.style.top = `${currentY + stepY * stepCount}px`;
+            player.div.style.left = `${currentX + stepX * stepCount}px`;
+            player.div.style.top = `${currentY + stepY * stepCount}px`;
+            moveMessage(id); // Actualizar posición de los mensajes mientras se mueve
             stepCount++;
         } else {
             clearInterval(moveInterval);
-            clearInterval(intervalId);
-            penguin.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
+            clearInterval(intervalId); // Detener la animación
+            player.div.src = 'pingu.png'; // Imagen estática del pingüino
         }
-    }, 16); // Ajusta este valor para controlar la velocidad del movimiento
+    }, 16); // Controlar la velocidad del movimiento
 }
 
     // Función para crear el div del mensaje
