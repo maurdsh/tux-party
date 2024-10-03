@@ -34,6 +34,7 @@
         .player {
             position: absolute;
             width: 50px;
+            transition: left 0.5s, top 0.5s; /* Opcional: suaviza el movimiento */
         }
         
         .message {
@@ -308,13 +309,38 @@ function sendMessage() {
 
     // Función para cambiar al nuevo gameArea
 function switchToGameArea2() {
-    const currentGameArea = document.getElementById('gameArea');
-    currentGameArea.style.display = 'none'; // Oculta el primer gameArea
-    gameArea2.style.display = 'block'; // Muestra el segundo gameArea
-    gameArea2.style.width = '350px'; // Ajusta el ancho según tus necesidades
-    gameArea2.style.height = '400px'; // Ajusta la altura según tus necesidades
-    gameArea2.style.background = 'url("2.png") no-repeat center center'; // Cambia la imagen de fondo
-    gameArea2.style.backgroundSize = '100% 100%'; // Ajusta el tamaño de la imagen
+    // Ocultar el primer gameArea
+    gameArea.style.display = 'none';
+
+    // Mostrar el segundo gameArea
+    gameArea2.style.display = 'block';
+
+    // Cambiar el fondo del nuevo gameArea
+    gameArea2.style.background = 'url("2.png") no-repeat center center';
+    gameArea2.style.backgroundSize = '100% 100%';
+
+    // Asegurarse de que el pingüino se muestre en el nuevo gameArea
+    if (players['tuNombreDeUsuario']) {
+        // Si el pingüino ya existe, cambiar su posición al nuevo gameArea
+        const playerElement = document.getElementById('player-' + 'tuNombreDeUsuario'); // Asegúrate de que este ID sea correcto
+        gameArea2.appendChild(playerElement); // Mover el elemento pingüino al nuevo área
+    } else {
+        // Si no existe, crear un nuevo pingüino
+        createPenguin(); // Define esta función para crear el pingüino en el nuevo área
+    }
+}
+
+// Función para crear el pingüino
+function createPenguin() {
+    const penguin = document.createElement('img');
+    penguin.src = 'ruta/a/tu/pinguino.png'; // Cambia esto por la ruta correcta
+    penguin.classList.add('player');
+    penguin.id = 'player-' + 'tuNombreDeUsuario'; // Asegúrate de que el ID sea único
+    penguin.style.position = 'absolute'; // Asegúrate de que el pingüino se posicione correctamente
+    penguin.style.left = '50%'; // Cambiar según sea necesario
+    penguin.style.top = '50%'; // Cambiar según sea necesario
+    gameArea2.appendChild(penguin); // Agregar el pingüino al nuevo gameArea
+}
     
     // Recibir mensaje de otros jugadores
     socket.on('receiveMessage', (data) => {
