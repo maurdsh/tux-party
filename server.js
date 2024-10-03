@@ -29,7 +29,9 @@ io.on('connection', (socket) => {
     players[socket.id].x = data.x;
     players[socket.id].y = data.y;
     players[socket.id].direction = data.direction; // Agregar la dirección
-    
+
+    console.log('Movimiento del jugador:', { id: socket.id, player: players[socket.id] });
+       
     // Emitir a otros jugadores la nueva posición y la dirección
     socket.broadcast.emit('playerMoved', { id: socket.id, player: players[socket.id] });
 });
