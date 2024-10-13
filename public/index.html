@@ -51,16 +51,16 @@
         }
         
         .message {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.8);
-            border: 1px solid black;
-            padding: 2px;
-            font-size: 12px;
-            white-space: normal; /* Cambiado de nowrap a normal para permitir saltos de lï¿½nea */
-            word-wrap: break-word; /* Permitir romper palabras largas */
-            max-width: 150px; /* Establece el ancho mï¿½ximo del mensaje */
-            pointer-events: none;
-        }
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid black;
+    padding: 2px;
+    font-size: 12px;
+    white-space: normal; /* Cambiado de nowrap a normal para permitir saltos de lï¿½nea */
+    word-wrap: break-word; /* Permitir romper palabras largas */
+    max-width: 150px; /* Establece el ancho mï¿½ximo del mensaje */
+    pointer-events: none;
+}
         
         .chat-area {
             position: absolute;
@@ -185,7 +185,6 @@ function createMessageDiv(id, message, gameArea) {
     const playerY = parseFloat(player.div.style.top);
     messageDiv.style.left = `${playerX + 60}px`; 
     messageDiv.style.top = `${playerY}px`; 
-    messageDiv.style.transform = `translate(${playerX + 60}px, ${playerY}px)`; // Agregar transform para mantener la posición relativa
 
     gameArea.appendChild(messageDiv);
     player.messageDivs.push(messageDiv); 
@@ -205,7 +204,8 @@ function moveMessage(id, gameArea) {
         const playerY = parseFloat(player.div.style.top);
 
         player.messageDivs.forEach((messageDiv, index) => {
-            messageDiv.style.transform = `translate(${playerX + 60}px, ${playerY + (index * 20)}px)`; // Actualizar transform para mantener la posición relativa
+            messageDiv.style.left = `${playerX + 60}px`; 
+            messageDiv.style.top = `${playerY + (index * 20)}px`; 
         });
     }
 }
