@@ -190,14 +190,14 @@ function createMessageDiv(id, message, gameArea) {
     gameArea.appendChild(messageDiv);
     player.messageDivs.push(messageDiv); 
 
-         // Eliminar el mensaje despuï¿½s de 10 segundos
+    // Eliminar el mensaje despuï¿½s de 10 segundos
     setTimeout(() => {
         messageDiv.remove();
         player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
     }, 10000);
 }
 
-    // Funciï¿½n para mover el mensaje
+// Funciï¿½n para mover el mensaje
 function moveMessage(id, gameArea) {
     const player = players[id];
     if (player && player.messageDivs.length > 0) {
