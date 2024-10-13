@@ -167,48 +167,48 @@
     }
 
     // Funciï¿½n para crear el div del mensaje
-    function createMessageDiv(id, message, gameArea) {
-        const player = players[id];
+function createMessageDiv(id, message, gameArea) {
+    const player = players[id];
 
-        // Limitar a 2 mensajes, eliminar el mï¿½s antiguo si ya hay 2
-        if (player.messageDivs.length >= 1) {
-            const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el mï¿½s antiguo
-            oldestMessageDiv.remove(); // Eliminar el div del DOM
-        }
-
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message';
-        messageDiv.textContent = message;
-
-        // Colocar el mensaje inicialmente a la derecha del pingï¿½ino
-        const playerX = parseFloat(player.div.style.left);
-        const playerY = parseFloat(player.div.style.top);
-        messageDiv.style.left = `${playerX + 60}px`; 
-        messageDiv.style.top = `${playerY}px`; 
-
-        gameArea.appendChild(messageDiv);
-        player.messageDivs.push(messageDiv); 
-
-        // Eliminar el mensaje despuï¿½s de 10 segundos
-        setTimeout(() => {
-            messageDiv.remove();
-            player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
-        }, 10000);
+    // Limitar a 2 mensajes, eliminar el mï¿½s antiguo si ya hay 2
+    if (player.messageDivs.length >= 1) {
+        const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el mï¿½s antiguo
+        oldestMessageDiv.remove(); // Eliminar el div del DOM
     }
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message';
+    messageDiv.textContent = message;
+
+    // Colocar el mensaje inicialmente a la derecha del pingï¿½ino
+    const playerX = parseFloat(player.div.style.left);
+    const playerY = parseFloat(player.div.style.top);
+    messageDiv.style.left = `${playerX + 60}px`; 
+    messageDiv.style.top = `${playerY}px`; 
+    messageDiv.style.transform = `translate(${playerX + 60}px, ${playerY}px)`; // Agregar transform para mantener la posición relativa
+
+    gameArea.appendChild(messageDiv);
+    player.messageDivs.push(messageDiv); 
+
+         // Eliminar el mensaje despuï¿½s de 10 segundos
+    setTimeout(() => {
+        messageDiv.remove();
+        player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
+    }, 10000);
+}
 
     // Funciï¿½n para mover el mensaje
-    function moveMessage(id, gameArea) {
-        const player = players[id];
-        if (player && player.messageDivs.length > 0) {
-            const playerX = parseFloat(player.div.style.left);
-            const playerY = parseFloat(player.div.style.top);
+function moveMessage(id, gameArea) {
+    const player = players[id];
+    if (player && player.messageDivs.length > 0) {
+        const playerX = parseFloat(player.div.style.left);
+        const playerY = parseFloat(player.div.style.top);
 
-            player.messageDivs.forEach((messageDiv, index) => {
-                messageDiv.style.left = `${playerX + 60}px`; 
-                messageDiv.style.top = `${playerY + (index * 20)}px`; 
-            });
-        }
+        player.messageDivs.forEach((messageDiv, index) => {
+            messageDiv.style.transform = `translate(${playerX + 60}px, ${playerY + (index * 20)}px)`; // Actualizar transform para mantener la posición relativa
+        });
     }
+}
 
     // Manejo de jugadores actuales
     socket.on('currentPlayers', (currentPlayers) => {
