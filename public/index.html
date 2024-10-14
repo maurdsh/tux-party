@@ -40,17 +40,18 @@
         
        .message {
     position: absolute;
-    top: -20px;
-    left: 120%;
+    top: -20px; /* Posiciona el mensaje encima del pingüino */
+    left: 120%; /* Centra horizontalmente el mensaje */
+    transform: translateX(-50%); /* Centra el mensaje */
     background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid black;
     padding: 2px;
     font-size: 12px;
-    white-space: pre-wrap; /* Cambiar a pre-wrap para respetar saltos de línea */
-    word-break: break-word; /* Forzar que las palabras se rompan al final de las líneas */
-    max-width: 150px;
+    white-space: pre-wrap; /* Permitir saltos de línea y respetar espacios */
+    word-wrap: break-word; /* Permitir romper palabras largas */
+    max-width: 150px; /* Ancho máximo del mensaje */
     pointer-events: none;
-    z-index: 3;
+    z-index: 3; /* Por encima del pingüino */
 }
 
        
@@ -185,51 +186,47 @@ function createMessageDiv(id, message) {
         oldestMessageDiv.remove();
     }
 
-    // Limitar la longitud total a 60 caracteres (3 líneas de 20 caracteres)
-    const maxTotalChars = 60;
-    const truncatedMessage = message.slice(0, maxTotalChars);
-
-    // Dividir el mensaje en líneas de hasta 20 caracteres
+    // Limitar a 60 caracteres y dividir en líneas de hasta 20 caracteres
     const maxLineLength = 20;
+    const maxLines = 3;
     let lines = [];
+
+    // Eliminar espacios al inicio y final y truncar a 60 caracteres
+    const truncatedMessage = message.trim().slice(0, 60);
+    const words = truncatedMessage.split(' '); // Separar en palabras
+
     let currentLine = '';
 
-    // Utilizamos un array de palabras
-    let words = truncatedMessage.split(' ');
-
+    // Construir líneas
     for (const word of words) {
-        // Si la línea actual más la nueva palabra supera los 20 caracteres
+        // Si agregar la palabra excede el límite de caracteres
         if (currentLine.length + word.length + 1 > maxLineLength) {
-            // Añadimos la línea actual y comenzamos una nueva línea
-            lines.push(currentLine.trim());
-            currentLine = word; // La nueva palabra se convierte en la nueva línea
+            lines.push(currentLine); // Agregar la línea actual
+            currentLine = word; // Iniciar nueva línea con la palabra actual
         } else {
-            // Añadimos la palabra a la línea actual
+            // Agregar la palabra a la línea actual
             if (currentLine.length > 0) {
-                currentLine += ' '; // Espacio antes de añadir la nueva palabra
+                currentLine += ' '; // Añadir espacio antes de la palabra
             }
             currentLine += word;
         }
     }
 
-    // Añadir la última línea si no está vacía
+    // Agregar cualquier línea restante
     if (currentLine.length > 0) {
-        lines.push(currentLine.trim());
+        lines.push(currentLine);
     }
 
-    // Limitar a un máximo de 3 líneas
-    lines = lines.slice(0, 3);
+    // Limitar el número de líneas a 3
+    lines = lines.slice(0, maxLines);
 
-    // Unir las líneas en un solo string con saltos de línea
-    const formattedMessage = lines.join('\n');
-
+    // Crear el div del mensaje
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message';
-    messageDiv.textContent = formattedMessage;
+    messageDiv.textContent = lines.join('\n'); // Unir líneas con salto de línea
 
     // Añadir el div del mensaje como hijo del jugador
     player.div.appendChild(messageDiv);
-
     player.messageDivs.push(messageDiv);
 
     // Eliminar el mensaje después de 10 segundos
