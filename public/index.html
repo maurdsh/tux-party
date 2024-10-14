@@ -304,16 +304,14 @@
    // Función para enviar el mensaje
 function sendMessage() {
     const message = messageInput.value.trim();
-    const wordCount = message.split(/\s+/).length;
 
-    if (message.length > 60) { // Cambiado de wordCount a message.length
+    if (message.length > 60) { // Validación de longitud
         alert('El mensaje no puede tener más de 60 caracteres.');
         return;
     }
 
     if (message) {
         socket.emit('sendMessage', message);
-        inputText = ''; // Reiniciar el texto aquí
         messageInput.value = ''; // Limpiar el campo de entrada
     }
 }
@@ -353,27 +351,9 @@ function sendMessage() {
     // Inicializar el temporizador al cargar la página
     resetInactivityTimer();
 
-    // Fragmento para capturar teclas y registrar texto
-    let inputText = '';
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key.length === 1 && inputText.length < 60) {
-            inputText += event.key;
-            messageInput.value = inputText;
-        } else if (event.key === 'Backspace') {
-            inputText = inputText.slice(0, -1);
-            messageInput.value = inputText;
-        } else if (event.key === 'Enter') {
-            sendMessage();
-        }
-    });
-
-    messageInput.addEventListener('focus', () => {
-        inputText = '';
-    });
-
     // Cierra tu etiqueta script aquí
 </script>
 </body>
 </html>
+
 
