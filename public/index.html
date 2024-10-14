@@ -274,7 +274,8 @@
                 initializePlayer(socket.id, 100, 100, gameArea2);
             } else {
                 socket.emit('sendMessage', message);
-                messageInput.value = '';
+                messageInput.value = ''; // Borrar el texto escrito en el input
+                inputText = ''; // Borrar el texto escrito en la variable inputText
             }
         }
     }
