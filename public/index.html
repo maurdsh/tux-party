@@ -12,20 +12,24 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: white;
+            background-color: #33CCFF;
         }
         
         .game-area {
-            position: relative;
-            width: calc(90vw - 20px);
-            height: calc(90vh - 20px);
-            background: url('1.png') no-repeat center center;
-            background-size: 100% 100%;
-            border: 2px solid black;
-            overflow: hidden;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    height: 400px;
+    background: url('1.png') no-repeat center center;
+    background-size: 100% 100%;
+    border: 2px solid black;
+    overflow: hidden;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
 
         .player {
             position: absolute;
@@ -50,8 +54,8 @@
             width: calc(100% - 20px);
             max-height: 60px;
             overflow-y: auto;
-            border-top: 2px solid black;
-            background-color: white;
+            /*border-top: 2px solid black;*/
+            /*background-color: white;*/
             padding: 5px;
             box-sizing: border-box;
         }
@@ -166,11 +170,11 @@ function createMessageDiv(id, message) {
     gameArea.appendChild(messageDiv);
     player.messageDivs.push(messageDiv); 
 
-    // Eliminar el mensaje después de 6 segundos
+    // Eliminar el mensaje después de 10 segundos
     setTimeout(() => {
         messageDiv.remove();
         player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
-    }, 6000);
+    }, 10000);
 }
     // Función para mover el mensaje
     function moveMessage(id) {
@@ -242,10 +246,10 @@ function createMessageDiv(id, message) {
     // Al hacer clic para mover el pingüino
 document.addEventListener('click', (event) => {
     const rect = gameArea.getBoundingClientRect();
-    const x = event.clientX - rect.left; // No restes el valor fijo
-    const y = event.clientY - rect.top; // No restes el valor fijo
+    const x = event.clientX - rect.left; // Posición X del clic
+    const y = event.clientY - rect.top; // Posición Y del clic
 
-    // Asegúrate de que el pingüino no salga del área de juego
+    // Limitar la posición del pingüino dentro del área de juego
     const limitedX = Math.max(0, Math.min(rect.width - 50, x)); // 50 es el ancho del pingüino
     const limitedY = Math.max(0, Math.min(rect.height - 50, y)); // 50 es la altura del pingüino
 
@@ -255,10 +259,13 @@ document.addEventListener('click', (event) => {
 
     // Determinar la dirección del movimiento
     let direction;
-    if (limitedY < currentPlayer.div.style.top.replace('px', '')) direction = 'up';
-    else if (limitedY > currentPlayer.div.style.top.replace('px', '')) direction = 'down';
-    else if (limitedX < currentPlayer.div.style.left.replace('px', '')) direction = 'left';
-    else if (limitedX > currentPlayer.div.style.left.replace('px', '')) direction = 'right';
+    const currentX = parseFloat(currentPlayer.div.style.left);
+    const currentY = parseFloat(currentPlayer.div.style.top);
+    
+    if (limitedY < currentY && Math.abs(limitedX - currentX) < Math.abs(limitedY - currentY)) direction = 'up';
+    else if (limitedY > currentY && Math.abs(limitedX - currentX) < Math.abs(limitedY - currentY)) direction = 'down';
+    else if (limitedX < currentX) direction = 'left';
+    else if (limitedX > currentX) direction = 'right';
 
     // Mover el pingüino y animar
     movePenguin(currentPlayer.div, limitedX, limitedY, direction);
