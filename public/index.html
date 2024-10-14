@@ -191,26 +191,30 @@ function createMessageDiv(id, message) {
 
     // Dividir el mensaje en líneas de hasta 20 caracteres
     const maxLineLength = 20;
-    let words = truncatedMessage.split(' ');
     let lines = [];
     let currentLine = '';
 
-    words.forEach(word => {
-        // Si la línea actual más la nueva palabra supera los 20 caracteres, hacemos un salto de línea
+    // Utilizamos un array de palabras
+    let words = truncatedMessage.split(' ');
+
+    for (const word of words) {
+        // Si la línea actual más la nueva palabra supera los 20 caracteres
         if (currentLine.length + word.length + 1 > maxLineLength) {
-            lines.push(currentLine);
-            currentLine = word;  // La palabra actual se convierte en la nueva línea
+            // Añadimos la línea actual y comenzamos una nueva línea
+            lines.push(currentLine.trim());
+            currentLine = word; // La nueva palabra se convierte en la nueva línea
         } else {
+            // Añadimos la palabra a la línea actual
             if (currentLine.length > 0) {
-                currentLine += ' ';
+                currentLine += ' '; // Espacio antes de añadir la nueva palabra
             }
             currentLine += word;
         }
-    });
+    }
 
-    // Añadir la última línea
+    // Añadir la última línea si no está vacía
     if (currentLine.length > 0) {
-        lines.push(currentLine);
+        lines.push(currentLine.trim());
     }
 
     // Limitar a un máximo de 3 líneas
