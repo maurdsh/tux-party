@@ -161,29 +161,29 @@
     }
 
     function movePlayerSmoothly(id, targetX, targetY, area) {
-        const player = players[id];
-        const currentX = parseFloat(player.div.style.left);
-        const currentY = parseFloat(player.div.style.top);
+    const player = players[id];
+    const currentX = parseFloat(player.div.style.left);
+    const currentY = parseFloat(player.div.style.top);
 
-        const dx = targetX - currentX;
-        const dy = targetY - currentY;
-        const steps = 60;
-        const stepX = dx / steps;
-        const stepY = dy / steps;
+    const dx = targetX - currentX;
+    const dy = targetY - currentY;
+    const steps = 60;
+    const stepX = dx / steps;
+    const stepY = dy / steps;
 
-        let stepCount = 0;
+    let stepCount = 0;
 
-        const moveInterval = setInterval(() => {
-            if (stepCount < steps) {
-                player.div.style.left = `${currentX + stepX * stepCount}px`;
-                player.div.style.top = `${currentY + stepY * stepCount}px`;
-                moveMessage(id, area);
-                stepCount++;
-            } else {
-                clearInterval(moveInterval);
-            }
-        }, 16);
-    }
+    const moveInterval = setInterval(() => {
+        if (stepCount < steps) {
+            player.div.style.left = `${currentX + stepX * stepCount}px`;
+            player.div.style.top = `${currentY + stepY * stepCount}px`;
+            moveMessage(id, area); // Mover el mensaje a la nueva posición del pingüino
+            stepCount++;
+        } else {
+            clearInterval(moveInterval);
+        }
+    }, 16);
+}
 
     // Sección de mensajes
     function createMessageDiv(id, message, area) {
