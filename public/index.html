@@ -26,7 +26,7 @@
             background: url('1.png') no-repeat center center;
             background-size: 100% 100%;
             border: 2px solid black;
-            overflow: hidden;
+            overflow: visible; /* Cambiado de hidden a visible */
             padding: 20px;
             box-sizing: border-box;
             z-index: 1; /* Asegura que esté por debajo de las áreas de chat e input */
@@ -35,12 +35,14 @@
         .player {
             position: relative; /* Cambiado de absolute a relative */
             width: 50px;
+            height: 50px; /* Asegura que el div del pingüino tenga altura */
         }
         
         .message {
             position: absolute;
-            top: -20px; /* Posición arriba del pingüino */
-            left: 60px; /* Posición a la derecha del pingüino */
+            top: -25px; /* Posiciona el mensaje encima del pingüino */
+            left: 50%; /* Centra horizontalmente el mensaje */
+            transform: translateX(-50%); /* Centra el mensaje */
             background-color: rgba(255, 255, 255, 0.8);
             border: 1px solid black;
             padding: 2px;
@@ -58,8 +60,6 @@
             width: 350px;
             max-height: 60px;
             overflow-y: auto;
-            /*border-top: 2px solid black;*/
-            /*background-color: white;*/
             padding: 5px;
             box-sizing: border-box;
             z-index: 2;
@@ -120,14 +120,18 @@
 
         // Función para crear un nuevo jugador
         function createPlayer(id, x, y) {
-            const playerDiv = document.createElement('img');
-            playerDiv.src = 'pingu.png'; // Asegúrate de que la imagen esté en la carpeta pública
+            const playerDiv = document.createElement('div'); // Cambiado de 'img' a 'div' para mejor manejo
             playerDiv.className = 'player';
             playerDiv.id = id;
             playerDiv.style.left = `${x}px`;
             playerDiv.style.top = `${y}px`;
             gameArea.appendChild(playerDiv);
-            
+
+            const playerImg = document.createElement('img');
+            playerImg.src = 'pingu.png'; // Asegúrate de que la imagen esté en la carpeta pública
+            playerImg.style.width = '100%'; // Para que la imagen ocupe todo el div
+            playerDiv.appendChild(playerImg);
+
             // Almacenar el jugador en el objeto players con posición anterior
             players[id] = { div: playerDiv, messageDivs: [], prevX: x, prevY: y };
         }
@@ -146,7 +150,8 @@
 
             // Cambiar las imágenes cada ciertos pasos
             const intervalId = setInterval(() => {
-                penguin.src = penguinImages[direction][frame % penguinImages[direction].length];
+                const playerImg = penguin.querySelector('img');
+                playerImg.src = penguinImages[direction][frame % penguinImages[direction].length];
                 frame++;
             }, 200);
 
@@ -159,7 +164,8 @@
                 } else {
                     clearInterval(moveInterval);
                     clearInterval(intervalId);
-                    penguin.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
+                    const playerImg = penguin.querySelector('img');
+                    playerImg.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
                 }
             }, 16); // Ajusta este valor para controlar la velocidad del movimiento
         }
@@ -167,6 +173,11 @@
         // Función para crear el div del mensaje
         function createMessageDiv(id, message) {
             const player = players[id];
+
+            if (!player) {
+                console.log(`Jugador ${id} no encontrado`);
+                return;
+            }
 
             // Limitar a 2 mensajes, eliminar el más antiguo si ya hay 1
             if (player.messageDivs.length >= 1) {
@@ -183,17 +194,14 @@
 
             player.messageDivs.push(messageDiv);
 
+            console.log(`Mensaje creado para ${id}: ${message}`); // Depuración
+
             // Eliminar el mensaje después de 10 segundos
             setTimeout(() => {
                 messageDiv.remove();
                 player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
             }, 10000);
         }
-
-        // Función para mover el mensaje (Ya no es necesaria)
-        // function moveMessage(id) {
-        //     // Eliminada para mantener los mensajes fijos
-        // }
 
         // Manejo de jugadores actuales
         socket.on('currentPlayers', (currentPlayers) => {
@@ -303,20 +311,20 @@
             }
         });
 
-       // Función para enviar el mensaje
-    function sendMessage() {
-        const message = messageInput.value.trim();
+        // Función para enviar el mensaje
+        function sendMessage() {
+            const message = messageInput.value.trim();
 
-        if (message.length > 60) { // Validación de longitud
-            alert('El mensaje no puede tener más de 60 caracteres.');
-            return;
-        }
+            if (message.length > 60) { // Validación de longitud
+                alert('El mensaje no puede tener más de 60 caracteres.');
+                return;
+            }
 
-        if (message) {
-            socket.emit('sendMessage', message);
-            messageInput.value = ''; // Limpiar el campo de entrada
+            if (message) {
+                socket.emit('sendMessage', message);
+                messageInput.value = ''; // Limpiar el campo de entrada
+            }
         }
-    }
 
         // Recibir mensaje de otros jugadores
         socket.on('receiveMessage', (data) => {
@@ -355,5 +363,3 @@
     </script>
 </body>
 </html>
-
-
