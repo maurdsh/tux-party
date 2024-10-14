@@ -33,12 +33,14 @@
         }
 
         .player {
-            position: absolute;
+            position: relative; /* Cambiado de absolute a relative */
             width: 50px;
         }
         
         .message {
             position: absolute;
+            top: -20px; /* Posición arriba del pingüino */
+            left: 60px; /* Posición a la derecha del pingüino */
             background-color: rgba(255, 255, 255, 0.8);
             border: 1px solid black;
             padding: 2px;
@@ -47,6 +49,7 @@
             word-wrap: break-word; /* Permitir romper palabras largas */
             max-width: 150px; /* Ancho máximo del mensaje */
             pointer-events: none;
+            z-index: 3; /* Por encima del pingüino */
         }
         
         .chat-area {
@@ -175,14 +178,10 @@
             messageDiv.className = 'message';
             messageDiv.textContent = message;
 
-            // Colocar el mensaje inicialmente a la derecha del pingüino
-            const playerX = parseFloat(player.div.style.left);
-            const playerY = parseFloat(player.div.style.top);
-            messageDiv.style.left = `${playerX + 60}px`; 
-            messageDiv.style.top = `${playerY}px`; 
+            // Append the messageDiv as a child of the player div
+            player.div.appendChild(messageDiv);
 
-            gameArea.appendChild(messageDiv);
-            player.messageDivs.push(messageDiv); 
+            player.messageDivs.push(messageDiv);
 
             // Eliminar el mensaje después de 10 segundos
             setTimeout(() => {
@@ -191,19 +190,10 @@
             }, 10000);
         }
 
-        // Función para mover el mensaje
-        function moveMessage(id) {
-            const player = players[id];
-            if (player && player.messageDivs.length > 0) {
-                const playerX = parseFloat(player.div.style.left);
-                const playerY = parseFloat(player.div.style.top);
-
-                player.messageDivs.forEach((messageDiv, index) => {
-                    messageDiv.style.left = `${playerX + 60}px`; 
-                    messageDiv.style.top = `${playerY + (index * 20)}px`; 
-                });
-            }
-        }
+        // Función para mover el mensaje (Ya no es necesaria)
+        // function moveMessage(id) {
+        //     // Eliminada para mantener los mensajes fijos
+        // }
 
         // Manejo de jugadores actuales
         socket.on('currentPlayers', (currentPlayers) => {
@@ -247,7 +237,7 @@
             const player = players[id];
             if (player) {
                 player.div.remove();
-                player.messageDivs.forEach(div => div.remove()); // Eliminar mensajes del jugador desconectado
+                // No es necesario eliminar los mensajes ya que son hijos del div del jugador
                 delete players[id];
             }
         });
@@ -313,35 +303,35 @@
             }
         });
 
-        // Función para enviar el mensaje
-        function sendMessage() {
-            const message = messageInput.value.trim();
+       // Función para enviar el mensaje
+    function sendMessage() {
+        const message = messageInput.value.trim();
 
-            if (message.length > 60) { // Validación de longitud
-                alert('El mensaje no puede tener más de 60 caracteres.');
-                return;
-            }
-
-            if (message) {
-                socket.emit('sendMessage', message);
-                messageInput.value = ''; // Limpiar el campo de entrada
-            }
+        if (message.length > 60) { // Validación de longitud
+            alert('El mensaje no puede tener más de 60 caracteres.');
+            return;
         }
+
+        if (message) {
+            socket.emit('sendMessage', message);
+            messageInput.value = ''; // Limpiar el campo de entrada
+        }
+    }
 
         // Recibir mensaje de otros jugadores
         socket.on('receiveMessage', (data) => {
             createMessageDiv(data.id, data.message);
-            moveMessage(data.id);
+            // Ya no es necesario mover los mensajes manualmente
         });
 
         // Actualizar la posición del mensaje al mover el jugador
-        function updateMessages() {
-            for (const id in players) {
-                moveMessage(id);
-            }
-        }
+        // function updateMessages() {
+        //     for (const id in players) {
+        //         moveMessage(id);
+        //     }
+        // }
 
-        setInterval(updateMessages, 60); 
+        // setInterval(updateMessages, 60); 
 
         // Fragmento código desconexión por inactividad
         let inactivityTimer;
@@ -365,4 +355,5 @@
     </script>
 </body>
 </html>
+
 
