@@ -38,24 +38,32 @@
             height: 50px; /* Asegura que el div del pingüino tenga altura */
         }
         
-        .message {
-            position: absolute;
-            top: -20px; /* Posiciona el mensaje encima del pingüino */
-            left: 120%; /* Centra horizontalmente el mensaje */
-            transform: translateX(-50%); /* Centra el mensaje */
-            background-color: rgba(255, 255, 255, 0.8);
-            border: 1px solid black;
-            padding: 2px;
-            font-size: 12px;
-            white-space: normal; /* Permitir saltos de línea */
-            word-wrap: break-word; /* Permitir romper palabras largas */
-            max-width: 150px; /* Ancho máximo del mensaje */
-            pointer-events: none;
-            z-index: 3; /* Por encima del pingüino */
+       .message {
+    position: absolute;
+    top: -20px; /* Posiciona el mensaje encima del pingüino */
+    left: 100%; /* Coloca el mensaje justo a la derecha del pingüino */
+    transform: translateX(-100%); /* Mantiene el mensaje fijo en su posición relativa */
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid black;
+    padding: 2px;
+    font-size: 12px;
+    white-space: pre-wrap; /* Permitir saltos de línea */
+    word-wrap: break-word; /* Permitir romper palabras largas */
+    max-width: 150px; /* Ancho máximo del mensaje */
+    pointer-events: none;
+    z-index: 3; /* Asegura que esté sobre el pingüino */
 
-            text-align: right; /* Alinea el texto hacia la derecha */
-    direction: rtl; /* Hace que el texto se mantenga alineado a la derecha cuando se llena la línea */
-        }
+    text-align: right; /* Alinear el texto a la derecha */
+}
+
+.message-content {
+    display: block; /* Asegura que el contenido ocupe todo el ancho */
+    white-space: pre-wrap; /* Permitir saltos de línea */
+    word-wrap: break-word; /* Permitir romper palabras largas */
+    text-align: right; /* Alinear el texto a la derecha */
+    direction: ltr; /* Devolver el flujo del texto a su normalidad, para evitar confusión visual */
+}
+
         
         .chat-area {
             position: absolute;
@@ -203,7 +211,12 @@ function createMessageDiv(id, message) {
 
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message';
-    messageDiv.textContent = formattedMessage; // Mostrar el mensaje formateado
+
+    const messageContent = document.createElement('span');
+    messageContent.className = 'message-content';
+    messageContent.textContent = formattedMessage; // Mostrar el mensaje formateado
+
+    messageDiv.appendChild(messageContent); // Añadir el contenido al div del mensaje
 
     // Append the messageDiv as a child of the player div
     player.div.appendChild(messageDiv);
