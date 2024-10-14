@@ -259,26 +259,30 @@
     });
 
     function sendMessage() {
-        const message = messageInput.value.trim();
-        const wordCount = message.split(/\s+/).length;
+    const message = messageInput.value.trim();
 
-        if (message.length > 60) {
-            alert('El mensaje no puede tener más de 60 caracteres.');
-            return;
-        }
+    if (message.length > 60) {
+        alert('El mensaje no puede tener más de 60 caracteres.');
+        return;
+    }
 
-        if (message) {
-            if (message === 'EXIT') {
-                gameArea.style.display = 'none';
-                gameArea2.style.display = 'block';
-                initializePlayer(socket.id, 100, 100, gameArea2);
-            } else {
-                socket.emit('sendMessage', message);
-                messageInput.value = ''; // Borrar el texto escrito en el input
-                inputText = ''; // Borrar el texto escrito en la variable inputText
+    if (message) {
+        if (message === 'EXIT') {
+            gameArea.style.display = 'none';
+            gameArea2.style.display = 'block';
+            initializePlayer(socket.id, 100, 100, gameArea2);
+        } else {
+            socket.emit('sendMessage', message);
+            const currentPlayer = players[socket.id];
+            if (currentPlayer) {
+                createMessageDiv(socket.id, message, gameArea); // Crear el mensaje en el área de juego
+                moveMessage(socket.id, gameArea); // Mover el mensaje a la posición actual del pingüino
             }
+            messageInput.value = ''; // Borrar el texto escrito en el input
+            inputText = ''; // Borrar el texto escrito en la variable inputText
         }
     }
+}
 
     // Sección de socket.io
     socket.on('currentPlayers', (currentPlayers) => {
