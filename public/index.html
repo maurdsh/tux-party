@@ -198,35 +198,40 @@ function createMessageDiv(id, message) {
 
     // Dividir el mensaje en líneas de 20 caracteres respetando los espacios
     const maxLineLength = 20;
-    let words = message.split(' '); // Dividir el mensaje en palabras
     let lines = [];
     let currentLine = '';
+    let currentLength = 0;
 
-    words.forEach(word => {
-        if ((currentLine + word).length <= maxLineLength) {
-            currentLine += word + ' '; // Agregar la palabra con un espacio
-        } else {
-            lines.push(currentLine.trim()); // Agregar la línea actual al array de líneas
-            currentLine = word + ' '; // Iniciar una nueva línea con la palabra actual
+    // Recorrer cada carácter del mensaje, respetando los espacios
+    for (let i = 0; i < message.length; i++) {
+        const char = message[i];
+        currentLine += char;
+        currentLength++;
+
+        // Si llegamos a 20 caracteres, agregamos la línea y reiniciamos
+        if (currentLength >= maxLineLength || char === ' ') {
+            lines.push(currentLine.trim());
+            currentLine = '';
+            currentLength = 0;
         }
-    });
+    }
 
-    // Agregar la última línea
+    // Añadir la última línea si no está vacía
     if (currentLine.length > 0) {
         lines.push(currentLine.trim());
     }
 
-    // Limitar el número de líneas a 3
+    // Limitar a 3 líneas
     lines = lines.slice(0, 3);
 
-    // Unir las líneas en un solo string con saltos de línea
+    // Unir las líneas con saltos de línea
     const formattedMessage = lines.join('\n');
 
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message';
     messageDiv.textContent = formattedMessage; // Mostrar el mensaje formateado
 
-    // Append the messageDiv as a child of the player div
+    // Añadir el div del mensaje como hijo del jugador
     player.div.appendChild(messageDiv);
 
     player.messageDivs.push(messageDiv);
