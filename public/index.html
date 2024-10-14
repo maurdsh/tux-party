@@ -196,24 +196,27 @@ function createMessageDiv(id, message) {
         oldestMessageDiv.remove(); // Eliminar el div del DOM
     }
 
-    // Dividir el mensaje en líneas de 20 caracteres, contando los espacios como caracteres
+    // Limitar la longitud total a 60 caracteres (3 líneas de 20 caracteres)
+    const maxTotalChars = 60;
+    const truncatedMessage = message.slice(0, maxTotalChars); // Truncar el mensaje si excede los 60 caracteres
+
+    // Dividir el mensaje en líneas de máximo 20 caracteres, contando los espacios como caracteres
     const maxLineLength = 20;
     let lines = [];
     let currentLine = '';
 
-    // Recorrer cada carácter del mensaje, agregando a la línea actual
-    for (let i = 0; i < message.length; i++) {
-        const char = message[i];
+    for (let i = 0; i < truncatedMessage.length; i++) {
+        const char = truncatedMessage[i];
         currentLine += char;
 
-        // Si la línea actual tiene 20 caracteres o más, la añadimos a las líneas y empezamos una nueva
-        if (currentLine.length >= maxLineLength) {
+        // Si alcanzamos los 20 caracteres, agregamos la línea a "lines"
+        if (currentLine.length === maxLineLength) {
             lines.push(currentLine);
-            currentLine = '';
+            currentLine = ''; // Reiniciar la línea actual
         }
     }
 
-    // Añadir la última línea si no está vacía
+    // Si queda texto en la última línea que no llega a los 20 caracteres, lo añadimos
     if (currentLine.length > 0) {
         lines.push(currentLine);
     }
@@ -241,7 +244,6 @@ function createMessageDiv(id, message) {
         player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
     }, 10000);
 }
-
 
         // Manejo de jugadores actuales
         socket.on('currentPlayers', (currentPlayers) => {
