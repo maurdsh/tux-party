@@ -170,38 +170,51 @@
             }, 16); // Ajusta este valor para controlar la velocidad del movimiento
         }
 
-        // Función para crear el div del mensaje
-        function createMessageDiv(id, message) {
-            const player = players[id];
+        // Función para crear el div del mensaje con máximo de 3 renglones y 20 caracteres por línea
+function createMessageDiv(id, message) {
+    const player = players[id];
 
-            if (!player) {
-                console.log(`Jugador ${id} no encontrado`);
-                return;
-            }
+    if (!player) {
+        console.log(`Jugador ${id} no encontrado`);
+        return;
+    }
 
-            // Limitar a 2 mensajes, eliminar el más antiguo si ya hay 1
-            if (player.messageDivs.length >= 1) {
-                const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el más antiguo
-                oldestMessageDiv.remove(); // Eliminar el div del DOM
-            }
+    // Limitar a 2 mensajes, eliminar el más antiguo si ya hay 1
+    if (player.messageDivs.length >= 1) {
+        const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el más antiguo
+        oldestMessageDiv.remove(); // Eliminar el div del DOM
+    }
 
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message';
-            messageDiv.textContent = message;
+    // Dividir el mensaje en líneas de 20 caracteres
+    const maxLineLength = 20;
+    let lines = [];
+    for (let i = 0; i < message.length; i += maxLineLength) {
+        lines.push(message.slice(i, i + maxLineLength));
+    }
 
-            // Append the messageDiv as a child of the player div
-            player.div.appendChild(messageDiv);
+    // Limitar el número de líneas a 3
+    lines = lines.slice(0, 3);
 
-            player.messageDivs.push(messageDiv);
+    // Unir las líneas en un solo string con saltos de línea
+    const formattedMessage = lines.join('\n');
 
-            console.log(`Mensaje creado para ${id}: ${message}`); // Depuración
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message';
+    messageDiv.textContent = formattedMessage; // Mostrar el mensaje formateado
 
-            // Eliminar el mensaje después de 10 segundos
-            setTimeout(() => {
-                messageDiv.remove();
-                player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
-            }, 10000);
-        }
+    // Append the messageDiv as a child of the player div
+    player.div.appendChild(messageDiv);
+
+    player.messageDivs.push(messageDiv);
+
+    console.log(`Mensaje creado para ${id}: ${message}`); // Depuración
+
+    // Eliminar el mensaje después de 10 segundos
+    setTimeout(() => {
+        messageDiv.remove();
+        player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
+    }, 10000);
+}
 
         // Manejo de jugadores actuales
         socket.on('currentPlayers', (currentPlayers) => {
