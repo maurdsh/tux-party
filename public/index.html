@@ -216,14 +216,15 @@ function createMessageDiv(id, message) {
     // Unir las líneas en un solo string con saltos de línea
     const messageContent = lines.join('\n');
 
+    // Crear un nuevo div para el mensaje
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message';
     messageDiv.textContent = messageContent; // Mostrar el mensaje formateado
 
-    // Append the messageDiv as a child of the player div
+    // Asegurarse de que el mensajeDiv se agregue correctamente al jugador
     player.div.appendChild(messageDiv);
 
-    player.messageDivs.push(messageDiv);
+    player.messageDivs.push(messageDiv); // Almacenar el div en el jugador
 
     console.log(`Mensaje creado para ${id}: ${message}`); // Depuración
 
@@ -233,6 +234,7 @@ function createMessageDiv(id, message) {
         player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
     }, 10000);
 }
+
         // Manejo de jugadores actuales
         socket.on('currentPlayers', (currentPlayers) => {
             for (let id in currentPlayers) {
