@@ -212,18 +212,14 @@
         }, 10000);
     }
 
-    function moveMessage(id, area) {
-        const player = players[id];
-        if (player && player.messageDivs.length > 0) {
-            const playerX = parseFloat(player.div.style.left);
-            const playerY = parseFloat(player.div.style.top);
-
-            player.messageDivs.forEach((messageDiv, index) => {
-                messageDiv.style.left = `${playerX + 60}px`;
-                messageDiv.style.top = `${playerY + (index * 20)}px`;
-            });
-        }
+   function moveMessage(id, area) {
+    const player = players[id];
+    const messageDiv = document.getElementById(`message-${id}`);
+    if (messageDiv) {
+        messageDiv.style.left = `${player.div.offsetLeft}px`;
+        messageDiv.style.top = `${player.div.offsetTop}px`;
     }
+}
 
     // Sección de eventos
     document.addEventListener('click', (event) => {
