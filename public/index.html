@@ -40,21 +40,21 @@
         
        .message {
     position: absolute;
-    top: -20px; /* Posiciona el mensaje encima del pingüino */
-    left: 100%; /* Coloca el mensaje justo a la derecha del pingüino */
-    transform: translateX(-100%); /* Mantiene el mensaje fijo en su posición relativa */
+    top: -20px;
+    left: 100%; /* Coloca el mensaje a la derecha del pingüino */
+    transform: translateX(-100%); /* Mantiene la posición fija a la derecha */
     background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid black;
     padding: 2px;
     font-size: 12px;
+    max-width: 150px; /* Limita el ancho del mensaje */
+    text-align: right; /* Alinea el texto a la derecha */
     white-space: pre-wrap; /* Permitir saltos de línea */
-    word-wrap: break-word; /* Permitir romper palabras largas */
-    max-width: 150px; /* Ancho máximo del mensaje */
+    word-wrap: break-word; /* Ajuste automático de palabras largas */
+    z-index: 3;
     pointer-events: none;
-    z-index: 3; /* Asegura que esté sobre el pingüino */
-
-    text-align: right; /* Alinear el texto a la derecha */
 }
+
 
 .message-content {
     display: block; /* Asegura que el contenido ocupe todo el ancho */
@@ -190,17 +190,30 @@ function createMessageDiv(id, message) {
         return;
     }
 
-    // Limitar a 2 mensajes, eliminar el más antiguo si ya hay 1
+    // Limitar a 1 mensaje, eliminar el más antiguo si ya hay 1
     if (player.messageDivs.length >= 1) {
         const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el más antiguo
         oldestMessageDiv.remove(); // Eliminar el div del DOM
     }
 
-    // Dividir el mensaje en líneas de 20 caracteres
+    // Dividir el mensaje en líneas de 20 caracteres respetando los espacios
     const maxLineLength = 20;
+    let words = message.split(' '); // Dividir el mensaje en palabras
     let lines = [];
-    for (let i = 0; i < message.length; i += maxLineLength) {
-        lines.push(message.slice(i, i + maxLineLength));
+    let currentLine = '';
+
+    words.forEach(word => {
+        if ((currentLine + word).length <= maxLineLength) {
+            currentLine += word + ' '; // Agregar la palabra con un espacio
+        } else {
+            lines.push(currentLine.trim()); // Agregar la línea actual al array de líneas
+            currentLine = word + ' '; // Iniciar una nueva línea con la palabra actual
+        }
+    });
+
+    // Agregar la última línea
+    if (currentLine.length > 0) {
+        lines.push(currentLine.trim());
     }
 
     // Limitar el número de líneas a 3
@@ -211,12 +224,7 @@ function createMessageDiv(id, message) {
 
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message';
-
-    const messageContent = document.createElement('span');
-    messageContent.className = 'message-content';
-    messageContent.textContent = formattedMessage; // Mostrar el mensaje formateado
-
-    messageDiv.appendChild(messageContent); // Añadir el contenido al div del mensaje
+    messageDiv.textContent = formattedMessage; // Mostrar el mensaje formateado
 
     // Append the messageDiv as a child of the player div
     player.div.appendChild(messageDiv);
