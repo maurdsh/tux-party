@@ -26,41 +26,37 @@
             background: url('1.png') no-repeat center center;
             background-size: 100% 100%;
             border: 2px solid black;
-            overflow: visible; /* Cambiado de hidden a visible */
+            overflow: hidden;
             padding: 20px;
             box-sizing: border-box;
             z-index: 1; /* Asegura que esté por debajo de las áreas de chat e input */
         }
 
         .player {
-            position: relative; /* Cambiado de absolute a relative */
+            position: absolute;
             width: 50px;
-            height: 50px; /* Asegura que el div del pingüino tenga altura */
         }
         
-       .message {
-    position: absolute;
-    top: -20px; /* Posiciona el mensaje encima del pingüino */
-    left: 120%; /* Centra horizontalmente el mensaje */
-    transform: translateX(-50%); /* Centra el mensaje */
-    background-color: rgba(255, 255, 255, 0.8);
-    border: 1px solid black;
-    padding: 2px;
-    font-size: 12px;
-    white-space: pre-wrap; /* Permitir saltos de línea y respetar espacios */
-    word-wrap: break-word; /* Permitir romper palabras largas */
-    max-width: 150px; /* Ancho máximo del mensaje */
-    pointer-events: none;
-    z-index: 3; /* Por encima del pingüino */
-}
-
-       
+        .message {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid black;
+            padding: 2px;
+            font-size: 12px;
+            white-space: normal; /* Permitir saltos de línea */
+            word-wrap: break-word; /* Permitir romper palabras largas */
+            max-width: 150px; /* Ancho máximo del mensaje */
+            pointer-events: none;
+        }
+        
         .chat-area {
             position: absolute;
             bottom: 100px; /* Ajustado para evitar superposición con input-area */
             width: 350px;
             max-height: 60px;
             overflow-y: auto;
+            /*border-top: 2px solid black;*/
+            /*background-color: white;*/
             padding: 5px;
             box-sizing: border-box;
             z-index: 2;
@@ -121,18 +117,14 @@
 
         // Función para crear un nuevo jugador
         function createPlayer(id, x, y) {
-            const playerDiv = document.createElement('div'); // Cambiado de 'img' a 'div' para mejor manejo
+            const playerDiv = document.createElement('img');
+            playerDiv.src = 'pingu.png'; // Asegúrate de que la imagen esté en la carpeta pública
             playerDiv.className = 'player';
             playerDiv.id = id;
             playerDiv.style.left = `${x}px`;
             playerDiv.style.top = `${y}px`;
             gameArea.appendChild(playerDiv);
-
-            const playerImg = document.createElement('img');
-            playerImg.src = 'pingu.png'; // Asegúrate de que la imagen esté en la carpeta pública
-            playerImg.style.width = '100%'; // Para que la imagen ocupe todo el div
-            playerDiv.appendChild(playerImg);
-
+            
             // Almacenar el jugador en el objeto players con posición anterior
             players[id] = { div: playerDiv, messageDivs: [], prevX: x, prevY: y };
         }
@@ -151,8 +143,7 @@
 
             // Cambiar las imágenes cada ciertos pasos
             const intervalId = setInterval(() => {
-                const playerImg = penguin.querySelector('img');
-                playerImg.src = penguinImages[direction][frame % penguinImages[direction].length];
+                penguin.src = penguinImages[direction][frame % penguinImages[direction].length];
                 frame++;
             }, 200);
 
@@ -165,75 +156,54 @@
                 } else {
                     clearInterval(moveInterval);
                     clearInterval(intervalId);
-                    const playerImg = penguin.querySelector('img');
-                    playerImg.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
+                    penguin.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
                 }
             }, 16); // Ajusta este valor para controlar la velocidad del movimiento
         }
 
-        // Función para crear el div del mensaje con máximo de 3 renglones y 20 caracteres por línea
-// Función para crear el div del mensaje con máximo de 3 renglones y 20 caracteres por línea
-// Función para crear el div del mensaje con máximo de 3 renglones y 20 caracteres por línea
-function createMessageDiv(id, message) {
-    const player = players[id];
+        // Función para crear el div del mensaje
+        function createMessageDiv(id, message) {
+            const player = players[id];
 
-    if (!player) {
-        console.log(`Jugador ${id} no encontrado`);
-        return;
-    }
-
-    // Limitar a 2 mensajes, eliminar el más antiguo si ya hay 1
-    if (player.messageDivs.length >= 1) {
-        const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el más antiguo
-        oldestMessageDiv.remove(); // Eliminar el div del DOM
-    }
-
-    // Limitar el mensaje a un máximo de 60 caracteres y dividir en líneas de 20
-    const maxLineLength = 20;
-    const formattedMessage = message.slice(0, 60).trim(); // Asegurarse de que no exceda los 60 caracteres y eliminar espacios iniciales/finales
-    let lines = [];
-    
-    // Dividir el mensaje en líneas de 20 caracteres
-    while (formattedMessage.length > 0) {
-        // Tomar la primera línea de hasta 20 caracteres
-        let line = formattedMessage.slice(0, maxLineLength);
-        
-        // Si hay un espacio en la línea, recortarlo hasta el último espacio para evitar cortar palabras
-        if (line.length === maxLineLength && formattedMessage[maxLineLength] !== ' ') {
-            const lastSpaceIndex = line.lastIndexOf(' ');
-            if (lastSpaceIndex !== -1) {
-                line = line.slice(0, lastSpaceIndex); // Recortar hasta el último espacio
+            // Limitar a 2 mensajes, eliminar el más antiguo si ya hay 1
+            if (player.messageDivs.length >= 1) {
+                const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el más antiguo
+                oldestMessageDiv.remove(); // Eliminar el div del DOM
             }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.textContent = message;
+
+            // Colocar el mensaje inicialmente a la derecha del pingüino
+            const playerX = parseFloat(player.div.style.left);
+            const playerY = parseFloat(player.div.style.top);
+            messageDiv.style.left = `${playerX + 60}px`; 
+            messageDiv.style.top = `${playerY}px`; 
+
+            gameArea.appendChild(messageDiv);
+            player.messageDivs.push(messageDiv); 
+
+            // Eliminar el mensaje después de 10 segundos
+            setTimeout(() => {
+                messageDiv.remove();
+                player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
+            }, 10000);
         }
 
-        lines.push(line); // Agregar la línea a las líneas
-        formattedMessage = formattedMessage.slice(line.length).trim(); // Recortar el mensaje original
-    }
+        // Función para mover el mensaje
+        function moveMessage(id) {
+            const player = players[id];
+            if (player && player.messageDivs.length > 0) {
+                const playerX = parseFloat(player.div.style.left);
+                const playerY = parseFloat(player.div.style.top);
 
-    // Limitar el número de líneas a 3
-    lines = lines.slice(0, 3);
-
-    // Unir las líneas en un solo string con saltos de línea
-    const messageContent = lines.join('\n');
-
-    // Crear un nuevo div para el mensaje
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'message';
-    messageDiv.textContent = messageContent; // Mostrar el mensaje formateado
-
-    // Asegurarse de que el mensajeDiv se agregue correctamente al jugador
-    player.div.appendChild(messageDiv);
-
-    player.messageDivs.push(messageDiv); // Almacenar el div en el jugador
-
-    console.log(`Mensaje creado para ${id}: ${message}`); // Depuración
-
-    // Eliminar el mensaje después de 10 segundos
-    setTimeout(() => {
-        messageDiv.remove();
-        player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
-    }, 10000);
-}
+                player.messageDivs.forEach((messageDiv, index) => {
+                    messageDiv.style.left = `${playerX + 60}px`; 
+                    messageDiv.style.top = `${playerY + (index * 20)}px`; 
+                });
+            }
+        }
 
         // Manejo de jugadores actuales
         socket.on('currentPlayers', (currentPlayers) => {
@@ -277,7 +247,7 @@ function createMessageDiv(id, message) {
             const player = players[id];
             if (player) {
                 player.div.remove();
-                // No es necesario eliminar los mensajes ya que son hijos del div del jugador
+                player.messageDivs.forEach(div => div.remove()); // Eliminar mensajes del jugador desconectado
                 delete players[id];
             }
         });
@@ -361,17 +331,17 @@ function createMessageDiv(id, message) {
         // Recibir mensaje de otros jugadores
         socket.on('receiveMessage', (data) => {
             createMessageDiv(data.id, data.message);
-            // Ya no es necesario mover los mensajes manualmente
+            moveMessage(data.id);
         });
 
         // Actualizar la posición del mensaje al mover el jugador
-        // function updateMessages() {
-        //     for (const id in players) {
-        //         moveMessage(id);
-        //     }
-        // }
+        function updateMessages() {
+            for (const id in players) {
+                moveMessage(id);
+            }
+        }
 
-        // setInterval(updateMessages, 60); 
+        setInterval(updateMessages, 60); 
 
         // Fragmento código desconexión por inactividad
         let inactivityTimer;
@@ -395,3 +365,5 @@ function createMessageDiv(id, message) {
     </script>
 </body>
 </html>
+
+
