@@ -200,7 +200,7 @@ function createMessageDiv(id, message) {
     const maxTotalChars = 60;
     const truncatedMessage = message.slice(0, maxTotalChars); // Truncar el mensaje si excede los 60 caracteres
 
-    // Dividir el mensaje en líneas de máximo 20 caracteres, contando los espacios como caracteres
+    // Dividir el mensaje en líneas de máximo 20 caracteres
     const maxLineLength = 20;
     let lines = [];
     let currentLine = '';
@@ -209,22 +209,22 @@ function createMessageDiv(id, message) {
         const char = truncatedMessage[i];
         currentLine += char;
 
-        // Si alcanzamos los 20 caracteres, agregamos la línea a "lines"
+        // Si la línea alcanza 20 caracteres, se añade a "lines"
         if (currentLine.length === maxLineLength) {
             lines.push(currentLine);
             currentLine = ''; // Reiniciar la línea actual
         }
     }
 
-    // Si queda texto en la última línea que no llega a los 20 caracteres, lo añadimos
+    // Añadir cualquier texto restante como la última línea
     if (currentLine.length > 0) {
         lines.push(currentLine);
     }
 
-    // Limitar a un máximo de 3 líneas
+    // Limitar el número de líneas a 3
     lines = lines.slice(0, 3);
 
-    // Unir las líneas con saltos de línea
+    // Unir las líneas en un string con saltos de línea entre ellas
     const formattedMessage = lines.join('\n');
 
     const messageDiv = document.createElement('div');
