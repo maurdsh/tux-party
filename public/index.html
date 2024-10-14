@@ -41,30 +41,19 @@
        .message {
     position: absolute;
     top: -20px;
-    left: 100%; /* Coloca el mensaje a la derecha del pingüino */
-    transform: translateX(-100%); /* Mantiene la posición fija a la derecha */
+    left: 120%;
     background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid black;
     padding: 2px;
     font-size: 12px;
-    max-width: 150px; /* Limita el ancho del mensaje */
-    text-align: right; /* Alinea el texto a la derecha */
-    white-space: pre-wrap; /* Permitir saltos de línea */
-    word-wrap: break-word; /* Ajuste automático de palabras largas */
-    z-index: 3;
+    white-space: pre-wrap; /* Cambiar a pre-wrap para respetar saltos de línea */
+    word-break: break-word; /* Forzar que las palabras se rompan al final de las líneas */
+    max-width: 150px;
     pointer-events: none;
+    z-index: 3;
 }
 
-
-.message-content {
-    display: block; /* Asegura que el contenido ocupe todo el ancho */
-    white-space: pre-wrap; /* Permitir saltos de línea */
-    word-wrap: break-word; /* Permitir romper palabras largas */
-    text-align: right; /* Alinear el texto a la derecha */
-    direction: ltr; /* Devolver el flujo del texto a su normalidad, para evitar confusión visual */
-}
-
-        
+       
         .chat-area {
             position: absolute;
             bottom: 100px; /* Ajustado para evitar superposición con input-area */
@@ -192,56 +181,57 @@ function createMessageDiv(id, message) {
 
     // Limitar a 1 mensaje, eliminar el más antiguo si ya hay 1
     if (player.messageDivs.length >= 1) {
-        const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el más antiguo
-        oldestMessageDiv.remove(); // Eliminar el div del DOM
+        const oldestMessageDiv = player.messageDivs.shift();
+        oldestMessageDiv.remove();
     }
 
     // Limitar la longitud total a 60 caracteres (3 líneas de 20 caracteres)
     const maxTotalChars = 60;
-    const truncatedMessage = message.slice(0, maxTotalChars); // Truncar el mensaje si excede los 60 caracteres
+    const truncatedMessage = message.slice(0, maxTotalChars);
 
-    // Dividir el mensaje en líneas de máximo 20 caracteres
+    // Dividir el mensaje en líneas de hasta 20 caracteres
     const maxLineLength = 20;
+    let words = truncatedMessage.split(' ');
     let lines = [];
     let currentLine = '';
 
-    for (let i = 0; i < truncatedMessage.length; i++) {
-        const char = truncatedMessage[i];
-        currentLine += char;
-
-        // Si la línea alcanza 20 caracteres, se añade a "lines"
-        if (currentLine.length === maxLineLength) {
+    words.forEach(word => {
+        // Si la línea actual más la nueva palabra supera los 20 caracteres, hacemos un salto de línea
+        if (currentLine.length + word.length + 1 > maxLineLength) {
             lines.push(currentLine);
-            currentLine = ''; // Reiniciar la línea actual
+            currentLine = word;  // La palabra actual se convierte en la nueva línea
+        } else {
+            if (currentLine.length > 0) {
+                currentLine += ' ';
+            }
+            currentLine += word;
         }
-    }
+    });
 
-    // Añadir cualquier texto restante como la última línea
+    // Añadir la última línea
     if (currentLine.length > 0) {
         lines.push(currentLine);
     }
 
-    // Limitar el número de líneas a 3
+    // Limitar a un máximo de 3 líneas
     lines = lines.slice(0, 3);
 
-    // Unir las líneas en un string con saltos de línea entre ellas
+    // Unir las líneas en un solo string con saltos de línea
     const formattedMessage = lines.join('\n');
 
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message';
-    messageDiv.textContent = formattedMessage; // Mostrar el mensaje formateado
+    messageDiv.textContent = formattedMessage;
 
     // Añadir el div del mensaje como hijo del jugador
     player.div.appendChild(messageDiv);
 
     player.messageDivs.push(messageDiv);
 
-    console.log(`Mensaje creado para ${id}: ${message}`); // Depuración
-
     // Eliminar el mensaje después de 10 segundos
     setTimeout(() => {
         messageDiv.remove();
-        player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
+        player.messageDivs = player.messageDivs.filter(div => div !== messageDiv);
     }, 10000);
 }
 
