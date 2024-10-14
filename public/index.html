@@ -173,6 +173,7 @@
 
         // Función para crear el div del mensaje con máximo de 3 renglones y 20 caracteres por línea
 // Función para crear el div del mensaje con máximo de 3 renglones y 20 caracteres por línea
+// Función para crear el div del mensaje con máximo de 3 renglones y 20 caracteres por línea
 function createMessageDiv(id, message) {
     const player = players[id];
 
@@ -189,19 +190,31 @@ function createMessageDiv(id, message) {
 
     // Limitar el mensaje a un máximo de 60 caracteres y dividir en líneas de 20
     const maxLineLength = 20;
-    const formattedMessage = message.slice(0, 60); // Asegurarse de que no exceda los 60 caracteres
+    const formattedMessage = message.slice(0, 60).trim(); // Asegurarse de que no exceda los 60 caracteres y eliminar espacios iniciales/finales
     let lines = [];
     
-    // Dividir el mensaje en líneas de 20 caracteres, respetando los espacios
-    for (let i = 0; i < formattedMessage.length; i += maxLineLength) {
-        lines.push(formattedMessage.slice(i, i + maxLineLength));
+    // Dividir el mensaje en líneas de 20 caracteres
+    while (formattedMessage.length > 0) {
+        // Tomar la primera línea de hasta 20 caracteres
+        let line = formattedMessage.slice(0, maxLineLength);
+        
+        // Si hay un espacio en la línea, recortarlo hasta el último espacio para evitar cortar palabras
+        if (line.length === maxLineLength && formattedMessage[maxLineLength] !== ' ') {
+            const lastSpaceIndex = line.lastIndexOf(' ');
+            if (lastSpaceIndex !== -1) {
+                line = line.slice(0, lastSpaceIndex); // Recortar hasta el último espacio
+            }
+        }
+
+        lines.push(line); // Agregar la línea a las líneas
+        formattedMessage = formattedMessage.slice(line.length).trim(); // Recortar el mensaje original
     }
 
     // Limitar el número de líneas a 3
     lines = lines.slice(0, 3);
 
     // Unir las líneas en un solo string con saltos de línea
-    const messageContent = lines.join('\n').trim(); // Usar trim() para eliminar líneas vacías
+    const messageContent = lines.join('\n');
 
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message';
@@ -220,8 +233,6 @@ function createMessageDiv(id, message) {
         player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
     }, 10000);
 }
-
-
         // Manejo de jugadores actuales
         socket.on('currentPlayers', (currentPlayers) => {
             for (let id in currentPlayers) {
