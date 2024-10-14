@@ -172,6 +172,7 @@
         }
 
         // Función para crear el div del mensaje con máximo de 3 renglones y 20 caracteres por línea
+// Función para crear el div del mensaje con máximo de 3 renglones y 20 caracteres por línea
 function createMessageDiv(id, message) {
     const player = players[id];
 
@@ -180,61 +181,46 @@ function createMessageDiv(id, message) {
         return;
     }
 
-    // Limitar a 1 mensaje, eliminar el más antiguo si ya hay 1
+    // Limitar a 2 mensajes, eliminar el más antiguo si ya hay 1
     if (player.messageDivs.length >= 1) {
-        const oldestMessageDiv = player.messageDivs.shift();
-        oldestMessageDiv.remove();
+        const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el más antiguo
+        oldestMessageDiv.remove(); // Eliminar el div del DOM
     }
 
-    // Limitar a 60 caracteres y dividir en líneas de hasta 20 caracteres
+    // Limitar el mensaje a un máximo de 60 caracteres y dividir en líneas de 20
     const maxLineLength = 20;
-    const maxLines = 3;
+    const formattedMessage = message.slice(0, 60); // Asegurarse de que no exceda los 60 caracteres
     let lines = [];
-
-    // Eliminar espacios al inicio y final y truncar a 60 caracteres
-    const truncatedMessage = message.trim().slice(0, 60);
-    const words = truncatedMessage.split(' '); // Separar en palabras
-
-    let currentLine = '';
-
-    // Construir líneas
-    for (const word of words) {
-        // Si agregar la palabra excede el límite de caracteres
-        if (currentLine.length + word.length + 1 > maxLineLength) {
-            lines.push(currentLine); // Agregar la línea actual
-            currentLine = word; // Iniciar nueva línea con la palabra actual
-        } else {
-            // Agregar la palabra a la línea actual
-            if (currentLine.length > 0) {
-                currentLine += ' '; // Añadir espacio antes de la palabra
-            }
-            currentLine += word;
-        }
-    }
-
-    // Agregar cualquier línea restante
-    if (currentLine.length > 0) {
-        lines.push(currentLine);
+    
+    // Dividir el mensaje en líneas de 20 caracteres, respetando los espacios
+    for (let i = 0; i < formattedMessage.length; i += maxLineLength) {
+        lines.push(formattedMessage.slice(i, i + maxLineLength));
     }
 
     // Limitar el número de líneas a 3
-    lines = lines.slice(0, maxLines);
+    lines = lines.slice(0, 3);
 
-    // Crear el div del mensaje
+    // Unir las líneas en un solo string con saltos de línea
+    const messageContent = lines.join('\n').trim(); // Usar trim() para eliminar líneas vacías
+
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message';
-    messageDiv.textContent = lines.join('\n'); // Unir líneas con salto de línea
+    messageDiv.textContent = messageContent; // Mostrar el mensaje formateado
 
-    // Añadir el div del mensaje como hijo del jugador
+    // Append the messageDiv as a child of the player div
     player.div.appendChild(messageDiv);
+
     player.messageDivs.push(messageDiv);
+
+    console.log(`Mensaje creado para ${id}: ${message}`); // Depuración
 
     // Eliminar el mensaje después de 10 segundos
     setTimeout(() => {
         messageDiv.remove();
-        player.messageDivs = player.messageDivs.filter(div => div !== messageDiv);
+        player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
     }, 10000);
 }
+
 
         // Manejo de jugadores actuales
         socket.on('currentPlayers', (currentPlayers) => {
