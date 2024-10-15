@@ -12,8 +12,9 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #33CCFF;
+            background-color: #33CCFF; /* Fondo por defecto */
             position: relative; /* Para posicionar elementos hijos */
+            transition: background-color 0.5s; /* Transición suave para el cambio de fondo */
         }
         
         .game-area {
@@ -35,6 +36,8 @@
         .player {
             position: absolute;
             width: 50px;
+            height: 50px;
+            pointer-events: none; /* Para que los jugadores no intercepten clics */
         }
         
         .message {
@@ -53,13 +56,13 @@
             position: absolute;
             bottom: 100px; /* Ajustado para evitar superposición con input-area */
             width: 350px;
-            max-height: 60px;
+            max-height: 200px; /* Aumentado para mostrar más mensajes */
             overflow-y: auto;
-            /*border-top: 2px solid black;*/
-            /*background-color: white;*/
             padding: 5px;
             box-sizing: border-box;
             z-index: 2;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 2px solid black;
         }
         
         .input-area {
@@ -72,6 +75,7 @@
             box-sizing: border-box;
             z-index: 2;
             background-color: rgba(255, 255, 255, 0.9); /* Fondo para mejor visibilidad */
+            border: 2px solid black;
         }
         
         input {
@@ -86,6 +90,17 @@
             font-size: 14px;
             cursor: pointer;
         }
+
+        /* Clase para ocultar elementos */
+        .hidden {
+            display: none;
+        }
+
+        /* Clase para el fondo blanco cuando el usuario ha enviado "EXIT" */
+        .exit-background {
+            background-color: white !important;
+            background-image: none !important; /* Eliminar la imagen de fondo */
+        }
     </style>
 </head>
 <body>
@@ -94,7 +109,6 @@
     <div class="chat-area" id="chatArea"></div>
     <div class="input-area">
         <input type="text" id="messageInput" maxlength="60" placeholder="Escribe tu mensaje (máx. 60 caracteres)" />
-
         <button id="sendMessage">Enviar</button>
     </div>
 
@@ -106,6 +120,7 @@
         const chatArea = document.getElementById('chatArea');
         const messageInput = document.getElementById('messageInput');
         const sendMessageButton = document.getElementById('sendMessage');
+        let hasExited = false; // Variable para rastrear si el usuario ha enviado "EXIT"
 
         // Obtener las imágenes de movimiento
         const penguinImages = {
@@ -287,24 +302,62 @@
 
         // ----- Modificaciones Añadidas Aquí -----
         
-        // Evitar que el clic en el botón "Enviar" propague el evento
-        sendMessageButton.addEventListener('click', function(event) {
-            event.stopPropagation(); // Detiene la propagación del clic
-            sendMessage();
+        // Manejar el cambio de área cuando se recibe el evento 'switchedArea'
+        socket.on('switchedArea', (newArea) => {
+            if (newArea === 'EXIT') {
+                hasExited = true;
+                document.body.classList.add('exit-background'); // Cambiar el fondo a blanco
+                gameArea.classList.add('hidden'); // Ocultar el área de juego original
+                // Remover y ocultar a todos los jugadores
+                for (let id in players) {
+                    if (id !== socket.id) { // No ocultar al propio pingüino
+                        players[id].div.classList.add('hidden');
+                        players[id].messageDivs.forEach(div => div.classList.add('hidden'));
+                    }
+                }
+            } else {
+                hasExited = false;
+                document.body.classList.remove('exit-background'); // Restaurar el fondo original
+                gameArea.classList.remove('hidden'); // Mostrar el área de juego original
+                // Mostrar a todos los jugadores
+                for (let id in players) {
+                    if (id !== socket.id) { // No mostrar al propio pingüino
+                        players[id].div.classList.remove('hidden');
+                        players[id].messageDivs.forEach(div => div.classList.remove('hidden'));
+                    }
+                }
+            }
         });
 
-        // Evitar que el clic en el campo de entrada de mensajes propague el evento
-        messageInput.addEventListener('click', function(event) {
-            event.stopPropagation(); // Detiene la propagación del clic
+        // Actualizar la visualización de los jugadores cuando se reciben nuevos jugadores
+        socket.on('newPlayer', (data) => {
+            createPlayer(data.id, data.player.x, data.player.y);
+            // Si el usuario ha enviado EXIT, ocultar a los nuevos jugadores que no están en EXIT
+            if (hasExited && data.player.hasExited) {
+                players[data.id].div.classList.add('hidden');
+                players[data.id].messageDivs.forEach(div => div.classList.add('hidden'));
+            }
         });
 
-        // Evitar que el clic dentro del área de entrada (input-area) propague el evento
-        const inputArea = document.querySelector('.input-area');
-        inputArea.addEventListener('click', function(event) {
-            event.stopPropagation(); // Detiene la propagación del clic
+        // Asegurarse de que al recibir mensajes, solo se muestren si están en el mismo estado
+        socket.on('receiveMessage', (data) => {
+            // Si el usuario ha enviado EXIT, solo mostrar mensajes de otros usuarios que también lo han hecho
+            if (hasExited && !data.hasExited) return;
+            // Si el usuario no ha enviado EXIT, solo mostrar mensajes de usuarios que tampoco lo han hecho
+            if (!hasExited && data.hasExited) return;
+            createMessageDiv(data.id, data.message);
+            moveMessage(data.id);
         });
 
-        // ----- Fin de las Modificaciones -----
+        // Cuando se desconecta un jugador, asegurarse de que sus elementos sean ocultados correctamente
+        socket.on('playerDisconnected', (id) => {
+            const player = players[id];
+            if (player) {
+                player.div.remove();
+                player.messageDivs.forEach(div => div.remove()); // Eliminar mensajes del jugador desconectado
+                delete players[id];
+            }
+        });
 
         // Enviar mensaje al presionar "Enter"
         messageInput.addEventListener('keypress', (event) => {
@@ -325,6 +378,12 @@
             if (message) {
                 socket.emit('sendMessage', message);
                 messageInput.value = ''; // Limpiar el campo de entrada
+
+                // Si el mensaje es "EXIT", manejar el cambio de área
+                if (message.toUpperCase() === 'EXIT') {
+                    // Emitir el cambio de área al servidor
+                    socket.emit('exitGameArea');
+                }
             }
         }
 
@@ -365,4 +424,5 @@
     </script>
 </body>
 </html>
+
 
