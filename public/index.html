@@ -222,8 +222,6 @@
 
         // Manejo de jugadores actuales
         socket.on('currentPlayers', (currentPlayers) => {
-            // Limpiar los jugadores actuales en el DOM
-            gameArea.innerHTML = '';
             for (let id in currentPlayers) {
                 createPlayer(id, currentPlayers[id].x, currentPlayers[id].y);
             }
@@ -269,40 +267,96 @@
             }
         });
 
+        // Al hacer clic para mover el pingüino dentro del gameArea
+        gameArea.addEventListener('click', (event) => {
+            const rect = gameArea.getBoundingClientRect();
+            const x = event.clientX - rect.left; // Posición X del clic
+            const y = event.clientY - rect.top; // Posición Y del clic
+
+            // Limitar la posición del pingüino dentro del área de juego
+            const limitedX = Math.max(0, Math.min(rect.width - 50, x)); // 50 es el ancho del pingüino
+            const limitedY = Math.max(0, Math.min(rect.height - 50, y)); // 50 es la altura del pingüino
+
+            // Obtener la posición actual del jugador
+            const currentPlayer = players[socket.id];
+            if (!currentPlayer) return; // Asegúrate de que el jugador exista
+
+            // Determinar la dirección del movimiento
+            let direction;
+            const currentX = parseFloat(currentPlayer.div.style.left);
+            const currentY = parseFloat(currentPlayer.div.style.top);
+            
+            if (limitedY < currentY && Math.abs(limitedX - currentX) < Math.abs(limitedY - currentY)) direction = 'up';
+            else if (limitedY > currentY && Math.abs(limitedX - currentX) < Math.abs(limitedY - currentY)) direction = 'down';
+            else if (limitedX < currentX) direction = 'left';
+            else if (limitedX > currentX) direction = 'right';
+
+            // Mover el pingüino y animar
+            movePenguin(currentPlayer.div, limitedX, limitedY, direction);
+            socket.emit('movePlayer', { x: limitedX, y: limitedY });
+
+            // Actualizar posiciones previas
+            currentPlayer.prevX = limitedX;
+            currentPlayer.prevY = limitedY;
+        });
+
+        // ----- Modificaciones Añadidas Aquí -----
+        
         // Manejar el cambio de área cuando se recibe el evento 'switchedArea'
         socket.on('switchedArea', (newArea) => {
-            if (newArea === 'gameArea2') {
-                // Cambiar el fondo a blanco
-                document.body.style.backgroundColor = '#FFFFFF';
-                gameArea.style.backgroundImage = 'none'; // Quitar la imagen de fondo
+            if (newArea === 'EXIT') {
+                hasExited = true;
+                document.body.classList.add('exit-background'); // Cambiar el fondo a blanco
+                gameArea.classList.add('hidden'); // Ocultar el área de juego original
+                // Remover y ocultar a todos los jugadores
+                for (let id in players) {
+                    if (id !== socket.id) { // No ocultar al propio pingüino
+                        players[id].div.classList.add('hidden');
+                        players[id].messageDivs.forEach(div => div.classList.add('hidden'));
+                    }
+                }
             } else {
-                // Restaurar el fondo original
-                document.body.style.backgroundColor = '#33CCFF';
-                gameArea.style.backgroundImage = "url('1.png')";
+                hasExited = false;
+                document.body.classList.remove('exit-background'); // Restaurar el fondo original
+                gameArea.classList.remove('hidden'); // Mostrar el área de juego original
+                // Mostrar a todos los jugadores
+                for (let id in players) {
+                    if (id !== socket.id) { // No mostrar al propio pingüino
+                        players[id].div.classList.remove('hidden');
+                        players[id].messageDivs.forEach(div => div.classList.remove('hidden'));
+                    }
+                }
             }
-
-            // Limpiar los jugadores actuales en el DOM
-            gameArea.innerHTML = '';
-
-            // El servidor ya envía 'currentPlayers' con los jugadores en la nueva área
-            // Por lo tanto, no es necesario solicitar nuevamente
         });
 
-        // Evitar que el clic en el botón "Enviar" propague el evento
-        sendMessageButton.addEventListener('click', function(event) {
-            event.stopPropagation(); // Detiene la propagación del clic
-            sendMessage();
+        // Actualizar la visualización de los jugadores cuando se reciben nuevos jugadores
+        socket.on('newPlayer', (data) => {
+            createPlayer(data.id, data.player.x, data.player.y);
+            // Si el usuario ha enviado EXIT, ocultar a los nuevos jugadores que no están en EXIT
+            if (hasExited && data.player.hasExited) {
+                players[data.id].div.classList.add('hidden');
+                players[data.id].messageDivs.forEach(div => div.classList.add('hidden'));
+            }
         });
 
-        // Evitar que el clic en el campo de entrada de mensajes propague el evento
-        messageInput.addEventListener('click', function(event) {
-            event.stopPropagation(); // Detiene la propagación del clic
+        // Asegurarse de que al recibir mensajes, solo se muestren si están en el mismo estado
+        socket.on('receiveMessage', (data) => {
+            // Si el usuario ha enviado EXIT, solo mostrar mensajes de otros usuarios que también lo han hecho
+            if (hasExited && !data.hasExited) return;
+            // Si el usuario no ha enviado EXIT, solo mostrar mensajes de usuarios que tampoco lo han hecho
+            if (!hasExited && data.hasExited) return;
+            createMessageDiv(data.id, data.message);
+            moveMessage(data.id);
         });
 
-        // Evitar que el clic dentro del área de entrada (input-area) propague el evento
-        const inputArea = document.querySelector('.input-area');
-        inputArea.addEventListener('click', function(event) {
-            event.stopPropagation(); // Detiene la propagación del clic
+        // Cuando se desconecta un jugador, asegurarse de que sus elementos sean ocultados correctamente
+        socket.on('playerDisconnected', (id) => {
+            const player = players[id];
+            if (player) {
+                player.div.remove();
+                player.messageDivs.forEach(div => div.remove()); // Eliminar mensajes del jugador desconectado
+                delete players[id];
+            }
         });
 
         // Enviar mensaje al presionar "Enter"
@@ -324,6 +378,12 @@
             if (message) {
                 socket.emit('sendMessage', message);
                 messageInput.value = ''; // Limpiar el campo de entrada
+
+                // Si el mensaje es "EXIT", manejar el cambio de área
+                if (message.toUpperCase() === 'EXIT') {
+                    // Emitir el cambio de área al servidor
+                    socket.emit('exitGameArea');
+                }
             }
         }
 
@@ -364,6 +424,7 @@
     </script>
 </body>
 </html>
+
 
 
 
