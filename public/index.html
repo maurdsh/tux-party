@@ -12,8 +12,9 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #33CCFF;
+            background-color: #33CCFF; /* Fondo por defecto para gameArea1 */
             position: relative; /* Para posicionar elementos hijos */
+            transition: background-color 0.5s;
         }
         
         .game-area {
@@ -23,13 +24,25 @@
             transform: translate(-50%, -50%);
             width: 350px;
             height: 400px;
-            background: url('1.png') no-repeat center center;
             background-size: 100% 100%;
             border: 2px solid black;
             overflow: hidden;
             padding: 20px;
             box-sizing: border-box;
             z-index: 1; /* Asegura que esté por debajo de las áreas de chat e input */
+        }
+
+        /* Estilo para gameArea1 */
+        #gameArea1 {
+            background: url('1.png') no-repeat center center;
+            background-size: 100% 100%;
+        }
+
+        /* Estilo para gameArea2 */
+        #gameArea2 {
+            background: url('2.png') no-repeat center center; /* Asume que tienes una imagen para gameArea2 */
+            background-size: 100% 100%;
+            display: none; /* Inicialmente oculto */
         }
 
         .player {
@@ -55,11 +68,11 @@
             width: 350px;
             max-height: 60px;
             overflow-y: auto;
-            /*border-top: 2px solid black;*/
-            /*background-color: white;*/
             padding: 5px;
             box-sizing: border-box;
             z-index: 2;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 2px solid black;
         }
         
         .input-area {
@@ -72,6 +85,7 @@
             box-sizing: border-box;
             z-index: 2;
             background-color: rgba(255, 255, 255, 0.9); /* Fondo para mejor visibilidad */
+            border: 2px solid black;
         }
         
         input {
@@ -90,7 +104,8 @@
 </head>
 <body>
 
-    <div class="game-area" id="gameArea"></div>
+    <div class="game-area" id="gameArea1"></div>
+    <div class="game-area" id="gameArea2"></div>
     <div class="chat-area" id="chatArea"></div>
     <div class="input-area">
         <input type="text" id="messageInput" maxlength="60" placeholder="Escribe tu mensaje (máx. 60 caracteres)" />
@@ -102,10 +117,12 @@
     <script>
         const socket = io();
         const players = {};
-        const gameArea = document.getElementById('gameArea');
+        const gameArea1 = document.getElementById('gameArea1');
+        const gameArea2 = document.getElementById('gameArea2');
         const chatArea = document.getElementById('chatArea');
         const messageInput = document.getElementById('messageInput');
         const sendMessageButton = document.getElementById('sendMessage');
+        let currentArea = 'gameArea1'; // Área de juego actual
 
         // Obtener las imágenes de movimiento
         const penguinImages = {
@@ -123,7 +140,7 @@
             playerDiv.id = id;
             playerDiv.style.left = `${x}px`;
             playerDiv.style.top = `${y}px`;
-            gameArea.appendChild(playerDiv);
+            getCurrentGameArea().appendChild(playerDiv);
             
             // Almacenar el jugador en el objeto players con posición anterior
             players[id] = { div: playerDiv, messageDivs: [], prevX: x, prevY: y };
@@ -181,7 +198,7 @@
             messageDiv.style.left = `${playerX + 60}px`; 
             messageDiv.style.top = `${playerY}px`; 
 
-            gameArea.appendChild(messageDiv);
+            getCurrentGameArea().appendChild(messageDiv);
             player.messageDivs.push(messageDiv); 
 
             // Eliminar el mensaje después de 10 segundos
@@ -205,7 +222,12 @@
             }
         }
 
-        // Manejo de jugadores actuales
+        // Obtener el área de juego actual
+        function getCurrentGameArea() {
+            return currentArea === 'gameArea1' ? gameArea1 : gameArea2;
+        }
+
+        // Renderizar jugadores en el área de juego
         socket.on('currentPlayers', (currentPlayers) => {
             for (let id in currentPlayers) {
                 createPlayer(id, currentPlayers[id].x, currentPlayers[id].y);
@@ -252,9 +274,34 @@
             }
         });
 
-        // Al hacer clic para mover el pingüino dentro del gameArea
-        gameArea.addEventListener('click', (event) => {
-            const rect = gameArea.getBoundingClientRect();
+        // Manejar el cambio de área
+        socket.on('switchedArea', (newArea) => {
+            // Ocultar el área de juego anterior
+            if (newArea === 'gameArea1') {
+                gameArea2.style.display = 'none';
+                gameArea1.style.display = 'block';
+                document.body.style.backgroundColor = '#33CCFF'; // Fondo para gameArea1
+            } else {
+                gameArea1.style.display = 'none';
+                gameArea2.style.display = 'block';
+                document.body.style.backgroundColor = '#FFFFFF'; // Fondo blanco para gameArea2
+            }
+
+            currentArea = newArea;
+
+            // Limpiar y renderizar jugadores en la nueva área
+            // Primero, eliminar todos los elementos de jugador en ambas áreas
+            for (let id in players) {
+                players[id].div.remove();
+                players[id].messageDivs.forEach(div => div.remove());
+            }
+            // Luego, solicitar la lista actual de jugadores en la nueva área
+            // Nota: Esto ya se maneja en 'currentPlayers' emitido por el servidor
+        });
+
+        // Al hacer clic para mover el pingüino dentro del gameArea actual
+        getCurrentGameArea().addEventListener('click', (event) => {
+            const rect = getCurrentGameArea().getBoundingClientRect();
             const x = event.clientX - rect.left; // Posición X del clic
             const y = event.clientY - rect.top; // Posición Y del clic
 
