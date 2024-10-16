@@ -48,23 +48,7 @@ io.on('connection', (socket) => {
     socket.on('sendMessage', (message) => {
         if (players[socket.id]) {
             if (message.toUpperCase() === 'EXIT') {
-                // Cambiar de área
-                players[socket.id].hasExited = true;
-
-                // Salir de la sala actual y unirse a gameArea2
-                socket.leave('gameArea1');
-                socket.join('gameArea2');
-
-                // Emitir el evento de cambio de área al cliente
-                socket.emit('switchedArea', 'EXIT');
-
-                // Notificar a la sala antigua que el jugador se ha desconectado
-                socket.to('gameArea1').emit('playerDisconnected', socket.id);
-
-                // Notificar a la nueva sala sobre el jugador que se ha unido
-                socket.to('gameArea2').emit('newPlayer', { id: socket.id, player: players[socket.id] });
-
-            } else {
+            
                 // Enviar el mensaje solo a los jugadores en la misma área
                 if (!players[socket.id].hasExited) {
                     io.to('gameArea1').emit('receiveMessage', { id: socket.id, message: message, hasExited: players[socket.id].hasExited });
@@ -86,18 +70,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Manejar el evento personalizado 'exitGameArea' si es necesario
-    socket.on('exitGameArea', () => {
-        if (players[socket.id] && !players[socket.id].hasExited) {
-            players[socket.id].hasExited = true;
-            socket.leave('gameArea1');
-            socket.join('gameArea2');
-            socket.emit('switchedArea', 'EXIT');
-            socket.to('gameArea1').emit('playerDisconnected', socket.id);
-            socket.to('gameArea2').emit('newPlayer', { id: socket.id, player: players[socket.id] });
-        }
-    });
-});
+    
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
