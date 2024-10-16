@@ -314,52 +314,8 @@
 
         // ----- Modificaciones Añadidas Aquí -----
         
-        // Manejar el cambio de área cuando se recibe el evento 'switchedArea'
-        socket.on('switchedArea', (newArea) => {
-            if (newArea === 'EXIT') {
-                hasExited = true;
-                document.body.classList.add('exit-background'); // Cambiar el fondo a blanco
-                gameArea.classList.add('hidden'); // Ocultar el área de juego original
-                // Remover y ocultar a todos los jugadores
-                for (let id in players) {
-                    if (id !== socket.id) { // No ocultar al propio pingüino
-                        players[id].div.classList.add('hidden');
-                        players[id].messageDivs.forEach(div => div.classList.add('hidden'));
-                    }
-                }
-            } else {
-                hasExited = false;
-                document.body.classList.remove('exit-background'); // Restaurar el fondo original
-                gameArea.classList.remove('hidden'); // Mostrar el área de juego original
-                // Mostrar a todos los jugadores
-                for (let id in players) {
-                    if (id !== socket.id) { // No mostrar al propio pingüino
-                        players[id].div.classList.remove('hidden');
-                        players[id].messageDivs.forEach(div => div.classList.remove('hidden'));
-                    }
-                }
-            }
-        });
-
-        // Actualizar la visualización de los jugadores cuando se reciben nuevos jugadores
-        socket.on('newPlayer', (data) => {
-            createPlayer(data.id, data.player.x, data.player.y);
-            // Si el usuario ha enviado EXIT, ocultar a los nuevos jugadores que no están en EXIT
-            if (hasExited && data.player.hasExited) {
-                players[data.id].div.classList.add('hidden');
-                players[data.id].messageDivs.forEach(div => div.classList.add('hidden'));
-            }
-        });
-
-        // Asegurarse de que al recibir mensajes, solo se muestren si están en el mismo estado
-        socket.on('receiveMessage', (data) => {
-            // Si el usuario ha enviado EXIT, solo mostrar mensajes de otros usuarios que también lo han hecho
-            if (hasExited && !data.hasExited) return;
-            // Si el usuario no ha enviado EXIT, solo mostrar mensajes de usuarios que tampoco lo han hecho
-            if (!hasExited && data.hasExited) return;
-            createMessageDiv(data.id, data.message);
-            moveMessage(data.id);
-        });
+      
+      
 
         // Cuando se desconecta un jugador, asegurarse de que sus elementos sean ocultados correctamente
         socket.on('playerDisconnected', (id) => {
