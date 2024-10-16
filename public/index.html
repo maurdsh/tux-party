@@ -340,15 +340,7 @@
                 }
             }
         });
-// Funciï¿½n para crear un nuevo jugador
-        function createPlayer(id, x, y) {
-            const playerDiv = document.createElement('img');
-            playerDiv.src = 'pingu.png'; // Asegï¿½rate de que la imagen estï¿½ en la carpeta pï¿½blica
-            playerDiv.className = 'player';
-            playerDiv.id = id;
-            playerDiv.style.left = `${x}px`;
-            playerDiv.style.top = `${y}px`;
-            gameArea.appendChild(playerDiv);
+
         // Actualizar la visualización de los jugadores cuando se reciben nuevos jugadores
         socket.on('newPlayer', (data) => {
             createPlayer(data.id, data.player.x, data.player.y);
