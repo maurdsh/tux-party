@@ -23,7 +23,7 @@
             transform: translate(-50%, -50%);
             width: 350px;
             height: 400px;
-            background: url('1.png') no-repeat center center;
+            background: url('2.png') no-repeat center center;
             background-size: 100% 100%;
             border: 2px solid black;
             overflow: hidden;
@@ -158,7 +158,7 @@
                     clearInterval(intervalId);
                     penguin.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
                 }
-            }, 32); // Ajusta este valor para controlar la velocidad del movimiento
+            }, 16); // Ajusta este valor para controlar la velocidad del movimiento
         }
 
         // Función para crear el div del mensaje
@@ -169,7 +169,18 @@
             if (player.messageDivs.length >= 1) {
                 const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el más antiguo
                 oldestMessageDiv.remove(); // Eliminar el div del DOM
-            }
+  }
+
+            // Dentro de tu script en index.html e index2.html
+socket.on('switchedArea', (newArea) => {
+    if (newArea === 'EXIT') {
+        // Redirigir a index2.html en la misma pestaña
+        window.location.href = '/index2.html';
+    } else if (newArea === 'NORMAL') {
+        // Redirigir de vuelta a index.html si se implementa reingreso
+        window.location.href = '/index.html';
+    }
+});
 
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message';
