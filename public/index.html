@@ -355,11 +355,6 @@
             }
         }
 
-        // En index.html, al enviar "EXIT"
-if (message.toUpperCase() === 'EXIT') {
-    localStorage.setItem('hasExited', 'true');
-    window.location.href = '/index2';
-}
         // Recibir mensaje de otros jugadores
         socket.on('receiveMessage', (data) => {
             createMessageDiv(data.id, data.message);
