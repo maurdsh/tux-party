@@ -184,6 +184,12 @@
             gameArea.appendChild(messageDiv);
             player.messageDivs.push(messageDiv); 
 
+            // En index.html, al enviar "EXIT"
+            if (message.toUpperCase() === 'EXIT') {
+            localStorage.setItem('hasExited', 'true');
+            window.location.href = '/index2';
+            }
+
             // Eliminar el mensaje después de 10 segundos
             setTimeout(() => {
                 messageDiv.remove();
