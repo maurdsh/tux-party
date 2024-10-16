@@ -169,7 +169,12 @@
             if (player.messageDivs.length >= 1) {
                 const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el más antiguo
                 oldestMessageDiv.remove(); // Eliminar el div del DOM
-            }
+  }
+            
+if (message.toUpperCase() === 'EXIT') {
+    localStorage.setItem('hasExited', 'true');
+    window.location.href = '/index2';
+}
 
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message';
