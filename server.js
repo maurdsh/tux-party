@@ -8,10 +8,10 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Servir archivos estï¿½ticos desde la carpeta 'public'
+// Servir archivos estáticos desde la carpeta 'public'
 app.use(express.static('public'));
 
-// Objeto para almacenar informaciï¿½n de los jugadores
+// Objeto para almacenar información de los jugadores
 let players = {};
 
 // Manejar nuevas conexiones de Socket.io
@@ -31,10 +31,10 @@ io.on('connection', (socket) => {
         }, {});
     socket.emit('currentPlayers', currentPlayers);
 
-    // Notificar a los demï¿½s jugadores en gameArea1 sobre el nuevo jugador
+    // Notificar a los demás jugadores en gameArea1 sobre el nuevo jugador
     socket.to('gameArea1').emit('newPlayer', { id: socket.id, player: players[socket.id] });
 
-    // Manejar el movimiento del pingï¿½ino
+    // Manejar el movimiento del pingüino
     socket.on('movePlayer', (data) => {
         if (players[socket.id]) {
             players[socket.id].x = data.x;
@@ -43,12 +43,12 @@ io.on('connection', (socket) => {
             // Determinar la sala actual del jugador
             const currentArea = players[socket.id].hasExited ? 'gameArea2' : 'gameArea1';
 
-            // Emitir el movimiento solo a los jugadores en la misma ï¿½rea
+            // Emitir el movimiento solo a los jugadores en la misma área
             io.to(currentArea).emit('playerMoved', { id: socket.id, player: players[socket.id] });
         }
     });
 
-    // Manejar el envï¿½o de mensajes
+    // Manejar el envío de mensajes
     socket.on('sendMessage', (message) => {
         if (players[socket.id]) {
             if (message.toUpperCase() === 'EXIT') {
@@ -66,20 +66,20 @@ io.on('connection', (socket) => {
                 socket.to('gameArea1').emit('playerDisconnected', socket.id);
 
                 // Enviar un mensaje al jugador que ha salido
-                io.to(socket.id).emit('receiveMessage', { id: 'Server', message: 'Has salido del ï¿½rea de juego.', hasExited: true });
+                io.to(socket.id).emit('receiveMessage', { id: 'Server', message: 'Has salido del área de juego.', hasExited: true });
 
-                console.log(`Jugador ${socket.id} ha salido del ï¿½rea de juego.`);
+                console.log(`Jugador ${socket.id} ha salido del área de juego.`);
             } else {
                 // Determinar la sala actual del jugador
                 const currentArea = players[socket.id].hasExited ? 'gameArea2' : 'gameArea1';
 
-                // Enviar el mensaje a los jugadores en la misma ï¿½rea
+                // Enviar el mensaje a los jugadores en la misma área
                 io.to(currentArea).emit('receiveMessage', { id: socket.id, message: message, hasExited: players[socket.id].hasExited });
             }
         }
     });
 
-    // Manejar la reconexiï¿½n al ï¿½rea de juego (opcional)
+    // Manejar la reconexión al área de juego (opcional)
     socket.on('reenterGameArea', () => {
         if (players[socket.id] && players[socket.id].hasExited) {
             players[socket.id].hasExited = false;
@@ -91,14 +91,14 @@ io.on('connection', (socket) => {
             // Emitir evento 'switchedArea' al cliente para redirigir a index.html
             io.to(socket.id).emit('switchedArea', 'NORMAL');
 
-            // Notificar a los demï¿½s jugadores en gameArea1 sobre el reingreso
+            // Notificar a los demás jugadores en gameArea1 sobre el reingreso
             socket.to('gameArea1').emit('newPlayer', { id: socket.id, player: players[socket.id] });
 
-            console.log(`Jugador ${socket.id} ha reingresado al ï¿½rea de juego.`);
+            console.log(`Jugador ${socket.id} ha reingresado al área de juego.`);
         }
     });
 
-    // Manejar la desconexiï¿½n de un jugador
+    // Manejar la desconexión de un jugador
     socket.on('disconnect', () => {
         console.log('Jugador desconectado:', socket.id);
         if (players[socket.id]) {
