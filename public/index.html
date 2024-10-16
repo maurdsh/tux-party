@@ -168,7 +168,7 @@
                     clearInterval(intervalId);
                     penguin.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
                 }
-            }, 32); // Ajusta este valor para controlar la velocidad del movimiento
+            }, 25); // Ajusta este valor para controlar la velocidad del movimiento
         }
 
         // Función para crear el div del mensaje
@@ -332,6 +332,17 @@
             }
         }
 
+// Dentro de tu script en index.html e index2.html
+socket.on('switchedArea', (newArea) => {
+    if (newArea === 'EXIT') {
+        // Redirigir a index2.html en la misma pestaï¿½a
+        window.location.href = '/index2.html';
+    } else if (newArea === 'NORMAL') {
+        // Redirigir de vuelta a index.html si se implementa reingreso
+        window.location.href = '/index.html';
+    }
+});
+        
         // Recibir mensaje de otros jugadores
         socket.on('receiveMessage', (data) => {
             createMessageDiv(data.id, data.message);
