@@ -317,6 +317,12 @@
             }
         });
 
+document.getElementById('sendMessage').addEventListener('click', function() {
+    var event = new KeyboardEvent('keydown', { key: 'Enter' });
+    document.dispatchEvent(event);
+});
+
+        
         // Función para enviar el mensaje
         function sendMessage() {
             const message = messageInput.value.trim();
