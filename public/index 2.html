@@ -99,6 +99,9 @@
     </style>
 </head>
 <body>
+ <h1>Has salido del ï¿½rea de juego.</h1>
+    <!-- Opcional: Botï¿½n para reingresar al ï¿½rea de juego principal -->
+    <button id="reenter">Reingresar al Juego</button>
 
     <div class="game-area" id="gameArea"></div>
     <div class="chat-area" id="chatArea"></div>
@@ -115,6 +118,19 @@
         const chatArea = document.getElementById('chatArea');
         const messageInput = document.getElementById('messageInput');
         const sendMessageButton = document.getElementById('sendMessage');
+        const reenterButton = document.getElementById('reenter');
+
+        reenterButton.addEventListener('click', () => {
+            // Emitir evento para reingresar al ï¿½rea de juego
+            socket.emit('reenterGameArea');
+        });
+
+        // Manejar el evento 'switchedArea' para redirigir de vuelta a index.html
+        socket.on('switchedArea', (newArea) => {
+            if (newArea === 'NORMAL') {
+                window.location.href = '/index.html';
+            }
+        });
         
 
         // Obtener las imï¿½genes de movimiento
@@ -168,7 +184,7 @@
                     clearInterval(intervalId);
                     penguin.src = 'pingu.png'; // Imagen final cuando el pingï¿½ino se detiene
                 }
-            }, 32); // Ajusta este valor para controlar la velocidad del movimiento
+            }, 25); // Ajusta este valor para controlar la velocidad del movimiento
         }
 
         // Funciï¿½n para crear el div del mensaje
