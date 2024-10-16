@@ -6,6 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juego Multijugador de Pingï¿½inos</title>
     <style>
+        h1 {
+    font-size: 16px; /* Tamaï¿½o pequeï¿½o de letra */
+    text-align: center; /* Centra el texto horizontalmente */
+    margin: 0; /* Elimina mï¿½rgenes superiores e inferiores */
+    padding: 10px 0; /* Un poco de espacio para separaciï¿½n */
+    position: absolute; /* Posiciona el <h1> en la parte superior */
+    top: 0; /* Coloca el <h1> en la parte superior de la pï¿½gina */
+    left: 0;
+    right: 0;
+}
+
         body {
             margin: 0;
             display: flex;
@@ -99,7 +110,7 @@
     </style>
 </head>
 <body>
- <h1>Has salido del ï¿½rea de juego.</h1>
+ <h1 >Has salido del ï¿½rea de juego.</h1>
     <!-- Opcional: Botï¿½n para reingresar al ï¿½rea de juego principal -->
     <button id="reenter">Reingresar al Juego</button>
 
@@ -184,7 +195,7 @@
                     clearInterval(intervalId);
                     penguin.src = 'pingu.png'; // Imagen final cuando el pingï¿½ino se detiene
                 }
-            }, 20); // Ajusta este valor para controlar la velocidad del movimiento
+            }, 15); // Ajusta este valor para controlar la velocidad del movimiento
         }
 
         // Funciï¿½n para crear el div del mensaje
