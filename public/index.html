@@ -129,37 +129,53 @@
             players[id] = { div: playerDiv, messageDivs: [], prevX: x, prevY: y };
         }
 
-        // Función para mover el pingüino con animación de imágenes
-        function movePenguin(penguin, targetX, targetY, direction) {
-            let frame = 0;
-            const steps = 60; // Número total de pasos para el movimiento
-            const currentX = parseFloat(penguin.style.left);
-            const currentY = parseFloat(penguin.style.top);
+      // Función para mover el pingüino con animación de imágenes
+function movePenguin(penguin, targetX, targetY, direction) {
+    let frame = 0;
+    const steps = 60; // Número total de pasos para el movimiento
+    const currentX = parseFloat(penguin.style.left);
+    const currentY = parseFloat(penguin.style.top);
 
-            const dx = targetX - currentX;
-            const dy = targetY - currentY;
-            const stepX = dx / steps;
-            const stepY = dy / steps;
+    const dx = targetX - currentX;
+    const dy = targetY - currentY;
+    const stepX = dx / steps;
+    const stepY = dy / steps;
 
-            // Cambiar las imágenes cada ciertos pasos
-            const intervalId = setInterval(() => {
-                penguin.src = penguinImages[direction][frame % penguinImages[direction].length];
-                frame++;
-            }, 200);
+    // Animar el cambio de imágenes
+    let lastFrameTime = 0;
+    const frameDuration = 200; // Duración de cada frame en ms
 
-            let stepCount = 0;
-            const moveInterval = setInterval(() => {
-                if (stepCount < steps) {
-                    penguin.style.left = `${currentX + stepX * stepCount}px`;
-                    penguin.style.top = `${currentY + stepY * stepCount}px`;
-                    stepCount++;
-                } else {
-                    clearInterval(moveInterval);
-                    clearInterval(intervalId);
-                    penguin.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
-                }
-            }, 16); // Ajusta este valor para controlar la velocidad del movimiento
+    // Usar requestAnimationFrame para el movimiento
+    let stepCount = 0;
+    function move() {
+        if (stepCount < steps) {
+            // Actualiza la posición
+            penguin.style.left = `${currentX + stepX * stepCount}px`;
+            penguin.style.top = `${currentY + stepY * stepCount}px`;
+
+            stepCount++;
+            requestAnimationFrame(move); // Volver a llamar hasta completar el movimiento
+        } else {
+            penguin.src = 'pingu.png'; // Imagen final cuando el pingüino se detiene
         }
+    }
+
+    function animateImage(timestamp) {
+        // Cambiar imagen si ha pasado el tiempo suficiente
+        if (timestamp - lastFrameTime > frameDuration) {
+            penguin.src = penguinImages[direction][frame % penguinImages[direction].length];
+            frame++;
+            lastFrameTime = timestamp;
+        }
+
+        if (stepCount < steps) {
+            requestAnimationFrame(animateImage);
+        }
+    }
+
+    requestAnimationFrame(move); // Iniciar el movimiento
+    requestAnimationFrame(animateImage); // Iniciar la animación
+}
 
         // Función para crear el div del mensaje
         function createMessageDiv(id, message) {
