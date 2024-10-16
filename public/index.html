@@ -310,15 +310,19 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
+ document.addEventListener('DOMContentLoaded', function() {
             const inputField = document.getElementById('messageInput');
+            const messagesContainer = document.getElementById('messages'); // Contenedor de mensajes
 
             // Funciï¿½n para manejar el envï¿½o del mensaje
             function sendMessage() {
                 const message = inputField.value;
                 if (message) {
-                    // Aquï¿½ puedes agregar la lï¿½gica para enviar el mensaje
-                    console.log("Mensaje enviado:", message);
+                    // Crear un nuevo elemento para el mensaje
+                    const messageElement = document.createElement('div');
+                    messageElement.textContent = message; // Asignar el texto del mensaje
+                    messagesContainer.appendChild(messageElement); // Aï¿½adir el mensaje al contenedor
+
                     inputField.value = ''; // Limpiar el campo de entrada
                 }
             }
