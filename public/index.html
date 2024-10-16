@@ -96,23 +96,6 @@
             display: none;
         }
 
-        /* Clase para el fondo blanco cuando el usuario ha enviado "EXIT" */
-        .exit-background {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 350px;
-            height: 400px;
-            background: url('2.png') no-repeat center center;
-            background-size: 100% 100%;
-            border: 2px solid black;
-            overflow: hidden;
-            padding: 20px;
-            box-sizing: border-box;
-            z-index: 1; /* Asegura que esté por debajo de las áreas de chat e input */
-           /* background-image: none !important; /* Eliminar la imagen de fondo */
-        }
     </style>
 </head>
 <body>
@@ -132,7 +115,7 @@
         const chatArea = document.getElementById('chatArea');
         const messageInput = document.getElementById('messageInput');
         const sendMessageButton = document.getElementById('sendMessage');
-        let hasExited = false; // Variable para rastrear si el usuario ha enviado "EXIT"
+        
 
         // Obtener las imágenes de movimiento
         const penguinImages = {
@@ -346,12 +329,6 @@
             if (message) {
                 socket.emit('sendMessage', message);
                 messageInput.value = ''; // Limpiar el campo de entrada
-
-                // Si el mensaje es "EXIT", manejar el cambio de área
-                if (message.toUpperCase() === 'EXIT') {
-                    // Emitir el cambio de área al servidor
-                    socket.emit('exitGameArea');
-                }
             }
         }
 
