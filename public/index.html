@@ -331,7 +331,15 @@
                 messageInput.value = ''; // Limpiar el campo de entrada
             }
         }
+document.querySelector('button:contains("Enviar")').addEventListener('click', function() {
+    var mensaje = document.querySelector('#campoDeTexto').value; // Asegï¿½rate de que #campoDeTexto sea el ID correcto del input
+    // Aquï¿½ envï¿½as el mensaje, por ejemplo, con un socket:
+    socket.emit('nuevoMensaje', mensaje);
+    document.querySelector('#campoDeTexto').value = ''; // Limpia el campo de texto
+});
 
+
+        
 // Dentro de tu script en index.html e index2.html
 socket.on('switchedArea', (newArea) => {
     if (newArea === 'EXIT') {
