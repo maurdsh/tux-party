@@ -186,6 +186,14 @@
             gameArea.appendChild(messageDiv);
             player.messageDivs.push(messageDiv); 
 
+            // En index2.html, al cargar
+            window.addEventListener('DOMContentLoaded', () => {
+            const hasExited = localStorage.getItem('hasExited');
+            if (hasExited === 'true') {
+            // Realizar acciones específicas
+            }
+            });
+
             // Eliminar el mensaje después de 10 segundos
             setTimeout(() => {
                 messageDiv.remove();
