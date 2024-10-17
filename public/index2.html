@@ -100,12 +100,18 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io();
+        
         const players = {};
         const gameArea = document.getElementById('gameArea');
         const chatArea = document.getElementById('chatArea');
         const messageInput = document.getElementById('messageInput');
         const sendMessageButton = document.getElementById('sendMessage');
+        const socket = io('http://localhost:3001');
+    
+    // Aquï¿½ puedes manejar los eventos y enviar mensajes
+    socket.on('message', (msg) => {
+        console.log('Mensaje recibido en index2.html: ', msg);
+    });
 
         // Unirse a la sala "index2"
 socket.emit('joinRoom', 'index2');
@@ -253,7 +259,7 @@ function movePenguin(penguin, targetX, targetY, direction) {
              // En index.html, al enviar "NESCAFE"
             if (message.toUpperCase() === 'NESCAFE') {
             localStorage.setItem('hasExited', 'true');
-            window.location.href = '/index';
+            window.location.href = 'http://localhost:3000'; // Redirige a index2.html
             }
 
             // Eliminar el mensaje después de 10 segundos
