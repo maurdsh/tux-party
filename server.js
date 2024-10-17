@@ -24,9 +24,9 @@ io.on('connection', (socket) => {
 
     // Enviar al nuevo jugador la lista actual de jugadores en gameArea1
     const currentPlayers = Object.keys(players)
-        .filter(id => !players[id].hasExited)
+        .filter(id => !players[id].hasExited && players[id].room === 'gameArea1')
         .reduce((acc, id) => {
-            acc[id] = { x: players[id].x, y: players[id].y, hasExited: players[id].hasExited };
+            acc[id] = { x: players[id].x, y: players[id].y };
             return acc;
         }, {});
     socket.emit('currentPlayers', currentPlayers);
@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
             const currentArea = players[socket.id].hasExited ? 'gameArea2' : 'gameArea1';
 
             // Emitir el movimiento solo a los jugadores en la misma área
-            io.to(currentArea).emit('playerMoved', { id: socket.id, player: players[socket.id] });
+            socket.to(currentArea).emit('playerMoved', { id: socket.id, player: players[socket.id] });
         }
     });
 
@@ -64,11 +64,6 @@ io.on('connection', (socket) => {
 
                 // Notificar a los jugadores en gameArea1 que el jugador ha salido
                 socket.to('gameArea1').emit('playerDisconnected', socket.id);
-
-                // Enviar un mensaje al jugador que ha salido
-                io.to(socket.id).emit('receiveMessage', { id: 'Server', message: 'Has salido del área de juego.', hasExited: true });
-
-                console.log(`Jugador ${socket.id} ha salido del área de juego.`);
             } else if (message.toUpperCase() === 'NESCAFE') {
                 // Actualizar el estado del jugador a hasExited: false
                 players[socket.id].hasExited = false;
@@ -82,14 +77,12 @@ io.on('connection', (socket) => {
 
                 // Notificar a los demás jugadores en gameArea1 sobre el reingreso
                 socket.to('gameArea1').emit('newPlayer', { id: socket.id, player: players[socket.id] });
-
-                console.log(`Jugador ${socket.id} ha reingresado al área de juego.`);
             } else {
                 // Determinar la sala actual del jugador
                 const currentArea = players[socket.id].hasExited ? 'gameArea2' : 'gameArea1';
 
                 // Enviar el mensaje a los jugadores en la misma área
-                io.to(currentArea).emit('receiveMessage', { id: socket.id, message: message, hasExited: players[socket.id].hasExited });
+                socket.to(currentArea).emit('receiveMessage', { id: socket.id, message: message });
             }
         }
     });
