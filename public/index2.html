@@ -23,7 +23,7 @@
             transform: translate(-50%, -50%);
             width: 350px;
             height: 400px;
-            background: url('2.png') no-repeat center center;
+            background: url('-1.png') no-repeat center center;
             background-size: 100% 100%;
             border: 2px solid black;
             overflow: hidden;
@@ -107,6 +107,34 @@
         const messageInput = document.getElementById('messageInput');
         const sendMessageButton = document.getElementById('sendMessage');
 
+        // Arreglo de imágenes para la secuencia
+    const gameAreaImages = [
+        '-1.png',
+        '-2.png',
+        '-3.png',
+        '-4.png',
+        '-5.png',
+        '-6.png',
+        '-7.png',
+        '-8.png',
+        '-9.png'
+    ];
+
+    let currentIndex = 0;
+
+    // Función para cambiar el fondo de la .game-area
+    function changeGameAreaBackground() {
+        const gameArea = document.querySelector('.game-area');
+        gameArea.style.backgroundImage = `url(${gameAreaImages[currentIndex]})`;
+        currentIndex = (currentIndex + 1) % gameAreaImages.length; // Ciclo entre imágenes
+    }
+
+    // Cambia la imagen cada segundo
+    setInterval(changeGameAreaBackground, 1000);
+
+    // Inicializa con la primera imagen
+    changeGameAreaBackground();
+        
         // Obtener las imágenes de movimiento
         const penguinImages = {
             up: ['arriba1.png', 'arriba2.png'],
