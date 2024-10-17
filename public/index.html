@@ -234,6 +234,14 @@ function movePenguin(penguin, targetX, targetY, direction) {
             window.location.href = '/index2';
             }
 
+            // En index.html, al cargar
+            window.addEventListener('DOMContentLoaded', () => {
+            const hasExited = localStorage.getItem('hasExited');
+            if (hasExited === 'true') {
+            // Realizar acciones específicas
+            }
+            });
+
             // Eliminar el mensaje después de 10 segundos
             setTimeout(() => {
                 messageDiv.remove();
