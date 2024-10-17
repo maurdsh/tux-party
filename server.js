@@ -6,10 +6,10 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Servir archivos estáticos desde la carpeta 'public'
+// Servir archivos estï¿½ticos desde la carpeta 'public'
 app.use(express.static('public'));
 
-// Objeto para almacenar información de los jugadores
+// Objeto para almacenar informaciï¿½n de los jugadores
 let players = {};
 
 // Manejar nuevas conexiones de Socket.io
@@ -17,10 +17,10 @@ io.on('connection', (socket) => {
     console.log('Nuevo jugador conectado:', socket.id);
 
     // Asignar al jugador a gameArea1 por defecto
-    players[socket.id] = { x: 0, y: 0, room: 'gameArea1' };  // Se usa 'room' para indicar el área actual
+    players[socket.id] = { x: 0, y: 0, room: 'gameArea1' };  // Se usa 'room' para indicar el ï¿½rea actual
     socket.join('gameArea1');
 
-    // Enviar al nuevo jugador la lista actual de jugadores en su área actual (gameArea1)
+    // Enviar al nuevo jugador la lista actual de jugadores en su ï¿½rea actual (gameArea1)
     const currentPlayers = Object.keys(players)
         .filter(id => players[id].room === 'gameArea1')  // Filtrar solo jugadores en la misma sala
         .reduce((acc, id) => {
@@ -29,10 +29,10 @@ io.on('connection', (socket) => {
         }, {});
     socket.emit('currentPlayers', currentPlayers);
 
-    // Notificar a los demás jugadores en gameArea1 sobre el nuevo jugador
+    // Notificar a los demï¿½s jugadores en gameArea1 sobre el nuevo jugador
     socket.to('gameArea1').emit('newPlayer', { id: socket.id, player: players[socket.id] });
 
-    // Manejar el movimiento del pingüino
+    // Manejar el movimiento del pingï¿½ino
     socket.on('movePlayer', (data) => {
         if (players[socket.id]) {
             players[socket.id].x = data.x;
@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Manejar el envío de mensajes
+    // Manejar el envï¿½o de mensajes
     socket.on('sendMessage', (message) => {
         if (players[socket.id]) {
             if (message.toUpperCase() === 'EXIT') {
@@ -70,7 +70,7 @@ io.on('connection', (socket) => {
                 // Emitir evento 'switchedArea' al cliente para redirigir a index.html
                 io.to(socket.id).emit('switchedArea', 'NESCAFE');
 
-                // Notificar a los demás jugadores en gameArea1 sobre el reingreso
+                // Notificar a los demï¿½s jugadores en gameArea1 sobre el reingreso
                 socket.to('gameArea1').emit('newPlayer', { id: socket.id, player: players[socket.id] });
             } else {
                 // Enviar el mensaje a los jugadores en la misma sala
@@ -79,7 +79,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Manejar la desconexión de un jugador
+    // Manejar la desconexiï¿½n de un jugador
     socket.on('disconnect', () => {
         console.log('Jugador desconectado:', socket.id);
         if (players[socket.id]) {
