@@ -278,9 +278,9 @@ function movePenguin(penguin, targetX, targetY, direction) {
         // Escuchar el evento 'switchedArea'
 socket.on('switchedArea', (area) => {
     if (area === 'EXIT') {
-        window.location.href = 'http://localhost:3001'; // Redirigir a gameArea2
+        window.location.href = 'https://tux-party.onrender.com/index2.html'; // Redirigir a gameArea2
     } else if (area === 'NESCAFE') {
-        window.location.href = 'http://localhost:3000'; // Redirigir a gameArea1
+        window.location.href = 'https://tux-party.onrender.com'; // Redirigir a gameArea1
     }
 });
 
