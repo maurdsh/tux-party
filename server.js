@@ -69,6 +69,21 @@ io.on('connection', (socket) => {
                 io.to(socket.id).emit('receiveMessage', { id: 'Server', message: 'Has salido del área de juego.', hasExited: true });
 
                 console.log(`Jugador ${socket.id} ha salido del área de juego.`);
+            } else if (message.toUpperCase() === 'NESCAFE') {
+                // Actualizar el estado del jugador a hasExited: false
+                players[socket.id].hasExited = false;
+
+                // Mover el socket de gameArea2 a gameArea1
+                socket.leave('gameArea2');
+                socket.join('gameArea1');
+
+                // Emitir evento 'switchedArea' al cliente para redirigir a index.html
+                io.to(socket.id).emit('switchedArea', 'NESCAFE');
+
+                // Notificar a los demás jugadores en gameArea1 sobre el reingreso
+                socket.to('gameArea1').emit('newPlayer', { id: socket.id, player: players[socket.id] });
+
+                console.log(`Jugador ${socket.id} ha reingresado al área de juego.`);
             } else {
                 // Determinar la sala actual del jugador
                 const currentArea = players[socket.id].hasExited ? 'gameArea2' : 'gameArea1';
@@ -76,25 +91,6 @@ io.on('connection', (socket) => {
                 // Enviar el mensaje a los jugadores en la misma área
                 io.to(currentArea).emit('receiveMessage', { id: socket.id, message: message, hasExited: players[socket.id].hasExited });
             }
-        }
-    });
-
-    // Manejar la reconexión al área de juego (opcional)
-    socket.on('reenterGameArea', () => {
-        if (players[socket.id] && players[socket.id].hasExited) {
-            players[socket.id].hasExited = false;
-
-            // Mover el socket de gameArea2 a gameArea1
-            socket.leave('gameArea2');
-            socket.join('gameArea1');
-
-            // Emitir evento 'switchedArea' al cliente para redirigir a index.html
-            io.to(socket.id).emit('switchedArea', 'NESCAFE');
-
-            // Notificar a los demás jugadores en gameArea1 sobre el reingreso
-            socket.to('gameArea1').emit('newPlayer', { id: socket.id, player: players[socket.id] });
-
-            console.log(`Jugador ${socket.id} ha reingresado al área de juego.`);
         }
     });
 
@@ -115,5 +111,3 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
-
-
