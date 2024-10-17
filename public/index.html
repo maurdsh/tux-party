@@ -6,28 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juego Multijugador de Pingüinos</title>
     <style>
-        /* Estilos para la pantalla de carga */
-        #loadingScreen {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999; /* Mantener la pantalla de carga encima */
-        }
-        /* Nueva animación de rotación */
-    #loadingText {
-        font-size: 24px;
-        font-weight: bold;
-        animation: rotate 1s linear infinite;
-    }
-
-    @keyframes rotate {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
         body {
             margin: 0;
             display: flex;
@@ -111,12 +89,7 @@
     </style>
 </head>
 <body>
-     <!-- Pantalla de carga -->
-    <div id="loadingScreen">
-        <div id="loadingText">Cargando...</div>
-    </div>
-      <!-- Contenido principal de la página -->
-    <div id="content" style="display:none;">
+
     <div class="game-area" id="gameArea"></div>
     <div class="chat-area" id="chatArea"></div>
     <div class="input-area">
@@ -124,17 +97,9 @@
 
         <button id="sendMessage">Enviar</button>
     </div>
-        </div>
 
     <script src="/socket.io/socket.io.js" defer></script>
     <script>
-        // Esperar a que la página se cargue completamente
-        window.onload = function() {
-            // Ocultar la pantalla de carga
-            document.getElementById('loadingScreen').style.display = 'none';
-            // Mostrar el contenido de la página
-            document.getElementById('content').style.display = 'block';
-        };
         const socket = io();
         const players = {};
         const gameArea = document.getElementById('gameArea');
