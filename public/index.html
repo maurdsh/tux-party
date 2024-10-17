@@ -275,27 +275,6 @@ function movePenguin(penguin, targetX, targetY, direction) {
             createPlayer(data.id, data.player.x, data.player.y);
         });
 
-        // Dentro de tu script en index.html e index2.html
-        socket.on('switchedArea', (newArea) => {
-        if (newArea === 'EXIT') {
-        // Redirigir a index2.html en la misma pestaña
-        window.location.href = '/index2.html';
-        } else if (newArea === 'NORMAL') {
-        // Redirigir de vuelta a index.html si se implementa reingreso
-        window.location.href = '/index.html';
-    }
-});
-        // Dentro de tu script en index.html e index2.html
-        socket.on('switchedArea', (newArea) => {
-        if (newArea === 'NESCAFE') {
-        // Redirigir a index.html en la misma pestaña
-        window.location.href = '/index.html';
-        } else if (newArea === 'NORMAL') {
-        // Redirigir de vuelta a index2.html si se implementa reingreso
-        window.location.href = '/index2.html';
-    }
-});
-
         // Escuchar el evento 'switchedArea'
 socket.on('switchedArea', (area) => {
     if (area === 'EXIT') {
