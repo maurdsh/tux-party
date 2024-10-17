@@ -23,7 +23,7 @@
             transform: translate(-50%, -50%);
             width: 350px;
             height: 400px;
-            background: url('1.png') no-repeat center center;
+            background: url('1.jpg') no-repeat center center;
             background-size: 100% 100%;
             border: 2px solid black;
             overflow: hidden;
@@ -100,6 +100,33 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
+         // Arreglo de imágenes para la secuencia
+    const gameAreaImages = [
+        '1.jpg',
+        '2.jpg',
+        '3.jpg',
+        '4.jpg',
+        '5.jpg',
+        '6.jpg',
+        '7.jpg',
+        '8.jpg',
+        '9.jpg'
+    ];
+
+    let currentIndex = 0;
+
+    // Función para cambiar el fondo de la .game-area
+    function changeGameAreaBackground() {
+        const gameArea = document.querySelector('.game-area');
+        gameArea.style.backgroundImage = `url(${gameAreaImages[currentIndex]})`;
+        currentIndex = (currentIndex + 1) % gameAreaImages.length; // Ciclo entre imágenes
+    }
+
+    // Cambia la imagen cada segundo
+    setInterval(changeGameAreaBackground, 1000);
+
+    // Inicializa con la primera imagen
+    changeGameAreaBackground();
         const socket = io();
         const players = {};
         const gameArea = document.getElementById('gameArea');
