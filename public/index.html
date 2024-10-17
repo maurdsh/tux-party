@@ -346,13 +346,15 @@ socket.on('switchedArea', (area) => {
             const x = event.clientX - rect.left; // Posición X del clic
             const y = event.clientY - rect.top; // Posición Y del clic
 
-            // Limitar la posición del pingüino dentro del área de juego
-            const limitedX = Math.max(0, Math.min(rect.width - 50, x)); // 50 es el ancho del pingüino
-            const limitedY = Math.max(0, Math.min(rect.height - 50, y)); // 50 es la altura del pingüino
+           const limitedX = Math.max(0, Math.min(rect.width - 50, x)); // 50 es el ancho del pingüino
+const limitedY = Math.max(0, Math.min(rect.height - 50, y)); // 50 es la altura del pingüino
 
-            // Obtener la posición actual del jugador
-            const currentPlayer = players[socket.id];
-            if (!currentPlayer) return; // Asegúrate de que el jugador exista
+// Obtener la posición actual del jugador
+const currentPlayer = players[socket.id];
+if (currentPlayer) {
+    movePenguin(currentPlayer.div, limitedX, limitedY, 'right'); // Puedes ajustar la dirección si es necesario
+}
+
 
             // Determinar la dirección del movimiento
             let direction;
