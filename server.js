@@ -17,19 +17,19 @@ io.on('connection', (socket) => {
     console.log('Nuevo jugador conectado:', socket.id);
 
     // Asignar al jugador a gameArea1 por defecto
-    players[socket.id] = { x: 0, y: 0, room: 'gameArea1' }; // Se usa 'room' para indicar el ï¿½rea actual
+    players[socket.id] = { x: 0, y: 0, room: 'gameArea1' };
     socket.join('gameArea1');
 
-    // Enviar al nuevo jugador la lista actual de jugadores en su ï¿½rea actual (gameArea1)
+    // Enviar la lista actual de jugadores en gameArea1
     const currentPlayers = Object.keys(players)
-        .filter(id => players[id].room === 'gameArea1') // Filtrar solo jugadores en la misma sala
+        .filter(id => players[id].room === 'gameArea1')
         .reduce((acc, id) => {
             acc[id] = { x: players[id].x, y: players[id].y };
             return acc;
         }, {});
     socket.emit('currentPlayers', currentPlayers);
 
-    // Notificar a los demï¿½s jugadores en gameArea1 sobre el nuevo jugador
+    // Notificar a los demï¿½s jugadores sobre el nuevo jugador
     socket.to('gameArea1').emit('newPlayer', { id: socket.id, player: players[socket.id] });
 
     // Manejar el movimiento del pingï¿½ino
@@ -38,7 +38,7 @@ io.on('connection', (socket) => {
             players[socket.id].x = data.x;
             players[socket.id].y = data.y;
 
-            // Emitir el movimiento solo a los jugadores en la misma sala
+            // Emitir el movimiento a los jugadores en la misma sala
             socket.to(players[socket.id].room).emit('playerMoved', { id: socket.id, player: players[socket.id] });
         }
     });
@@ -47,21 +47,13 @@ io.on('connection', (socket) => {
     socket.on('sendMessage', (message) => {
         if (players[socket.id]) {
             if (message.toUpperCase() === 'EXIT') {
-                // Mover al jugador a gameArea2
                 players[socket.id].room = 'gameArea2';
-
-                // Cambiar al socket a la nueva sala
                 socket.leave('gameArea1');
                 socket.join('gameArea2');
-
-                // Emitir evento 'switchedArea' al cliente para redirigir a index2.html
                 io.to(socket.id).emit('switchedArea', 'EXIT');
-
-                // Notificar a los jugadores en gameArea1 que el jugador ha salido
                 socket.to('gameArea1').emit('playerDisconnected', socket.id);
             } else {
-                // Enviar el mensaje a los jugadores en la misma sala
-                socket.to(players[socket.id].room).emit('receiveMessage', { id: socket.id, message: message });
+                socket.to(players[socket.id].room).emit('receiveMessage', { id: socket.id, message });
             }
         }
     });
@@ -72,7 +64,6 @@ io.on('connection', (socket) => {
         if (players[socket.id]) {
             const area = players[socket.id].room;
             delete players[socket.id];
-            // Notificar a la sala que el jugador se ha desconectado
             socket.to(area).emit('playerDisconnected', socket.id);
         }
     });
