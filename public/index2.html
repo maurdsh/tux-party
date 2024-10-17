@@ -277,7 +277,7 @@ function movePenguin(penguin, targetX, targetY, direction) {
         // Escuchar el evento 'switchedArea'
 socket.on('switchedArea', (area) => {
     if (area === 'EXIT') {
-        window.location.href = 'index2.html'; // Redirigir a gameArea2
+        window.location.href = 'http://localhost:3001'; // Redirigir a gameArea2
     } else if (area === 'NESCAFE') {
         window.location.href = 'http://localhost:3000'; // Redirige a index2.html
     }
