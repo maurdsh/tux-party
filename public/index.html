@@ -241,6 +241,16 @@
                 messageArea.value = ''; // Limpia el área de mensajes después de enviar
             }
         });
+// Verifica si el mensaje es "NESCAFE"
+            if (message === 'NESCAFE') {
+                // Redirige a otra página
+                window.location.href = 'https://tux-party.onrender.com'; // Cambia esta URL por la que desees
+            } else {
+                alert('Mensaje enviado: ' + message); // Solo para probar el envío de otros mensajes
+                messageArea.value = ''; // Limpia el área de mensajes después de enviar
+            }
+        });
+
         
         // Manejo de jugadores actuales
         socket.on('currentPlayers', (currentPlayers) => {
