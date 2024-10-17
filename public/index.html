@@ -100,12 +100,18 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io();
+        
         const players = {};
         const gameArea = document.getElementById('gameArea');
         const chatArea = document.getElementById('chatArea');
         const messageInput = document.getElementById('messageInput');
         const sendMessageButton = document.getElementById('sendMessage');
+        const socket = io('http://localhost:3000');
+    
+    // Aquï¿½ puedes manejar los eventos y enviar mensajes
+    socket.on('message', (msg) => {
+        console.log('Mensaje recibido en index.html: ', msg);
+    });
         
 
 // Unirse a la sala "index"
