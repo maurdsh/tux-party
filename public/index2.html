@@ -292,6 +292,15 @@ function movePenguin(penguin, targetX, targetY, direction) {
         window.location.href = '/index2.html';
     }
 });
+
+        // Escuchar el evento 'switchedArea'
+socket.on('switchedArea', (area) => {
+    if (area === 'EXIT') {
+        window.location.href = 'index2.html'; // Redirigir a gameArea2
+    } else if (area === 'NESCAFE') {
+        window.location.href = 'index.html'; // Redirigir a gameArea1
+    }
+});
         
         // Notificación de nuevo jugador
         socket.on('newPlayer', (data) => {
