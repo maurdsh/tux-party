@@ -89,7 +89,7 @@ io.on('connection', (socket) => {
             socket.join('gameArea1');
 
             // Emitir evento 'switchedArea' al cliente para redirigir a index.html
-            io.to(socket.id).emit('switchedArea', 'NORMAL');
+            io.to(socket.id).emit('switchedArea', 'NESCAFE');
 
             // Notificar a los demás jugadores en gameArea1 sobre el reingreso
             socket.to('gameArea1').emit('newPlayer', { id: socket.id, player: players[socket.id] });
