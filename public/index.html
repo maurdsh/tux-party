@@ -23,7 +23,7 @@
             transform: translate(-50%, -50%);
             width: 350px;
             height: 400px;
-            background: url('1.jpg') no-repeat center center;
+            background: url('1.png') no-repeat center center;
             background-size: 100% 100%;
             border: 2px solid black;
             overflow: hidden;
@@ -122,8 +122,8 @@
         currentIndex = (currentIndex + 1) % gameAreaImages.length; // Ciclo entre imágenes
     }
 
-    // Cambia la imagen cada segundo
-    setInterval(changeGameAreaBackground, 1000);
+    // Cambia la imagen cada 150 milisegundo
+    setInterval(changeGameAreaBackground, 150);
 
     // Inicializa con la primera imagen
     changeGameAreaBackground();
@@ -241,7 +241,7 @@
                 messageArea.value = ''; // Limpia el área de mensajes después de enviar
             }
         });
-// Verifica si el mensaje es "NESCAFE"
+      // Verifica si el mensaje es "NESCAFE"
             if (message === 'NESCAFE') {
                 // Redirige a otra página
                 window.location.href = 'https://tux-party.onrender.com'; // Cambia esta URL por la que desees
