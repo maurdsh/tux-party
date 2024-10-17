@@ -17,12 +17,12 @@ io.on('connection', (socket) => {
     console.log('Nuevo jugador conectado:', socket.id);
 
     // Asignar al jugador a gameArea1 por defecto
-    players[socket.id] = { x: 0, y: 0, room: 'gameArea1' };  // Se usa 'room' para indicar el ï¿½rea actual
+    players[socket.id] = { x: 0, y: 0, room: 'gameArea1' }; // Se usa 'room' para indicar el ï¿½rea actual
     socket.join('gameArea1');
 
     // Enviar al nuevo jugador la lista actual de jugadores en su ï¿½rea actual (gameArea1)
     const currentPlayers = Object.keys(players)
-        .filter(id => players[id].room === 'gameArea1')  // Filtrar solo jugadores en la misma sala
+        .filter(id => players[id].room === 'gameArea1') // Filtrar solo jugadores en la misma sala
         .reduce((acc, id) => {
             acc[id] = { x: players[id].x, y: players[id].y };
             return acc;
@@ -59,19 +59,6 @@ io.on('connection', (socket) => {
 
                 // Notificar a los jugadores en gameArea1 que el jugador ha salido
                 socket.to('gameArea1').emit('playerDisconnected', socket.id);
-            } else if (message.toUpperCase() === 'NESCAFE') {
-                // Mover al jugador a gameArea1
-                players[socket.id].room = 'gameArea1';
-
-                // Cambiar al socket a la nueva sala
-                socket.leave('gameArea2');
-                socket.join('gameArea1');
-
-                // Emitir evento 'switchedArea' al cliente para redirigir a index.html
-                io.to(socket.id).emit('switchedArea', 'NESCAFE');
-
-                // Notificar a los demï¿½s jugadores en gameArea1 sobre el reingreso
-                socket.to('gameArea1').emit('newPlayer', { id: socket.id, player: players[socket.id] });
             } else {
                 // Enviar el mensaje a los jugadores en la misma sala
                 socket.to(players[socket.id].room).emit('receiveMessage', { id: socket.id, message: message });
@@ -94,5 +81,5 @@ io.on('connection', (socket) => {
 // Iniciar el servidor en el puerto especificado
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`Servidor escuchando en el puerto ${PORT}`);
+    console.log(`Servidor 1 escuchando en el puerto ${PORT}`);
 });
