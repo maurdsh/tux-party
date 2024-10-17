@@ -106,6 +106,20 @@
         const chatArea = document.getElementById('chatArea');
         const messageInput = document.getElementById('messageInput');
         const sendMessageButton = document.getElementById('sendMessage');
+        
+
+// Unirse a la sala "index"
+socket.emit('joinRoom', 'index');
+
+// Manejar los eventos de la sala
+socket.on('message', (message) => {
+  console.log(message);
+});
+
+socket.on('playerMoved', (data) => {
+  // Actualiza el movimiento de otros jugadores
+});
+
 
         // Arreglo de imágenes para la secuencia
     const gameAreaImages = [
