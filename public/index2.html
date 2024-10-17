@@ -107,6 +107,18 @@
         const messageInput = document.getElementById('messageInput');
         const sendMessageButton = document.getElementById('sendMessage');
 
+        // Unirse a la sala "index2"
+socket.emit('joinRoom', 'index2');
+
+// Manejar los eventos de la sala
+socket.on('message', (message) => {
+  console.log(message);
+});
+
+socket.on('playerMoved', (data) => {
+  // Actualiza el movimiento de otros jugadores
+});
+
         // Arreglo de imágenes para la secuencia
     const gameAreaImages = [
         '-1.png',
