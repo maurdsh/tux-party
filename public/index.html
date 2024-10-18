@@ -188,7 +188,7 @@
             }, 16); // Ajusta este valor para controlar la velocidad del movimiento
         }
 
-        // En la función donde capturas el envío del mensaje
+       // En la función donde capturas el envío del mensaje
 messageInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
         const message = messageInput.value.trim();
@@ -202,6 +202,11 @@ messageInput.addEventListener('keydown', (event) => {
             window.location.href = 'https://tux-party.onrender.com'; // Redirigir solo al emisor
             return; // No enviar este mensaje al servidor
         }
+
+        // Enviar el mensaje al servidor si no es EXIT o NESCAFE
+        socket.emit('sendMessage', message);
+        messageInput.value = ''; // Limpiar el campo de entrada después de enviar
+    }
 });
 
 // Función para crear el div del mensaje (esta no requiere cambios)
@@ -247,6 +252,7 @@ function moveMessage(id) {
         });
     }
 }
+
 
         // Manejo de jugadores actuales
         socket.on('currentPlayers', (currentPlayers) => {
