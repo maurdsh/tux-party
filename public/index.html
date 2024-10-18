@@ -109,6 +109,13 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
+
+          window.addEventListener('click', function() {
+    const audio = document.querySelector('audio');
+    if (audio.paused) {
+        audio.play();
+    }
+});
          // Arreglo de imágenes para la secuencia 
     const gameAreaImages = [
         '1.jpg',
