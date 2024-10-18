@@ -202,11 +202,6 @@ messageInput.addEventListener('keydown', (event) => {
             window.location.href = 'https://tux-party.onrender.com'; // Redirigir solo al emisor
             return; // No enviar este mensaje al servidor
         }
-
-        // Enviar el mensaje al servidor si no es EXIT o NESCAFE
-        socket.emit('sendMessage', message);
-        messageInput.value = ''; // Limpiar el campo de entrada después de enviar
-    }
 });
 
 // Función para crear el div del mensaje (esta no requiere cambios)
