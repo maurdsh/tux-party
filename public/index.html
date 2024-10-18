@@ -80,12 +80,12 @@
             font-size: 14px;
         }
 
-        button {
+        /*button {
             width: 18%;
             padding: 5px;
             font-size: 14px;
             cursor: pointer;
-        }
+        }*/
     </style>
 </head>
 <body>
@@ -190,7 +190,7 @@
 
        // En la función donde capturas el envío del mensaje
 messageInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter''sendMessage') {
+    if (event.key === 'Enter') {
         const message = messageInput.value.trim();
 
         // Verificar si el mensaje es "EXIT" o "NESCAFE" y redirigir al emisor
