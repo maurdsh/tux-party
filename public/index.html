@@ -92,6 +92,12 @@
     </style>
 </head>
 <body>
+    <!-- El audio se reproducirá automáticamente al cargar la página -->
+    <audio autoplay loop>
+        <source src="tu-cancion.mp3" type="audio/mpeg">
+        <!-- Puedes agregar más fuentes de diferentes formatos si es necesario -->
+        <!--Tu navegador no soporta la reproducción de audio.-->
+    </audio>
 
     <div class="game-area" id="gameArea"></div>
     <div class="chat-area" id="chatArea"></div>
@@ -205,6 +211,39 @@ messageInput.addEventListener('keydown', (event) => {
             window.location.href = 'https://tux-party.onrender.com'; // Redirigir solo al emisor
             return; // No enviar este mensaje al servidor
         }
+         if (message.toUpperCase() === 'RIELES') {
+            window.location.href = 'https://porfirio.onrender.com'; // Redirigir solo al emisor
+            return; // No enviar este mensaje al servidor
+        }
+         if (message.toUpperCase() === '1876') {
+            window.location.href = 'https://one876.onrender.com'; // Redirigir solo al emisor
+            return; // No enviar este mensaje al servidor
+        }
+      if (message.toUpperCase() === 'A') {
+            window.location.href = 'https://a-v5tl.onrender.com'; // Redirigir solo al emisor
+            return; // No enviar este mensaje al servidor
+        }
+      if (message.toUpperCase() === 'FUERA') {
+            window.location.href = 'https://one876.onrender.com'; // Redirigir solo al emisor
+            return; // No enviar este mensaje al servidor
+        }
+      if (message.toUpperCase() === 'B') {
+            window.location.href = 'https://b-scmp.onrender.com'; // Redirigir solo al emisor
+            return; // No enviar este mensaje al servidor
+        }
+      if (message.toUpperCase() === 'FERROCARRIL') {
+            window.location.href = 'https://ferrocarril.onrender.com '; // Redirigir solo al emisor
+            return; // No enviar este mensaje al servidor
+        }
+if (message.toUpperCase() === 'BELLAS ARTES') {
+            window.location.href = 'https://bellasartes.onrender.com'; // Redirigir solo al emisor
+            return; // No enviar este mensaje al servidor
+        }
+if (message.toUpperCase() === 'REVOLUCIÓN MEXICANA') {
+            window.location.href = 'https://fin-tpek.onrender.com'; // Redirigir solo al emisor
+            return; // No enviar este mensaje al servidor
+        }
+
 
         // Enviar el mensaje al servidor si no es EXIT o NESCAFE
         socket.emit('sendMessage', message);
