@@ -193,6 +193,13 @@ messageInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
         const message = messageInput.value.trim();
 
+        
+        // Asegúrate de que el mensaje no esté vacío
+        if (message) {
+            // Enviar el mensaje al servidor
+            socket.emit('chat message', message);
+
+
         // Verificar si el mensaje es "EXIT" o "NESCAFE" y redirigir al emisor
         if (message.toUpperCase() === 'EXIT') {
             window.location.href = 'https://cafe-8mwz.onrender.com'; // Redirigir solo al emisor
@@ -206,6 +213,21 @@ messageInput.addEventListener('keydown', (event) => {
         // Enviar el mensaje al servidor si no es EXIT o NESCAFE
         socket.emit('sendMessage', message);
         messageInput.value = ''; // Limpiar el campo de entrada después de enviar
+    }
+});
+
+        // Escucha los mensajes del servidor
+socket.on('chat message', (msg) => {
+    createMessageDiv(playerId, msg); // Crea el div del mensaje para todos los usuarios
+
+    // Verifica si el mensaje recibido es "EXIT" o "NESCAFE" 
+    if (msg.toUpperCase() === 'EXIT' && playerId === id) {
+        window.location.href = 'https://cafe-8mwz.onrender.com'; // Redirigir solo al emisor
+        return;
+    }
+    if (msg.toUpperCase() === 'NESCAFE' && playerId === id) {
+        window.location.href = 'https://tux-party.onrender.com'; // Redirigir solo al emisor
+        return;
     }
 });
 
