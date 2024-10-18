@@ -197,6 +197,12 @@
         window.location.href = 'https://cafe-8mwz.onrender.com'; // Cambia esta URL por la que desees
         return; // Salir de la función después de redirigir
     }
+// Verificar si el mensaje es "NESCAFE" para redirigir a una nueva página
+    if (message.trim().toUpperCase() === 'EXIT') {
+        window.location.href = 'https://tux-party.onrender.com'; // Cambia esta URL por la que desees
+        return; // Salir de la función después de redirigir
+    }
+
 
             // Limitar a 2 mensajes, eliminar el más antiguo si ya hay 1
             if (player.messageDivs.length >= 1) {
