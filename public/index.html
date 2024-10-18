@@ -216,21 +216,6 @@ messageInput.addEventListener('keydown', (event) => {
     }
 });
 
-        // Escucha los mensajes del servidor
-socket.on('chat message', (msg) => {
-    createMessageDiv(playerId, msg); // Crea el div del mensaje para todos los usuarios
-
-    // Verifica si el mensaje recibido es "EXIT" o "NESCAFE" 
-    if (msg.toUpperCase() === 'EXIT' && playerId === id) {
-        window.location.href = 'https://cafe-8mwz.onrender.com'; // Redirigir solo al emisor
-        return;
-    }
-    if (msg.toUpperCase() === 'NESCAFE' && playerId === id) {
-        window.location.href = 'https://tux-party.onrender.com'; // Redirigir solo al emisor
-        return;
-    }
-});
-
 // Función para crear el div del mensaje (esta no requiere cambios)
 function createMessageDiv(id, message) {
     const player = players[id];
