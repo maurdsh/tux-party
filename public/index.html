@@ -79,13 +79,16 @@
             padding: 5px;
             font-size: 14px;
         }
-
-        /*button {
+        
+        button {
             width: 18%;
             padding: 5px;
             font-size: 14px;
             cursor: pointer;
-        }*/
+        }
+        #sendMessage {
+    display: none;
+}
     </style>
 </head>
 <body>
@@ -95,7 +98,7 @@
     <div class="input-area">
         <input type="text" id="messageInput" maxlength="60" placeholder="Escribe tu mensaje (máx. 60 caracteres)" />
 
-         <button id="sendMessage"><!--Enviar--></button>
+         <button id="sendMessage">Enviar</button>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
