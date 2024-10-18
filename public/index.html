@@ -188,11 +188,12 @@
             }, 16); // Ajusta este valor para controlar la velocidad del movimiento
         }
 
-        // Función para crear el div del mensaje
-        function createMessageDiv(id, message) {
-            const player = players[id];
+        // En la función donde capturas el envío del mensaje
+messageInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        const message = messageInput.value.trim();
 
-            // Verificar si el mensaje es "EXIT" o "NESCAFE" y redirigir al emisor
+        // Verificar si el mensaje es "EXIT" o "NESCAFE" y redirigir al emisor
         if (message.toUpperCase() === 'EXIT') {
             window.location.href = 'https://cafe-8mwz.onrender.com'; // Redirigir solo al emisor
             return; // No enviar este mensaje al servidor
@@ -202,45 +203,55 @@
             return; // No enviar este mensaje al servidor
         }
 
-            // Limitar a 2 mensajes, eliminar el más antiguo si ya hay 1
-            if (player.messageDivs.length >= 1) {
-                const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el más antiguo
-                oldestMessageDiv.remove(); // Eliminar el div del DOM
-            }
+        // Enviar el mensaje al servidor si no es EXIT o NESCAFE
+        socket.emit('sendMessage', message);
+        messageInput.value = ''; // Limpiar el campo de entrada después de enviar
+    }
+});
 
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message';
-            messageDiv.textContent = message;
+// Función para crear el div del mensaje (esta no requiere cambios)
+function createMessageDiv(id, message) {
+    const player = players[id];
 
-            // Colocar el mensaje inicialmente a la derecha del pingüino
-            const playerX = parseFloat(player.div.style.left);
-            const playerY = parseFloat(player.div.style.top);
+    // Limitar a 2 mensajes, eliminar el más antiguo si ya hay 1
+    if (player.messageDivs.length >= 1) {
+        const oldestMessageDiv = player.messageDivs.shift(); // Eliminar el más antiguo
+        oldestMessageDiv.remove(); // Eliminar el div del DOM
+    }
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message';
+    messageDiv.textContent = message;
+
+    // Colocar el mensaje inicialmente a la derecha del pingüino
+    const playerX = parseFloat(player.div.style.left);
+    const playerY = parseFloat(player.div.style.top);
+    messageDiv.style.left = `${playerX + 60}px`; 
+    messageDiv.style.top = `${playerY}px`; 
+
+    gameArea.appendChild(messageDiv);
+    player.messageDivs.push(messageDiv); 
+
+    // Eliminar el mensaje después de 10 segundos
+    setTimeout(() => {
+        messageDiv.remove();
+        player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
+    }, 10000);
+}
+
+// Función para mover el mensaje
+function moveMessage(id) {
+    const player = players[id];
+    if (player && player.messageDivs.length > 0) {
+        const playerX = parseFloat(player.div.style.left);
+        const playerY = parseFloat(player.div.style.top);
+
+        player.messageDivs.forEach((messageDiv, index) => {
             messageDiv.style.left = `${playerX + 60}px`; 
-            messageDiv.style.top = `${playerY}px`; 
-
-            gameArea.appendChild(messageDiv);
-            player.messageDivs.push(messageDiv); 
-
-            // Eliminar el mensaje después de 10 segundos
-            setTimeout(() => {
-                messageDiv.remove();
-                player.messageDivs = player.messageDivs.filter((div) => div !== messageDiv);
-            }, 10000);
-        }
-
-        // Función para mover el mensaje
-        function moveMessage(id) {
-            const player = players[id];
-            if (player && player.messageDivs.length > 0) {
-                const playerX = parseFloat(player.div.style.left);
-                const playerY = parseFloat(player.div.style.top);
-
-                player.messageDivs.forEach((messageDiv, index) => {
-                    messageDiv.style.left = `${playerX + 60}px`; 
-                    messageDiv.style.top = `${playerY + (index * 20)}px`; 
-                });
-            }
-        }
+            messageDiv.style.top = `${playerY + (index * 20)}px`; 
+        });
+    }
+}
         
         // Manejo de jugadores actuales
         socket.on('currentPlayers', (currentPlayers) => {
